@@ -18,8 +18,8 @@ export default function EngineeringPage() {
           <p className="font-body text-sm font-medium uppercase tracking-[0.2em] text-sage-dark">
             Engineering
           </p>
-          <h1 className="mt-6 max-w-3xl font-heading text-4xl leading-tight text-charcoal sm:text-5xl lg:text-6xl">
-            I also build the systems behind my campaigns.
+          <h1 className="mt-6 max-w-3xl font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl lg:text-6xl">
+            I also build the <em className="text-sage-dark italic">systems</em> behind my campaigns.
           </h1>
           <p className="mt-6 max-w-2xl font-body text-lg leading-relaxed text-warm-grey">
             Full-stack development is a differentiator, not a separate career — I build the

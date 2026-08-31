@@ -31,6 +31,10 @@
   --color-beige-border: var(--color-beige-border);
   --font-heading: var(--font-heading);
   --font-body: var(--font-body);
+  /* "ease-premium" utility — a slower expo-out curve for deliberate,
+     confident motion (drawer, overlays) instead of default linear/ease
+     timing, per the editorial-premium direction. */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
@@ -48,6 +52,10 @@ h2,
 h3,
 h4 {
   font-family: var(--font-heading);
+  /* Playfair at regular weight reads thin/quiet next to Inter body copy —
+     semibold is the baseline "richness" fix sitewide; primary H1s go
+     further to font-bold explicitly where they're used. */
+  font-weight: 600;
 }
 
 /* Barely-visible paper-grain texture, layered via ::before on any

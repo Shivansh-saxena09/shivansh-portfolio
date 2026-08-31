@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CaseStudyDetail } from "@/content/caseStudies";
 import { skillLabel } from "@/content/skills";
 import { cardSummary } from "@/lib/caseStudyNarrative";
+import { statHeadline } from "@/lib/highlightStats";
 import { Tag } from "@/components/ui/Tag";
 
 const categoryLabel: Record<CaseStudyDetail["category"], string> = {
@@ -31,7 +32,9 @@ export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudyDetail }) {
 
       <p className="font-body text-sm leading-relaxed text-warm-grey">{oneLiner}</p>
 
-      <p className="font-body text-base font-medium text-sage-dark">{resultHeadline}</p>
+      <p className="font-body text-base font-semibold text-sage-dark">
+        {statHeadline(resultHeadline, caseStudy.slug, "card")}
+      </p>
 
       <div className="mt-auto flex flex-wrap gap-2 pt-2">
         <Tag>{caseStudy.platform}</Tag>

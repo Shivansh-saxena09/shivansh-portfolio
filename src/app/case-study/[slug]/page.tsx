@@ -10,6 +10,7 @@ import {
   formatINR,
   formatNumber,
 } from "@/lib/caseStudyNarrative";
+import { highlightStats, statHeadline } from "@/lib/highlightStats";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 import { StatTile } from "@/components/case-study/StatTile";
@@ -86,11 +87,11 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             <span className="font-body text-xs text-warm-grey">{caseStudy.dateRange}</span>
           </div>
 
-          <h1 className="mt-4 font-heading text-4xl leading-tight text-charcoal sm:text-5xl lg:text-6xl">
+          <h1 className="mt-4 font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl lg:text-6xl">
             {caseStudy.campaignName}
           </h1>
           <p className="mt-4 font-body text-lg text-warm-grey">{caseStudy.narrative.objective}</p>
-          <p className="mt-6 font-body text-2xl font-medium text-sage-dark">{resultHeadline}</p>
+          <p className="mt-6 leading-tight">{statHeadline(resultHeadline, caseStudy.slug, "page")}</p>
         </div>
 
         <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
@@ -138,17 +139,21 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
 
           <div className="mt-10 max-w-[42rem] lg:order-1 lg:col-span-8 lg:mt-0">
             <p className="font-body text-base leading-relaxed text-charcoal">
-              {composeCampaignIntro(caseStudy)}
+              {highlightStats(composeCampaignIntro(caseStudy), "intro")}
             </p>
 
             {/* Narrative — auto-composed metrics prose interleaved with the
-                author's own words, per CLAUDE.md's case-study spec. */}
+                author's own words, per CLAUDE.md's case-study spec. Numbers
+                get the same inline callout treatment here as in the
+                auto-generated copy — a reader scanning "The Challenge"
+                should catch the ₹540 CPL failure number as fast as the
+                sentence around it. */}
             <div className="mt-12 flex flex-col gap-10">
               {narrativeBlocks.map((block) => (
                 <div key={block.key}>
                   <h2 className="font-heading text-xl text-charcoal">{block.label}</h2>
                   <p className="mt-2 font-body text-base leading-relaxed text-warm-grey">
-                    {caseStudy.narrative[block.key]}
+                    {highlightStats(caseStudy.narrative[block.key], block.key)}
                   </p>
                 </div>
               ))}

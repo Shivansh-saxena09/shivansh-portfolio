@@ -1,5 +1,6 @@
 import type { AdSet } from "@/content/caseStudies";
 import { composeAdSetNarrative, formatINR, formatNumber, formatPct } from "@/lib/caseStudyNarrative";
+import { highlightStats } from "@/lib/highlightStats";
 import { StatTile } from "./StatTile";
 
 export function AdSetSection({ adSet, showName }: { adSet: AdSet; showName: boolean }) {
@@ -12,7 +13,7 @@ export function AdSetSection({ adSet, showName }: { adSet: AdSet; showName: bool
       {showName && <h3 className="font-heading text-xl text-charcoal">{adSet.name}</h3>}
 
       <p className="mt-2 font-body text-base leading-relaxed text-charcoal">
-        {composeAdSetNarrative(adSet)}
+        {highlightStats(composeAdSetNarrative(adSet), adSet.name)}
       </p>
 
       <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">

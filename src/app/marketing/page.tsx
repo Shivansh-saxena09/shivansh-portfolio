@@ -27,8 +27,8 @@ export default async function MarketingPage({
           <p className="font-body text-sm font-medium uppercase tracking-[0.2em] text-terracotta">
             Marketing Work
           </p>
-          <h1 className="mt-6 max-w-3xl font-heading text-4xl leading-tight text-charcoal sm:text-5xl lg:text-6xl">
-            Campaign case studies, built from real numbers.
+          <h1 className="mt-6 max-w-3xl font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl lg:text-6xl">
+            Campaign case studies, built from <em className="text-terracotta italic">real numbers</em>.
           </h1>
           <p className="mt-6 max-w-2xl font-body text-lg leading-relaxed text-warm-grey">
             Every case study below is pulled from structured campaign data — targeting,

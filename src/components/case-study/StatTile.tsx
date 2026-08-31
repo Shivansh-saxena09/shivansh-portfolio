@@ -15,7 +15,9 @@ export function StatTile({
       }`}
     >
       <dt className="font-body text-xs uppercase tracking-wide text-warm-grey">{label}</dt>
-      <dd className={`mt-1 font-heading text-charcoal ${compact ? "text-lg" : "text-2xl"}`}>
+      <dd
+        className={`mt-1 font-heading font-bold text-charcoal ${compact ? "text-xl" : "text-3xl"}`}
+      >
         {value}
       </dd>
     </div>

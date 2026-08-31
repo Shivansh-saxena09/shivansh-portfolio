@@ -11,11 +11,18 @@ import { Tag } from "@/components/ui/Tag";
 
 const focusSkills = skills.filter((s) => s.category === "marketing").slice(0, 4);
 
-/** Splits text into word spans for a GSAP stagger reveal. */
-function splitWords(text: string) {
+/**
+ * Splits text into word spans for a GSAP stagger reveal. `accent` marks one
+ * word (matched exactly, punctuation included) for the editorial
+ * terracotta-italic treatment — same span structure either way, so the
+ * reveal animation targets `.split-word` uniformly regardless of styling.
+ */
+function splitWords(text: string, accent?: string) {
   return text.split(" ").map((word, i) => (
     <span key={i} className="inline-block overflow-hidden pb-1 align-bottom">
-      <span className="split-word inline-block">{word}&nbsp;</span>
+      <span className={`split-word inline-block ${word === accent ? "italic text-terracotta" : ""}`}>
+        {word}&nbsp;
+      </span>
     </span>
   ));
 }
@@ -62,9 +69,9 @@ export function Hero() {
 
             <h1
               ref={headingRef}
-              className="mt-6 font-heading text-4xl leading-[1.1] tracking-tight text-charcoal sm:text-6xl lg:text-7xl"
+              className="mt-6 font-heading text-4xl font-bold leading-[1.1] tracking-tight text-charcoal sm:text-6xl lg:text-7xl"
             >
-              {splitWords(heroCopy.heading)}
+              {splitWords(heroCopy.heading, "pipeline.")}
             </h1>
 
             <p className="hero-fade mt-8 max-w-xl font-body text-lg leading-relaxed text-warm-grey sm:text-xl">

@@ -12,7 +12,7 @@ export function FeaturedProject() {
 
         <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-7">
-            <h2 className="font-heading text-3xl text-charcoal sm:text-4xl">
+            <h2 className="font-heading text-3xl font-bold text-charcoal sm:text-4xl">
               {featuredProject.name}
             </h2>
             <p className="mt-3 font-body text-lg text-warm-grey">{featuredProject.tagline}</p>
