@@ -1,26 +1,119 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------- */
+/* Design tokens — "Warm Cream + Terracotta/Sage" (Editorial Premium)      */
+/* See CLAUDE.md → Design Direction for the source spec.                   */
+/* ---------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-cream: #f7f3ec; /* base background */
+  --color-ivory: #fdfbf7; /* secondary bg / cards, layered above base */
+  --color-terracotta: #b5623a; /* primary accent — muted baked-clay */
+  --color-terracotta-dark: #9a4f2d; /* hover/active state */
+  --color-sage: #7c8b6f; /* secondary accent — dull olive-sage */
+  --color-sage-dark: #667458;
+  --color-charcoal: #2b2622; /* text primary — warm near-black */
+  --color-warm-grey: #7a7268; /* text secondary / muted */
+  --color-beige-border: #e4dcc9; /* borders / dividers */
+
+  --font-heading: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-cream: var(--color-cream);
+  --color-ivory: var(--color-ivory);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-dark: var(--color-terracotta-dark);
+  --color-sage: var(--color-sage);
+  --color-sage-dark: var(--color-sage-dark);
+  --color-charcoal: var(--color-charcoal);
+  --color-warm-grey: var(--color-warm-grey);
+  --color-beige-border: var(--color-beige-border);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: auto; /* Lenis owns smooth scroll; avoid double-handling */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+}
+
+/* Barely-visible paper-grain texture, layered via ::before on any
+   element given this class (kept as a class, not global, so it stays cheap). */
+.paper-grain {
+  position: relative;
+  isolation: isolate;
+}
+
+.paper-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Light-glass card used sparingly for floating overlays */
+.glass-card {
+  background: color-mix(in srgb, var(--color-ivory) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--color-beige-border) 80%, transparent);
+  box-shadow: 0 8px 30px -12px rgb(43 38 34 / 0.18);
+}
+
+/* Center-out underline used by nav links */
+.nav-underline {
+  position: relative;
+}
+
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.nav-underline:hover::after,
+.nav-underline[data-active="true"]::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Fixed top scroll-progress line */
+.scroll-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60;
+  background: transparent;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  width: var(--scroll-progress, 0%);
+  background: linear-gradient(90deg, var(--color-terracotta), var(--color-sage));
+  transform-origin: left;
 }
