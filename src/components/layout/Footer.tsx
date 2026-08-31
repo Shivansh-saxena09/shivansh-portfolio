@@ -4,11 +4,23 @@ import { SocialLinks } from "@/components/ui/SocialLinks";
 
 export function Footer() {
   return (
-    <footer className="paper-grain border-t border-beige-border/70 bg-ivory">
-      <Container className="relative z-10 flex flex-col gap-6 py-14 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-heading text-xl text-charcoal">{person.name}</p>
-          <p className="mt-1 font-body text-sm text-warm-grey">{footerNote}</p>
+    <footer className="paper-grain relative border-t border-beige-border/70 bg-ivory">
+      {/* Same terracotta→sage gradient as the scroll-progress line — a
+          small bookend touch tying the top and bottom of every page together. */}
+      <div
+        aria-hidden="true"
+        className="h-[2px] w-full bg-gradient-to-r from-terracotta to-sage"
+      />
+
+      <Container className="relative z-10 flex flex-col gap-8 py-16 sm:flex-row sm:items-center sm:justify-between sm:py-20">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta font-heading text-sm font-semibold text-ivory">
+            S
+          </span>
+          <div>
+            <p className="font-heading text-xl font-semibold text-charcoal">{person.name}</p>
+            <p className="mt-0.5 font-body text-sm text-warm-grey">{footerNote}</p>
+          </div>
         </div>
 
         <SocialLinks />
