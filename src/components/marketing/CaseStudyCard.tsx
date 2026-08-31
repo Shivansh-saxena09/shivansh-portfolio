@@ -16,7 +16,7 @@ export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudyDetail }) {
   return (
     <Link
       href={`/case-study/${caseStudy.slug}`}
-      className="group flex flex-col gap-4 rounded-2xl border border-beige-border bg-ivory p-7 shadow-sm transition-shadow duration-300 hover:shadow-lg"
+      className="group flex flex-col gap-4 rounded-2xl border border-beige-border bg-ivory p-6 shadow-[0_1px_3px_rgba(43,38,34,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-16px_rgba(43,38,34,0.22)] sm:p-7"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-terracotta">

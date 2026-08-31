@@ -70,6 +70,7 @@ export function Preloader() {
   return (
     <div
       ref={rootRef}
+      data-preloader
       className="invisible fixed inset-0 z-[100] flex items-center justify-center bg-charcoal"
       aria-hidden="true"
     >

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FeaturedProject } from "@/components/engineering/FeaturedProject";
 import { SkillsGrid } from "@/components/engineering/SkillsGrid";
 import { ResumeButton } from "@/components/engineering/ResumeButton";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Engineering — Shivansh Saxena",
@@ -12,12 +13,12 @@ export const metadata: Metadata = {
 export default function EngineeringPage() {
   return (
     <>
-      <section className="border-b border-beige-border/70 px-6 pt-20 pb-16 sm:px-10 sm:pt-28">
-        <div className="mx-auto max-w-4xl">
+      <section className="paper-grain relative border-b border-beige-border/70 pt-16 pb-14 sm:pt-24 sm:pb-16">
+        <Container className="relative z-10">
           <p className="font-body text-sm font-medium uppercase tracking-[0.2em] text-sage-dark">
             Engineering
           </p>
-          <h1 className="mt-6 font-heading text-4xl leading-tight text-charcoal sm:text-5xl">
+          <h1 className="mt-6 max-w-3xl font-heading text-4xl leading-tight text-charcoal sm:text-5xl lg:text-6xl">
             I also build the systems behind my campaigns.
           </h1>
           <p className="mt-6 max-w-2xl font-body text-lg leading-relaxed text-warm-grey">
@@ -28,7 +29,7 @@ export default function EngineeringPage() {
           <div className="mt-8">
             <ResumeButton />
           </div>
-        </div>
+        </Container>
       </section>
 
       <FeaturedProject />

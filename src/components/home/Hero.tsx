@@ -3,8 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { heroCopy } from "@/content/site";
+import { skills } from "@/content/skills";
 import { useReferrerBias } from "@/lib/useReferrerBias";
 import { Button } from "@/components/ui/Button";
+import { Container } from "@/components/ui/Container";
+import { Tag } from "@/components/ui/Tag";
+
+const focusSkills = skills.filter((s) => s.category === "marketing").slice(0, 4);
 
 /** Splits text into word spans for a GSAP stagger reveal. */
 function splitWords(text: string) {
@@ -47,35 +52,67 @@ export function Hero() {
   const engineeringLeaning = bias === "engineering-leaning";
 
   return (
-    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream px-6 pt-20 pb-24 sm:px-10 sm:pt-28 sm:pb-32">
-      <div className="mx-auto max-w-4xl">
-        <p className="hero-fade font-body text-sm font-medium uppercase tracking-[0.2em] text-terracotta">
-          {heroCopy.eyebrow}
-        </p>
+    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-16 pb-20 sm:pt-24 sm:pb-28 lg:pb-32">
+      <Container>
+        <div className="lg:grid lg:grid-cols-12 lg:items-center lg:gap-12">
+          <div className="lg:col-span-7">
+            <p className="hero-fade font-body text-sm font-medium uppercase tracking-[0.2em] text-terracotta">
+              {heroCopy.eyebrow}
+            </p>
 
-        <h1
-          ref={headingRef}
-          className="mt-6 font-heading text-4xl leading-[1.1] tracking-tight text-charcoal sm:text-6xl"
-        >
-          {splitWords(heroCopy.heading)}
-        </h1>
+            <h1
+              ref={headingRef}
+              className="mt-6 font-heading text-4xl leading-[1.1] tracking-tight text-charcoal sm:text-6xl lg:text-7xl"
+            >
+              {splitWords(heroCopy.heading)}
+            </h1>
 
-        <p className="hero-fade mt-8 max-w-2xl font-body text-lg leading-relaxed text-warm-grey sm:text-xl">
-          {heroCopy.subheading}
-        </p>
+            <p className="hero-fade mt-8 max-w-xl font-body text-lg leading-relaxed text-warm-grey sm:text-xl">
+              {heroCopy.subheading}
+            </p>
 
-        <div className="hero-fade mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Button href="/marketing" variant="primary">
-            View Marketing Work
-          </Button>
-          <Button
-            href="/engineering"
-            variant={engineeringLeaning ? "primary" : "secondary"}
-          >
-            View Engineering Work
-          </Button>
+            <div className="hero-fade mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <Button href="/marketing" variant="primary">
+                View Marketing Work
+              </Button>
+              <Button
+                href="/engineering"
+                variant={engineeringLeaning ? "primary" : "secondary"}
+              >
+                View Engineering Work
+              </Button>
+            </div>
+          </div>
+
+          {/* Floating card composition — fills the wide-screen right rail
+              with real content (no fabricated stats) instead of leaving
+              the hero feeling empty/centered on large viewports. */}
+          <div className="hero-fade relative mt-16 lg:col-span-5 lg:mt-0">
+            <div
+              aria-hidden="true"
+              className="absolute -right-6 -top-10 h-56 w-56 rounded-full bg-sage/25 blur-3xl sm:h-72 sm:w-72"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -bottom-8 left-6 h-40 w-40 rounded-full bg-terracotta/20 blur-3xl"
+            />
+
+            <div className="glass-card paper-grain relative mx-auto max-w-sm -rotate-2 rounded-2xl px-7 py-8 sm:px-8">
+              <span className="relative z-10 font-body text-xs font-semibold uppercase tracking-[0.15em] text-warm-grey">
+                Core Focus
+              </span>
+              <div className="relative z-10 mt-4 flex flex-wrap gap-2">
+                {focusSkills.map((skill) => (
+                  <Tag key={skill.slug}>{skill.label}</Tag>
+                ))}
+              </div>
+              <p className="relative z-10 mt-5 font-body text-sm leading-relaxed text-warm-grey">
+                Also builds the tracking and reporting systems behind the campaigns.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -24,31 +24,40 @@ export function AdSetComparisonTable({ adSets }: { adSets: AdSet[] }) {
   ];
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-beige-border">
-      <table className="w-full min-w-[480px] border-collapse font-body text-sm">
-        <thead>
-          <tr className="bg-ivory">
-            <th className="px-4 py-3 text-left font-medium text-warm-grey">Ad Set</th>
-            {adSets.map((adSet) => (
-              <th key={adSet.name} className="px-4 py-3 text-left font-medium text-charcoal">
-                {adSet.name}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.label} className="border-t border-beige-border">
-              <th className="px-4 py-3 text-left font-medium text-warm-grey">{row.label}</th>
+    <div className="relative">
+      {/* Fade hint that this scrolls horizontally on narrow screens — no
+          JS scroll-position tracking, just a static affordance since the
+          table reliably needs it below ~480px content width. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 w-10 rounded-r-xl bg-gradient-to-l from-cream to-transparent sm:hidden"
+      />
+      <div className="overflow-x-auto rounded-xl border border-beige-border">
+        <table className="w-full min-w-[480px] border-collapse font-body text-sm">
+          <thead>
+            <tr className="bg-ivory">
+              <th className="px-4 py-3 text-left font-medium text-warm-grey">Ad Set</th>
               {adSets.map((adSet) => (
-                <td key={adSet.name} className="px-4 py-3 text-charcoal">
-                  {row.values(adSet)}
-                </td>
+                <th key={adSet.name} className="px-4 py-3 text-left font-medium text-charcoal">
+                  {adSet.name}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label} className="border-t border-beige-border">
+                <th className="px-4 py-3 text-left font-medium text-warm-grey">{row.label}</th>
+                {adSets.map((adSet) => (
+                  <td key={adSet.name} className="px-4 py-3 text-charcoal">
+                    {row.values(adSet)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
