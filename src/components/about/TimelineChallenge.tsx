@@ -18,36 +18,56 @@ const CONFETTI = [
 
 /**
  * A one-question "Quick Take" mini-challenge — the interactive centerpiece
- * of the /about timeline. No score, no lock-in: picking an answer reveals
- * an explanation immediately, and the visitor can freely switch between
- * options to read both explanations out of curiosity. Kept deliberately
- * tiny in scope (one question, one tap, done) so it never slows down
- * someone just scrolling through — see src/content/about.ts for the data
- * shape this reads from.
+ * of the /about timeline. Deliberately styled as far from the timeline's
+ * cards as the palette allows (dark charcoal instead of ivory, dashed
+ * accent border, asymmetric "sticker" corners, a bouncy pop-in instead of
+ * a fade) — a visitor should never mistake this for more career history.
+ * No score, no lock-in: picking an answer reveals an explanation
+ * immediately, and switching between options re-reveals freely so anyone
+ * curious can read both. See src/content/about.ts for the data shape.
  */
 export function TimelineChallenge({ challenge }: { challenge: TimelineChallengeData }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = challenge.options.find((o) => o.id === selectedId) ?? null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-beige-border bg-gradient-to-br from-terracotta/[0.06] via-ivory to-sage/[0.08] p-6">
-      <div className="flex items-center gap-2">
-        <span aria-hidden="true" className="text-base">
+    <div className="timeline-challenge-card relative overflow-hidden rounded-tl-[32px] rounded-tr-xl rounded-br-[32px] rounded-bl-xl border-2 border-dashed border-terracotta/60 bg-charcoal p-6 shadow-[0_24px_50px_-16px_rgba(181,98,58,0.4)]">
+      {/* Warm glow washes, not a flat black box — keeps it feeling premium
+          rather than like an unrelated dark-mode widget dropped on the page. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-terracotta/25 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-sage/25 blur-3xl"
+      />
+
+      <div className="relative z-10 flex items-center gap-3">
+        <span
+          aria-hidden="true"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-terracotta to-sage text-base"
+        >
           🎯
         </span>
-        <span className="font-body text-[10px] font-semibold tracking-[0.2em] text-warm-grey uppercase">
-          Quick Take
-        </span>
+        <div>
+          <p className="font-body text-xs font-bold tracking-[0.2em] text-cream uppercase">
+            Quick Take
+          </p>
+          <p className="font-body text-[11px] font-medium text-cream/60">
+            Test yourself — pick one
+          </p>
+        </div>
       </div>
 
-      <p className="mt-3 font-heading text-lg leading-snug text-charcoal">
+      <p className="relative z-10 mt-4 font-heading text-lg leading-snug text-cream">
         <span aria-hidden="true" className="mr-1.5">
           {challenge.emoji}
         </span>
         {challenge.question}
       </p>
 
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="relative z-10 mt-4 flex flex-col gap-2">
         {challenge.options.map((option) => {
           const isSelected = option.id === selectedId;
           const revealCorrect = selectedId !== null && option.correct;
@@ -62,10 +82,10 @@ export function TimelineChallenge({ challenge }: { challenge: TimelineChallengeD
               whileTap={{ scale: 0.98 }}
               className={`rounded-xl border px-4 py-3 text-left font-body text-sm font-medium transition-colors duration-200 ${
                 revealCorrect
-                  ? "border-sage bg-sage/15 text-sage-dark"
+                  ? "border-sage bg-sage/20 text-sage"
                   : revealWrong
-                    ? "border-terracotta bg-terracotta/10 text-terracotta-dark"
-                    : "border-beige-border bg-ivory text-charcoal hover:border-sage"
+                    ? "border-terracotta bg-terracotta/20 text-terracotta"
+                    : "border-cream/15 bg-cream/[0.06] text-cream hover:border-sage/60"
               }`}
             >
               {option.label}
@@ -93,7 +113,7 @@ export function TimelineChallenge({ challenge }: { challenge: TimelineChallengeD
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3 }}
             aria-live="polite"
-            className="relative mt-4 rounded-xl bg-cream/70 px-4 py-3"
+            className="relative z-10 mt-4 rounded-xl bg-cream/10 px-4 py-3"
           >
             {selected.correct && (
               <div
@@ -114,10 +134,10 @@ export function TimelineChallenge({ challenge }: { challenge: TimelineChallengeD
               </div>
             )}
 
-            <p className="font-body text-sm font-semibold text-charcoal">
+            <p className="font-body text-sm font-semibold text-cream">
               {selected.correct ? "Correct!" : "Not quite —"}
             </p>
-            <p className="mt-1 font-body text-sm leading-relaxed text-warm-grey">
+            <p className="mt-1 font-body text-sm leading-relaxed text-cream/70">
               {selected.correct ? challenge.correctExplanation : challenge.incorrectExplanation}
             </p>
           </motion.div>

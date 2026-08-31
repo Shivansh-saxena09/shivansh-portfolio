@@ -43,12 +43,17 @@ export function Timeline() {
         });
       });
 
+      // A deliberately different, bouncier entrance than the timeline
+      // cards' clean fade+slide (power2.out) — a small overshoot-and-
+      // settle pop reads as "playful" the instant it moves, before a
+      // visitor even reads the card, reinforcing the visual distinction.
       gsap.utils.toArray<HTMLElement>(".timeline-challenge").forEach((card) => {
         gsap.from(card, {
           opacity: 0,
-          y: 20,
-          duration: 0.6,
-          ease: "power2.out",
+          scale: 0.85,
+          rotate: -4,
+          duration: 0.7,
+          ease: "back.out(1.6)",
           scrollTrigger: {
             trigger: card,
             start: "top 88%",
