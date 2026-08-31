@@ -1,15 +1,18 @@
 import Link from "next/link";
-import type { CaseStudy } from "@/content/caseStudies";
+import type { CaseStudyDetail } from "@/content/caseStudies";
 import { skillLabel } from "@/content/skills";
+import { cardSummary } from "@/lib/caseStudyNarrative";
 import { Tag } from "@/components/ui/Tag";
 
-const categoryLabel: Record<CaseStudy["category"], string> = {
+const categoryLabel: Record<CaseStudyDetail["category"], string> = {
   standard: "Campaign",
   learning: "Learning",
   "dual-skill-fusion": "Marketing × Engineering",
 };
 
-export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudy }) {
+export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudyDetail }) {
+  const { oneLiner, resultHeadline } = cardSummary(caseStudy);
+
   return (
     <Link
       href={`/case-study/${caseStudy.slug}`}
@@ -26,9 +29,9 @@ export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudy }) {
         {caseStudy.campaignName}
       </h3>
 
-      <p className="font-body text-sm leading-relaxed text-warm-grey">{caseStudy.oneLiner}</p>
+      <p className="font-body text-sm leading-relaxed text-warm-grey">{oneLiner}</p>
 
-      <p className="font-body text-base font-medium text-sage-dark">{caseStudy.resultHeadline}</p>
+      <p className="font-body text-base font-medium text-sage-dark">{resultHeadline}</p>
 
       <div className="mt-auto flex flex-wrap gap-2 pt-2">
         <Tag>{caseStudy.platform}</Tag>
