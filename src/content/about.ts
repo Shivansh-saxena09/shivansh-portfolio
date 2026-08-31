@@ -1,18 +1,39 @@
 /**
  * Placeholder-free — every fact here comes straight from CLAUDE.md's real
- * background section. Structured (not prose blobs) so this becomes the
- * admin's Experience/Timeline Manager later without a rewrite.
+ * background section (or is directly derivable from it, e.g. role counts).
+ * Structured (not prose blobs) so this becomes the admin's Experience/
+ * Timeline Manager later without a rewrite.
  */
 
-export const aboutStory = {
+export const aboutHero = {
+  eyebrow: "About",
   headline: "Marketing is the job. Building is the",
   accentWord: "edge.",
+} as const;
+
+/** Quick-facts card in the hero — a snapshot, not the full story. */
+export const vitals = {
+  currentRole: "Performance Marketing Manager",
+  currentOrg: "Divya Padma Infosystem LLP",
+  location: "Based in India · open to remote work",
+  educationNote: "MBA in progress — Digital Marketing + Business Analytics & IT",
+} as const;
+
+export const aboutStory = {
   paragraphs: [
     "I'm a Performance Marketing Manager at Divya Padma Infosystem LLP, running Meta Ads and Google Ads for real estate lead generation — the kind of work measured in cost per lead and qualification rate, not impressions.",
     "Full-stack development is what I bring on top of that: Next.js, React, and Supabase, used to build the tracking, qualification, and reporting systems my own campaigns run on. It's a differentiator I built because I got tired of waiting on someone else's dashboard — not a parallel career.",
     "I'm also a year into an MBA — Digital Marketing and Business Analytics & IT — on top of a B.Tech in Computer Science. One degree taught me to build; the other is formalizing the marketing and analytics instincts I already use every day.",
   ],
+  pullQuote: "I got tired of waiting on someone else's dashboard.",
 } as const;
+
+/** Small, real, derivable numbers — not fabricated metrics. */
+export const quickFacts = [
+  { value: "3", label: "Roles since 2023" },
+  { value: "2", label: "Degrees pursued" },
+  { value: "2", label: "Ad platforms — Meta & Google" },
+] as const;
 
 export type TimelineEntry = {
   range: string;
@@ -21,6 +42,7 @@ export type TimelineEntry = {
   location?: string;
   description: string;
   current?: boolean;
+  skills: string[];
 };
 
 // Newest first — leads with the current role, per the marketing-first,
@@ -33,6 +55,7 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "Meta and Google Ads campaign strategy and budget allocation for real estate lead generation, plus the Conversions API setup behind reporting that survives iOS attribution loss.",
     current: true,
+    skills: ["meta-ads", "google-ads", "conversions-api"],
   },
   {
     range: "Nov 2023 – Jan 2025",
@@ -40,6 +63,7 @@ export const experienceTimeline: TimelineEntry[] = [
     org: "Dfractal Advisory",
     description:
       "A dual role spanning paid campaign management and building the websites and landing pages those campaigns pointed traffic to.",
+    skills: ["lead-generation", "web-dev"],
   },
   {
     range: "Jun 2023 – Sep 2023",
@@ -48,6 +72,7 @@ export const experienceTimeline: TimelineEntry[] = [
     location: "New Delhi, Ashok Vihar Phase 2",
     description:
       "First professional role, split between social media marketing execution and website development — where the marketing/dev overlap started.",
+    skills: ["web-dev"],
   },
 ];
 
@@ -55,6 +80,7 @@ export type EducationEntry = {
   range: string;
   credential: string;
   detail: string;
+  accent: "terracotta" | "sage";
 };
 
 export const education: EducationEntry[] = [
@@ -62,10 +88,12 @@ export const education: EducationEntry[] = [
     range: "2023",
     credential: "B.Tech, Computer Science",
     detail: "Abdul Kalam Technical University (AKTU), Lucknow",
+    accent: "sage",
   },
   {
     range: "Expected 2027",
     credential: "MBA — Digital Marketing + Business Analytics & IT",
     detail: "Pursuing, dual specialization — 1st year complete",
+    accent: "terracotta",
   },
 ];

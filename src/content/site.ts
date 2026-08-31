@@ -43,3 +43,11 @@ export const contact = {
 } as const;
 
 export const footerNote = "Based in India · Open to remote work" as const;
+
+/**
+ * ⚠️ PLACEHOLDER FILE. Generated, not the real resume — see
+ * public/resume-placeholder.pdf. Swap this for a real uploaded PDF via
+ * the admin's Resume Manager (CLAUDE.md → Admin Panel) once it exists;
+ * every component reads the URL from here, so that's the only edit needed.
+ */
+export const resumeUrl = "/resume-placeholder.pdf" as const;

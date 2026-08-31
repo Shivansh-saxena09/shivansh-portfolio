@@ -1,0 +1,12 @@
+# Binary assets — never run through git's autocrlf line-ending
+# normalization. A PDF's xref table points to exact byte offsets;
+# LF<->CRLF conversion would silently corrupt it.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FeaturedProject } from "@/components/engineering/FeaturedProject";
 import { SkillsGrid } from "@/components/engineering/SkillsGrid";
-import { ResumeButton } from "@/components/engineering/ResumeButton";
+import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
