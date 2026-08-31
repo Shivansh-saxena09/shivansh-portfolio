@@ -35,6 +35,30 @@ export const quickFacts = [
   { value: "2", label: "Ad platforms — Meta & Google" },
 ] as const;
 
+export type TimelineChallengeOption = {
+  id: string;
+  label: string;
+  correct: boolean;
+};
+
+/**
+ * A one-question, pick-an-answer performance-marketing scenario tied to
+ * this specific role — real concepts (CAPI/attribution, CPL vs CPC,
+ * organic vs. paid reach), not trivia. Renders as an interactive mini
+ * challenge in the space opposite this entry's card at desktop width,
+ * folded inline on mobile/tablet. See src/components/about/Timeline.tsx
+ * and TimelineChallenge.tsx. Shaped so this becomes an admin-editable
+ * `timeline_challenges` table later — a question + options array + two
+ * fixed explanation strings, nothing baked into component logic.
+ */
+export type TimelineChallenge = {
+  emoji: string;
+  question: string;
+  options: TimelineChallengeOption[];
+  correctExplanation: string;
+  incorrectExplanation: string;
+};
+
 export type TimelineEntry = {
   range: string;
   role: string;
@@ -43,21 +67,7 @@ export type TimelineEntry = {
   description: string;
   current?: boolean;
   skills: string[];
-  /**
-   * A real marketing concept tied to what this specific role actually
-   * involved — not a generic glossary. Drives the scroll-synced "Marketing
-   * Concept" panel in the timeline's center gutter (desktop) and an inline
-   * card per entry (mobile/tablet). See src/components/about/Timeline.tsx.
-   */
-  concept: { term: string; definition: string };
-  /**
-   * A short first-person reflection tied to this specific role — not a
-   * definition (that's `concept`), a lesson. Renders as a margin
-   * annotation in the empty space opposite this entry's card at desktop
-   * width (see Timeline.tsx) — deliberately a different visual register
-   * from the site's card system, so it reads as an aside, not more data.
-   */
-  fieldNote: string;
+  challenge: TimelineChallenge;
 };
 
 // Newest first — leads with the current role, per the marketing-first,
@@ -71,13 +81,19 @@ export const experienceTimeline: TimelineEntry[] = [
       "Meta and Google Ads campaign strategy and budget allocation for real estate lead generation, plus the Conversions API setup behind reporting that survives iOS attribution loss.",
     current: true,
     skills: ["meta-ads", "google-ads", "conversions-api"],
-    concept: {
-      term: "CAPI",
-      definition:
-        "Conversions API — server-side event tracking that reports conversions even when a browser blocks the pixel or a user declines tracking. The fix for iOS-era attribution loss.",
+    challenge: {
+      emoji: "📉",
+      question:
+        "Your Meta Ads dashboard suddenly shows 30% fewer conversions overnight — same spend, same creative. Most likely cause?",
+      options: [
+        { id: "fatigue", label: "The audience is fatigued", correct: false },
+        { id: "tracking", label: "iOS privacy settings broke pixel tracking", correct: true },
+      ],
+      correctExplanation:
+        "Exactly — this is why server-side Conversions API exists: it keeps reporting conversions even when the browser blocks the pixel.",
+      incorrectExplanation:
+        "Fatigue shows up gradually as rising CPM and falling CTR. A sudden, broad drop like this usually means tracking broke, not the creative.",
     },
-    fieldNote:
-      "The best campaign optimization isn't a bigger budget — it's better data. CAPI taught me that the hard way.",
   },
   {
     range: "Nov 2023 – Jan 2025",
@@ -86,13 +102,19 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "A dual role spanning paid campaign management and building the websites and landing pages those campaigns pointed traffic to.",
     skills: ["lead-generation", "web-dev"],
-    concept: {
-      term: "CPL",
-      definition:
-        "Cost Per Lead — what you pay, on average, for one lead. The core efficiency metric in performance marketing, more useful on its own than CPC or CPM.",
+    challenge: {
+      emoji: "💰",
+      question:
+        "Ad Set A has a lower cost-per-click. Ad Set B has a higher cost-per-click but a lower cost-per-lead. Which gets more budget?",
+      options: [
+        { id: "a", label: "Ad Set A — cheaper clicks", correct: false },
+        { id: "b", label: "Ad Set B — cheaper leads", correct: true },
+      ],
+      correctExplanation:
+        "Right — CPC is a vanity metric here. Cost-per-lead is what actually pays the bills, and B wins on that.",
+      incorrectExplanation:
+        "Cheap clicks that don't convert are still expensive leads. Cost-per-lead is the number that matters, and B wins on that.",
     },
-    fieldNote:
-      "Building the landing page myself meant no more waiting on a dev to test what the ad copy had already proven.",
   },
   {
     range: "Jun 2023 – Sep 2023",
@@ -102,13 +124,19 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "First professional role, split between social media marketing execution and website development — where the marketing/dev overlap started.",
     skills: ["web-dev"],
-    concept: {
-      term: "Organic vs. Paid",
-      definition:
-        "Organic reach is who sees your content for free; paid reach is what you buy on top of it. Most real strategies deliberately blend both, not just the one with a budget.",
+    challenge: {
+      emoji: "📣",
+      question:
+        "You post the exact same content organically, then boost it with ₹500. Which number is guaranteed to go up?",
+      options: [
+        { id: "reach", label: "Reach", correct: true },
+        { id: "engagement", label: "Engagement rate", correct: false },
+      ],
+      correctExplanation:
+        "Reach is what money buys directly — more people see it. That part's guaranteed.",
+      incorrectExplanation:
+        "Boosting definitely grows reach, but engagement rate isn't guaranteed — showing the post to less-interested people can dilute it.",
     },
-    fieldNote:
-      "My first real lesson: organic content earns trust; paid budget just amplifies it faster.",
   },
 ];
 
