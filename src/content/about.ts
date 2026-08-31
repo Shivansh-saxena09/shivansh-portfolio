@@ -50,6 +50,14 @@ export type TimelineEntry = {
    * card per entry (mobile/tablet). See src/components/about/Timeline.tsx.
    */
   concept: { term: string; definition: string };
+  /**
+   * A short first-person reflection tied to this specific role — not a
+   * definition (that's `concept`), a lesson. Renders as a margin
+   * annotation in the empty space opposite this entry's card at desktop
+   * width (see Timeline.tsx) — deliberately a different visual register
+   * from the site's card system, so it reads as an aside, not more data.
+   */
+  fieldNote: string;
 };
 
 // Newest first — leads with the current role, per the marketing-first,
@@ -68,6 +76,8 @@ export const experienceTimeline: TimelineEntry[] = [
       definition:
         "Conversions API — server-side event tracking that reports conversions even when a browser blocks the pixel or a user declines tracking. The fix for iOS-era attribution loss.",
     },
+    fieldNote:
+      "The best campaign optimization isn't a bigger budget — it's better data. CAPI taught me that the hard way.",
   },
   {
     range: "Nov 2023 – Jan 2025",
@@ -81,6 +91,8 @@ export const experienceTimeline: TimelineEntry[] = [
       definition:
         "Cost Per Lead — what you pay, on average, for one lead. The core efficiency metric in performance marketing, more useful on its own than CPC or CPM.",
     },
+    fieldNote:
+      "Building the landing page myself meant no more waiting on a dev to test what the ad copy had already proven.",
   },
   {
     range: "Jun 2023 – Sep 2023",
@@ -95,6 +107,8 @@ export const experienceTimeline: TimelineEntry[] = [
       definition:
         "Organic reach is who sees your content for free; paid reach is what you buy on top of it. Most real strategies deliberately blend both, not just the one with a budget.",
     },
+    fieldNote:
+      "My first real lesson: organic content earns trust; paid budget just amplifies it faster.",
   },
 ];
 

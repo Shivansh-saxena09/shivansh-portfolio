@@ -48,6 +48,23 @@ export function Timeline() {
         });
       });
 
+      // Field-note annotations get their own reveal, queried separately
+      // from .timeline-item so they can't shift the active-concept index
+      // tracking below (which assumes items[i] === experienceTimeline[i]).
+      gsap.utils.toArray<HTMLElement>(".timeline-fieldnote").forEach((note) => {
+        gsap.from(note, {
+          opacity: 0,
+          y: 16,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: note,
+            start: "top 88%",
+            toggleActions: "play none none none",
+          },
+        });
+      });
+
       // Active-concept tracking only matters where the sticky gutter panel
       // is actually visible (lg+) — matchMedia keeps these triggers from
       // ever being created on mobile/tablet.
@@ -149,6 +166,36 @@ export function Timeline() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Field notes — the space directly opposite each card at lg+,
+          previously empty. Deliberately NOT another bordered card: no
+          fill, no terracotta/sage, a slight permanent tilt plus a slow
+          drift (paused under reduced-motion) so it reads as a different
+          register of content — a handwritten margin note, not more data.
+          Each line is a first-person reflection tied to that specific
+          role, distinct from the gutter panel's formal definitions. */}
+      {experienceTimeline.map((entry, i) => {
+        const onLeft = i % 2 === 0;
+        return (
+          <div
+            key={`note-${entry.org}-${entry.range}`}
+            className="hidden lg:flex lg:items-center lg:justify-center"
+            style={{ gridColumn: onLeft ? 3 : 1, gridRow: i + 1 }}
+          >
+            <div className="timeline-fieldnote field-note-float rotate-[-1.5deg] max-w-[200px] px-4 text-center">
+              <span aria-hidden="true" className="block font-heading text-6xl leading-none text-beige-border select-none">
+                “
+              </span>
+              <p className="-mt-5 font-heading text-lg leading-snug text-charcoal italic">
+                {entry.fieldNote}
+              </p>
+              <span className="mt-3 block font-body text-[10px] font-semibold tracking-[0.2em] text-warm-grey uppercase">
+                Field Note
+              </span>
             </div>
           </div>
         );

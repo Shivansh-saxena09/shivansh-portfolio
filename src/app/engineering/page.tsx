@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { FeaturedProject } from "@/components/engineering/FeaturedProject";
+import { ProjectPreviewCard } from "@/components/engineering/ProjectPreviewCard";
 import { SkillsGrid } from "@/components/engineering/SkillsGrid";
 import { CodeCard } from "@/components/engineering/CodeCard";
 import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
+import { projects } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Engineering — Shivansh Saxena",
@@ -57,7 +58,26 @@ export default function EngineeringPage() {
         </Container>
       </section>
 
-      <FeaturedProject />
+      {/* Featured project — a preview card linking to its own full detail
+          page (/project/[slug]), matching the case-study pattern rather
+          than dumping the whole breakdown inline here. */}
+      <section className="border-t border-beige-border/70 bg-ivory py-20 sm:py-24">
+        <Container>
+          <span className="font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
+            Featured Project
+          </span>
+          <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
+            The system behind the campaigns.
+          </h2>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectPreviewCard key={project.slug} project={project} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
       <SkillsGrid />
     </>
   );

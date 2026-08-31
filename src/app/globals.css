@@ -125,3 +125,26 @@ h4 {
   background: linear-gradient(90deg, var(--color-terracotta), var(--color-sage));
   transform-origin: left;
 }
+
+/* Slow ambient drift for the timeline's margin annotations — marks them
+   as a different, faintly "alive" kind of content next to the static
+   cards. Only runs when the visitor hasn't asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .field-note-float {
+    animation: field-note-float 6s ease-in-out infinite;
+  }
+}
+
+/* Rotation is baked into the same transform value as the float, rather
+   than left to a separate Tailwind rotate-* utility on the element —
+   CSS animations replace the whole computed `transform`, so a static
+   rotate class would just get clobbered by this keyframe otherwise. */
+@keyframes field-note-float {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-1.5deg) translateY(-6px);
+  }
+}

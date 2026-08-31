@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { featuredProject } from "@/content/featuredProject";
+import { getFeaturedProject } from "@/content/projects";
 import { highlightCode } from "@/lib/highlightCode";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
@@ -17,16 +17,18 @@ import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 export function CodeCard() {
   const [index, setIndex] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
-  const snippets = featuredProject.challenges.map((c) => c.snippet);
+  const project = getFeaturedProject();
+  const snippets = project?.challenges.map((c) => c.snippet) ?? [];
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || snippets.length === 0) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % snippets.length);
     }, 4500);
     return () => clearInterval(id);
   }, [reducedMotion, snippets.length]);
 
+  if (snippets.length === 0) return null;
   const active = snippets[index];
 
   return (
