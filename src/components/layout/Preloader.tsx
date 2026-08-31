@@ -1,33 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { person } from "@/content/site";
-
-function subscribeReducedMotion(callback: () => void): () => void {
-  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-
-function getReducedMotionSnapshot(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function getReducedMotionServerSnapshot(): boolean {
-  return false;
-}
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 /**
  * Branded preloader — a brief logo/wordmark reveal before site content
  * shows (CLAUDE.md → Animations & Interactions). Runs once per page load.
  */
 export function Preloader() {
-  const prefersReducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot,
-  );
+  const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
 

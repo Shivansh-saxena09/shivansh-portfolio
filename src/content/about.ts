@@ -43,6 +43,13 @@ export type TimelineEntry = {
   description: string;
   current?: boolean;
   skills: string[];
+  /**
+   * A real marketing concept tied to what this specific role actually
+   * involved — not a generic glossary. Drives the scroll-synced "Marketing
+   * Concept" panel in the timeline's center gutter (desktop) and an inline
+   * card per entry (mobile/tablet). See src/components/about/Timeline.tsx.
+   */
+  concept: { term: string; definition: string };
 };
 
 // Newest first — leads with the current role, per the marketing-first,
@@ -56,6 +63,11 @@ export const experienceTimeline: TimelineEntry[] = [
       "Meta and Google Ads campaign strategy and budget allocation for real estate lead generation, plus the Conversions API setup behind reporting that survives iOS attribution loss.",
     current: true,
     skills: ["meta-ads", "google-ads", "conversions-api"],
+    concept: {
+      term: "CAPI",
+      definition:
+        "Conversions API — server-side event tracking that reports conversions even when a browser blocks the pixel or a user declines tracking. The fix for iOS-era attribution loss.",
+    },
   },
   {
     range: "Nov 2023 – Jan 2025",
@@ -64,6 +76,11 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "A dual role spanning paid campaign management and building the websites and landing pages those campaigns pointed traffic to.",
     skills: ["lead-generation", "web-dev"],
+    concept: {
+      term: "CPL",
+      definition:
+        "Cost Per Lead — what you pay, on average, for one lead. The core efficiency metric in performance marketing, more useful on its own than CPC or CPM.",
+    },
   },
   {
     range: "Jun 2023 – Sep 2023",
@@ -73,6 +90,11 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "First professional role, split between social media marketing execution and website development — where the marketing/dev overlap started.",
     skills: ["web-dev"],
+    concept: {
+      term: "Organic vs. Paid",
+      definition:
+        "Organic reach is who sees your content for free; paid reach is what you buy on top of it. Most real strategies deliberately blend both, not just the one with a budget.",
+    },
   },
 ];
 
