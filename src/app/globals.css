@@ -125,3 +125,80 @@ h4 {
   background: linear-gradient(90deg, var(--color-terracotta), var(--color-sage));
   transform-origin: left;
 }
+
+/* ---------------------------------------------------------------------- */
+/* Quick Take card (About → Timeline) — the deliberately different,       */
+/* "living" interactive card. Layered, not flat: a slowly rotating        */
+/* gradient-ring border (classic dual-layer mask trick, not a plain CSS   */
+/* border) plus two drifting ambient glows. Both pause under reduced      */
+/* motion, still rendering as a static (unrotated / unmoved) version.     */
+/* ---------------------------------------------------------------------- */
+/* Padding-based ring, not a negative-inset + mask-composite trick: the
+   wrapper's own box gets 2px of padding (the ring's visible thickness),
+   the rotating gradient sits at inset:0 behind everything, and the real
+   card (a normal, non-absolute child) naturally sits inset by that
+   padding, covering the gradient's center and leaving only a 2px ring
+   showing around it. Nothing here bleeds past the wrapper's own
+   declared box, so there's no risk of it inflating an ancestor's
+   scrollable width the way the mask-based version briefly did (caught
+   via a real overflow regression, not by inspection). */
+.quick-take-border {
+  position: relative;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.quick-take-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    var(--color-terracotta),
+    var(--color-sage),
+    var(--color-terracotta)
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .quick-take-border::before {
+    animation: quick-take-spin 9s linear infinite;
+  }
+
+  .quick-take-glow-a {
+    animation: quick-take-drift-a 9s ease-in-out infinite;
+  }
+
+  .quick-take-glow-b {
+    animation: quick-take-drift-b 11s ease-in-out infinite;
+  }
+}
+
+@keyframes quick-take-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes quick-take-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(14px, -10px) scale(1.15);
+  }
+}
+
+@keyframes quick-take-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-16px, 12px) scale(1.1);
+  }
+}

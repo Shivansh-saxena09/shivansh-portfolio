@@ -59,6 +59,8 @@ export type TimelineChallenge = {
   incorrectExplanation: string;
 };
 
+export type TimelineIconName = "trending" | "layers" | "sprout";
+
 export type TimelineEntry = {
   range: string;
   role: string;
@@ -68,6 +70,8 @@ export type TimelineEntry = {
   current?: boolean;
   skills: string[];
   challenge: TimelineChallenge;
+  /** Which small badge icon distinguishes this entry — see TimelineIcons.tsx. */
+  icon: TimelineIconName;
 };
 
 // Newest first — leads with the current role, per the marketing-first,
@@ -81,6 +85,7 @@ export const experienceTimeline: TimelineEntry[] = [
       "Meta and Google Ads campaign strategy and budget allocation for real estate lead generation, plus the Conversions API setup behind reporting that survives iOS attribution loss.",
     current: true,
     skills: ["meta-ads", "google-ads", "conversions-api"],
+    icon: "trending",
     challenge: {
       emoji: "📉",
       question:
@@ -102,6 +107,7 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "A dual role spanning paid campaign management and building the websites and landing pages those campaigns pointed traffic to.",
     skills: ["lead-generation", "web-dev"],
+    icon: "layers",
     challenge: {
       emoji: "💰",
       question:
@@ -124,6 +130,7 @@ export const experienceTimeline: TimelineEntry[] = [
     description:
       "First professional role, split between social media marketing execution and website development — where the marketing/dev overlap started.",
     skills: ["web-dev"],
+    icon: "sprout",
     challenge: {
       emoji: "📣",
       question:
