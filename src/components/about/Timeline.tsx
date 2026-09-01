@@ -140,11 +140,7 @@ export function Timeline() {
                     the card it belongs to since there's no opposite-side
                     column to place it in below lg. */}
                 <div className="mt-5 lg:hidden">
-                  <TimelineChallenge
-                    challenge={entry.challenge}
-                    range={entry.range}
-                    current={entry.current}
-                  />
+                  <TimelineChallenge challenge={entry.challenge} icon={entry.icon} />
                 </div>
               </div>
             </div>
@@ -162,11 +158,7 @@ export function Timeline() {
             className="timeline-challenge hidden lg:flex lg:items-center"
             style={{ gridColumn: onLeft ? 3 : 1, gridRow: i + 1 }}
           >
-            <TimelineChallenge
-              challenge={entry.challenge}
-              range={entry.range}
-              current={entry.current}
-            />
+            <TimelineChallenge challenge={entry.challenge} icon={entry.icon} />
           </div>
         );
       })}

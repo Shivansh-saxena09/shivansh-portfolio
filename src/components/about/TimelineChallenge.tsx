@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { TimelineChallenge as TimelineChallengeData } from "@/content/about";
+import type { TimelineChallenge as TimelineChallengeData, TimelineIconName } from "@/content/about";
+import { timelineIcons } from "./TimelineIcons";
 
 // Small, fixed burst of emoji particles for the "correct" reveal — no
 // confetti library, just a handful of Framer Motion spans animating
@@ -22,10 +23,10 @@ const CONFETTI = [
  * flat recolored card: a slowly rotating conic-gradient border ring (see
  * .quick-take-border in globals.css), two drifting ambient glows, and a
  * pulsing badge — layered depth and motion, all paused under
- * prefers-reduced-motion. `range`/`current` render a date tag matching
- * the paired timeline card's exact style, so the two visually rhyme as
- * belonging together even before the connecting line (see Timeline.tsx)
- * registers.
+ * prefers-reduced-motion. The `icon` prop repeats the paired timeline
+ * card's own icon (small, muted) so the two visually rhyme as belonging
+ * together — by role, not by date — on top of the connecting line (see
+ * Timeline.tsx).
  *
  * No score, no lock-in: picking an answer reveals an explanation
  * immediately, and the visitor can freely switch between options to read
@@ -34,15 +35,21 @@ const CONFETTI = [
  */
 export function TimelineChallenge({
   challenge,
-  range,
-  current,
+  icon,
 }: {
   challenge: TimelineChallengeData;
-  range: string;
-  current?: boolean;
+  /**
+   * The same per-role icon shown on the paired timeline card (see
+   * TimelineIcons.tsx) — repeated here, small and muted, so the two
+   * cards visually rhyme by "which role this belongs to" rather than
+   * "when": a date/status badge on an interactive quiz never made sense
+   * (a challenge isn't a dated event), even though it looked tidy.
+   */
+  icon: TimelineIconName;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = challenge.options.find((o) => o.id === selectedId) ?? null;
+  const Icon = timelineIcons[icon];
 
   return (
     <div className="quick-take-border rounded-tl-[32px] rounded-tr-xl rounded-br-[32px] rounded-bl-xl">
@@ -83,18 +90,16 @@ export function TimelineChallenge({
             </div>
           </div>
 
-          {/* Matching the timeline card's exact date-badge style/position —
-              a visual rhyme tying this challenge to that specific role. */}
-          <div className="flex flex-col items-end gap-1">
-            <span className="font-body text-[10px] font-semibold tracking-[0.15em] text-terracotta uppercase">
-              {range}
-            </span>
-            {current && (
-              <span className="rounded-full bg-sage/20 px-2 py-0.5 font-body text-[10px] font-semibold text-sage">
-                Current
-              </span>
-            )}
-          </div>
+          {/* Same icon as the paired timeline card, small and muted —
+              ties this challenge to that specific role without
+              implying it's a dated/scheduled event the way a date
+              badge would. */}
+          <span
+            aria-hidden="true"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cream/10 text-cream/50"
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </span>
         </div>
 
         <p className="relative z-10 mt-4 font-heading text-lg leading-snug text-cream">
