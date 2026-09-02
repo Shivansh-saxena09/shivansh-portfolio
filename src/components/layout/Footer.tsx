@@ -1,31 +1,74 @@
 "use client";
 
-import { useRef, type MouseEvent, type TouchEvent } from "react";
+import { useRef, useSyncExternalStore, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
-import { footerNote, person, nav, contact } from "@/content/site";
+import {
+  person,
+  nav,
+  contact,
+  location,
+  availability,
+  footerCta,
+} from "@/content/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
+import { Button } from "@/components/ui/Button";
+import { EmailIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 
 const footerNav = [{ label: "Home", href: "/" }, ...nav] as const;
 
+// Live IST clock in the identity column — a small, real detail (India
+// has one timezone, no DST, so this is simple/reliable), not a static
+// "Based in India" line. useSyncExternalStore rather than useState+
+// useEffect: the value is genuinely unknowable at SSR time, which is
+// exactly the case this hook exists for — server snapshot is null (no
+// mismatch), the real time appears the moment it mounts.
+function subscribeClock(callback: () => void) {
+  const id = setInterval(callback, 30_000);
+  return () => clearInterval(id);
+}
+function getClockSnapshot() {
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date());
+}
+function getClockServerSnapshot() {
+  return null;
+}
+
+function PinIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} {...props}>
+      <path
+        d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="9.5" r="2.25" />
+    </svg>
+  );
+}
+
 /**
- * Site footer — four columns (identity / explore / get in touch /
- * signature). The signature column holds the interactive wordmark: a
- * hollow "Shivansh Saxena" that fills in with the terracotta→sage
- * gradient inside a soft circle following the cursor (or a dragged
- * finger on touch) — scoped to that one column's width (via container
- * query units) rather than spanning the whole footer, so it reads as a
- * proportionate signature detail, not a dominating background element.
- * Social icons sit in the same column, below the wordmark.
+ * Site footer, composed as one deliberate closing sequence rather than a
+ * grid of stacked links: a full-width closing CTA panel first (the "one
+ * more chance to reach out" a page's content already made the case for),
+ * then a four-column utility grid (identity+location+live clock / explore
+ * / get in touch / the interactive signature wordmark), then copyright.
  *
- * `person.name` (an existing content-module value) drives both the real,
- * readable name in the identity column and the wordmark — one field,
- * two presentations, nothing new hardcoded.
+ * The signature column's wordmark is `person.name`, scoped via container-
+ * query units to that column's own width — a hollow outline that fills
+ * with the terracotta→sage gradient inside a soft circle following the
+ * cursor or a dragged finger. See globals.css' .footer-wordmark-* rules.
  */
 export function Footer() {
   const fillLayerRef = useRef<HTMLDivElement>(null);
   const [firstName, ...restName] = person.name.split(" ");
   const lastName = restName.join(" ");
+  const localTime = useSyncExternalStore(subscribeClock, getClockSnapshot, getClockServerSnapshot);
 
   function setSpot(clientX: number, clientY: number, target: HTMLElement) {
     const el = fillLayerRef.current;
@@ -53,24 +96,48 @@ export function Footer() {
     "font-heading text-[clamp(1.75rem,15cqw,2.75rem)] leading-[1.05] font-bold";
 
   return (
-    <footer className="paper-grain relative overflow-hidden border-t border-beige-border/70 bg-ivory">
+    <footer className="paper-grain relative overflow-hidden border-t border-beige-border/70 bg-cream">
       <div aria-hidden="true" className="h-[2px] w-full bg-gradient-to-r from-terracotta to-sage" />
 
       <Container className="relative z-10 py-16 sm:py-20 lg:py-24">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        {/* Closing CTA — a real, floating panel (glass-card + its own
+            paper-grain), giving the paper texture and layered-depth
+            language actual structural work to do here, not just a
+            barely-visible global wash. */}
+        <div className="glass-card paper-grain relative overflow-hidden rounded-3xl px-8 py-10 shadow-xl sm:px-12 sm:py-12">
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <h2 className="max-w-md font-heading text-3xl leading-tight font-bold text-charcoal sm:text-4xl">
+              {footerCta.heading}
+            </h2>
+            <Button href={contact.whatsapp} variant="primary" className="w-fit shrink-0">
+              {footerCta.ctaLabel}
+            </Button>
+          </div>
+        </div>
+
+        {/* Utility grid */}
+        <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           <div>
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-base font-semibold text-ivory">
                 S
               </span>
-              <div>
-                <p className="font-heading text-xl font-bold text-charcoal">{person.name}</p>
-                <p className="mt-0.5 font-body text-sm text-warm-grey">{footerNote}</p>
-              </div>
+              <p className="font-heading text-xl font-bold text-charcoal">{person.name}</p>
             </div>
+
             <p className="mt-6 max-w-xs font-body text-sm leading-relaxed text-warm-grey">
               {person.tagline}
             </p>
+
+            <div className="mt-5 flex items-center gap-1.5 font-body text-sm text-charcoal">
+              <PinIcon className="h-4 w-4 shrink-0 text-terracotta" />
+              {location}
+              {localTime && <span className="text-warm-grey">· {localTime} IST</span>}
+            </div>
+            <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-sage/15 px-3 py-1 font-body text-xs font-semibold text-sage-dark">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+              {availability}
+            </span>
           </div>
 
           <div>
@@ -97,16 +164,18 @@ export function Footer() {
             <div className="mt-5 flex flex-col items-start gap-3">
               <a
                 href={`mailto:${contact.email}`}
-                className="nav-underline font-body text-sm text-charcoal"
+                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
+                <EmailIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 {contact.email}
               </a>
               <a
                 href={contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="nav-underline font-body text-sm text-charcoal"
+                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
+                <WhatsAppIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 Message on WhatsApp
               </a>
             </div>

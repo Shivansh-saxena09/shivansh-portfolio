@@ -42,7 +42,14 @@ export const contact = {
   github: "https://github.com/Shivansh-saxena09",
 } as const;
 
-export const footerNote = "Based in India · Open to remote work" as const;
+export const location = "Greater Noida, India" as const;
+export const availability = "Open to remote work" as const;
+
+/** Closing call-to-action panel at the top of the footer. */
+export const footerCta = {
+  heading: "Have a campaign that needs to perform?",
+  ctaLabel: "Message on WhatsApp",
+} as const;
 
 /**
  * ⚠️ PLACEHOLDER FILE. Generated, not the real resume — see
