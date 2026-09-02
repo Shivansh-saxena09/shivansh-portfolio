@@ -15,7 +15,7 @@ import { Container } from "@/components/ui/Container";
 import { StatTile } from "@/components/case-study/StatTile";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
 import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTable";
-import { GalleryPlaceholder } from "@/components/case-study/GalleryPlaceholder";
+import { Gallery } from "@/components/case-study/GalleryPlaceholder";
 
 const categoryLabel = {
   standard: "Campaign",
@@ -183,7 +183,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             <div className="mt-14">
               <h2 className="font-heading text-xl text-charcoal">Creatives</h2>
               <div className="mt-5">
-                <GalleryPlaceholder count={caseStudy.galleryPlaceholderCount} />
+                <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
               </div>
             </div>
           </div>

@@ -66,10 +66,11 @@ export type CaseStudyDetail = {
   adSets: AdSet[];
   narrative: NarrativeFields;
   galleryPlaceholderCount: number;
+  galleryImages: { id: string; url: string; altText: string | null }[];
   overrideResultHeadline?: string | null;
 };
 
-type AdSetRow = {
+export type AdSetRow = {
   id: string;
   name: string;
   sort_order: number;
@@ -116,9 +117,10 @@ type CaseStudyRow = {
   narrative_what_id_do_differently: string;
   case_study_skills: { skill_slug: string }[];
   ad_sets: AdSetRow[];
+  case_study_images: { id: string; storage_path: string; alt_text: string | null; sort_order: number }[];
 };
 
-function mapAdSetRow(row: AdSetRow): AdSet {
+export function mapAdSetRow(row: AdSetRow): AdSet {
   return {
     id: row.id,
     name: row.name,
@@ -150,6 +152,10 @@ function mapAdSetRow(row: AdSetRow): AdSet {
   };
 }
 
+export function mediaPublicUrl(storagePath: string): string {
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${storagePath}`;
+}
+
 function mapCaseStudyRow(row: CaseStudyRow, skillsMap: Record<string, Skill>): CaseStudyDetail {
   return {
     slug: row.slug,
@@ -165,6 +171,9 @@ function mapCaseStudyRow(row: CaseStudyRow, skillsMap: Record<string, Skill>): C
     skills: row.case_study_skills.map((s) => skillsMap[s.skill_slug]).filter(Boolean),
     lastVerified: row.last_verified,
     galleryPlaceholderCount: row.gallery_placeholder_count,
+    galleryImages: [...row.case_study_images]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((img) => ({ id: img.id, url: mediaPublicUrl(img.storage_path), altText: img.alt_text })),
     overrideResultHeadline: row.override_result_headline,
     adSets: [...row.ad_sets].sort((a, b) => a.sort_order - b.sort_order).map(mapAdSetRow),
     narrative: {
@@ -182,7 +191,8 @@ const CASE_STUDY_SELECT = `slug, campaign_name, project_name, objective, platfor
   date_range, status, category, last_verified, gallery_placeholder_count, override_result_headline,
   narrative_objective, narrative_strategy, narrative_challenge, narrative_decision, narrative_outcome, narrative_what_id_do_differently,
   case_study_skills ( skill_slug ),
-  ad_sets ( * )`;
+  ad_sets ( * ),
+  case_study_images ( id, storage_path, alt_text, sort_order )`;
 
 export const getCaseStudies = cache(async function getCaseStudies(): Promise<CaseStudyDetail[]> {
   const supabase = createClient();
