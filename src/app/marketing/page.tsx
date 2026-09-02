@@ -49,15 +49,37 @@ export default async function MarketingPage({
 
       <section className="py-16 sm:py-20">
         <Container>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-            {filtered.length > 0 ? (
-              filtered.map((caseStudy) => (
-                <CaseStudyCard key={caseStudy.slug} caseStudy={caseStudy} />
-              ))
-            ) : (
-              <p className="font-body text-warm-grey">No case studies tagged with this skill yet.</p>
-            )}
-          </div>
+          {filtered.length > 0 ? (
+            <>
+              {/* Mobile: a swipeable, snap-to-card carousel (one card at a
+                  time, next card peeking at the edge) rather than a long
+                  vertical stack of five near-identical cards — the
+                  textbook case for a horizontal pattern on a small screen.
+                  Desktop: unchanged responsive grid. Pure CSS scroll-snap,
+                  no JS/library cost. */}
+              <p className="mb-4 font-body text-xs font-medium text-warm-grey sm:hidden">
+                Swipe to explore →
+              </p>
+              <div className="relative sm:contents">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-cream to-transparent sm:hidden"
+                />
+                <div className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+                  {filtered.map((caseStudy) => (
+                    <div
+                      key={caseStudy.slug}
+                      className="w-[82vw] shrink-0 snap-start sm:w-auto sm:shrink"
+                    >
+                      <CaseStudyCard caseStudy={caseStudy} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="font-body text-warm-grey">No case studies tagged with this skill yet.</p>
+          )}
         </Container>
       </section>
 

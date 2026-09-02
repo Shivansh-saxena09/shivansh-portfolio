@@ -37,10 +37,18 @@ export function ContactCTA() {
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row lg:flex-col lg:items-start">
-              <Button href={contact.whatsapp} variant="primary">
+              <Button
+                href={contact.whatsapp}
+                variant="primary"
+                className="js-whatsapp-cta w-full sm:w-auto lg:w-full"
+              >
                 Message on WhatsApp
               </Button>
-              <Button href={`mailto:${contact.email}`} variant="secondary">
+              <Button
+                href={`mailto:${contact.email}`}
+                variant="secondary"
+                className="w-full sm:w-auto lg:w-full"
+              >
                 Send an Email
               </Button>
             </div>
@@ -93,7 +101,7 @@ export function ContactCTA() {
 
             <button
               type="submit"
-              className="relative z-10 mt-2 w-fit rounded-full bg-terracotta px-8 py-4 font-body text-sm font-medium text-ivory transition-colors hover:bg-terracotta-dark"
+              className="relative z-10 mt-2 w-full rounded-full bg-terracotta px-8 py-4 font-body text-sm font-medium text-ivory transition-colors hover:bg-terracotta-dark sm:w-fit"
             >
               Send
             </button>

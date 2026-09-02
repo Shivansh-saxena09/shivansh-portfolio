@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Preloader } from "@/components/layout/Preloader";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SmoothScrollProvider } from "@/components/layout/SmoothScrollProvider";
+import { MobileStickyCta } from "@/components/layout/MobileStickyCta";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="flex-1">{children}</main>
           <Footer />
         </SmoothScrollProvider>
+        <MobileStickyCta />
       </body>
     </html>
   );

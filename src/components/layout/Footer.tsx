@@ -109,7 +109,11 @@ export function Footer() {
             <h2 className="max-w-md font-heading text-3xl leading-tight font-bold text-charcoal sm:text-4xl">
               {footerCta.heading}
             </h2>
-            <Button href={contact.whatsapp} variant="primary" className="w-fit shrink-0">
+            <Button
+              href={contact.whatsapp}
+              variant="primary"
+              className="js-whatsapp-cta w-full shrink-0 sm:w-fit"
+            >
               {footerCta.ctaLabel}
             </Button>
           </div>

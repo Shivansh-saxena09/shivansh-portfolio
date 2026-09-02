@@ -37,7 +37,7 @@ export default function EngineeringPage() {
               </p>
 
               <div className="mt-8">
-                <ResumeButton />
+                <ResumeButton className="w-full sm:w-auto" />
               </div>
             </div>
 

@@ -82,14 +82,22 @@ export default function AboutPage() {
                 “{aboutStory.pullQuote}”
               </blockquote>
 
-              <div className="mt-10 grid grid-cols-3 gap-3 lg:grid-cols-1 lg:gap-4">
+              {/* Below sm: a real phone is too narrow for 3 columns here
+                  without cramped wrapping (confirmed visually, not
+                  assumed) — a stacked row list reads as a deliberate
+                  spec-sheet rather than a squeezed grid. sm–lg: enough
+                  width reopens for the 3-up grid. lg+: back to a single
+                  stacked column matching the sidebar card treatment. */}
+              <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
                 {quickFacts.map((fact) => (
                   <div
                     key={fact.label}
-                    className="rounded-xl border border-beige-border bg-ivory p-5 lg:flex lg:items-center lg:gap-4"
+                    className="flex items-center gap-4 rounded-xl border border-beige-border bg-ivory p-5 sm:block sm:gap-0 lg:flex lg:items-center lg:gap-4"
                   >
-                    <p className="font-heading text-3xl font-bold text-terracotta">{fact.value}</p>
-                    <p className="mt-1 font-body text-xs text-warm-grey lg:mt-0">{fact.label}</p>
+                    <p className="shrink-0 font-heading text-3xl font-bold text-terracotta">
+                      {fact.value}
+                    </p>
+                    <p className="font-body text-xs text-warm-grey sm:mt-1 lg:mt-0">{fact.label}</p>
                   </div>
                 ))}
               </div>
@@ -122,10 +130,10 @@ export default function AboutPage() {
             See the work that comes out of it.
           </h2>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Button href="/marketing" variant="primary">
+            <Button href="/marketing" variant="primary" className="w-full sm:w-auto">
               View Marketing Work
             </Button>
-            <Button href="/engineering" variant="secondary">
+            <Button href="/engineering" variant="secondary" className="w-full sm:w-auto">
               View Engineering Work
             </Button>
           </div>

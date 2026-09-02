@@ -79,12 +79,13 @@ export function Hero() {
             </p>
 
             <div className="hero-fade mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Button href="/marketing" variant="primary">
+              <Button href="/marketing" variant="primary" className="w-full sm:w-auto">
                 View Marketing Work
               </Button>
               <Button
                 href="/engineering"
                 variant={engineeringLeaning ? "primary" : "secondary"}
+                className="w-full sm:w-auto"
               >
                 View Engineering Work
               </Button>
