@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { getSiteSettings, getContactInfo, getPageMeta } from "@/lib/data/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
