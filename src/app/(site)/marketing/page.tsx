@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCaseStudiesBySkill } from "@/lib/data/caseStudies";
 import { skillLabel } from "@/lib/data/skills";
 import { getContactInfo, getPageMeta } from "@/lib/data/site";
+import { pageMetadata } from "@/lib/seo";
 import { CaseStudyCard } from "@/components/marketing/CaseStudyCard";
 import { ServicesSection } from "@/components/marketing/ServicesSection";
 import { ContactCTA } from "@/components/marketing/ContactCTA";
@@ -10,12 +11,11 @@ import { Container } from "@/components/ui/Container";
 
 export async function generateMetadata(): Promise<Metadata> {
   const meta = await getPageMeta("marketing");
-  return {
-    title: meta?.metaTitle ?? "Marketing Work — Shivansh Saxena",
+  return pageMetadata(meta, {
+    title: "Marketing Work — Shivansh Saxena",
     description:
-      meta?.metaDescription ??
       "Meta Ads and Google Ads campaign case studies with real, structured performance data — lead generation for real estate.",
-  };
+  });
 }
 
 export default async function MarketingPage({

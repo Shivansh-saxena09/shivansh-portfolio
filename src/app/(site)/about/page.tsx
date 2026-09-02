@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAboutContent, getQuickFacts, getExperienceTimeline } from "@/lib/data/about";
 import { getPageMeta } from "@/lib/data/site";
+import { pageMetadata } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ResumeButton } from "@/components/ui/ResumeButton";
@@ -9,12 +10,11 @@ import { Education } from "@/components/about/Education";
 
 export async function generateMetadata(): Promise<Metadata> {
   const meta = await getPageMeta("about");
-  return {
-    title: meta?.metaTitle ?? "About — Shivansh Saxena",
+  return pageMetadata(meta, {
+    title: "About — Shivansh Saxena",
     description:
-      meta?.metaDescription ??
       "Performance Marketing Manager running Meta and Google Ads for real estate lead generation, with full-stack development as a differentiator — the story, experience, and education.",
-  };
+  });
 }
 
 export default async function AboutPage() {

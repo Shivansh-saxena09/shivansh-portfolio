@@ -6,15 +6,15 @@ import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
 import { getProjects, getFeaturedProject } from "@/lib/data/projects";
 import { getPageMeta } from "@/lib/data/site";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const meta = await getPageMeta("engineering");
-  return {
-    title: meta?.metaTitle ?? "Engineering — Shivansh Saxena",
+  return pageMetadata(meta, {
+    title: "Engineering — Shivansh Saxena",
     description:
-      meta?.metaDescription ??
       "Full-stack systems built to support performance marketing work: Next.js, React, and Supabase — the differentiator behind the campaigns.",
-  };
+  });
 }
 
 export default async function EngineeringPage() {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject, getAllProjectSlugs } from "@/lib/data/projects";
+import { getSiteSettings } from "@/lib/data/site";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
@@ -29,10 +30,10 @@ export async function generateMetadata({
   params,
 }: PageProps<"/project/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const [project, settings] = await Promise.all([getProject(slug), getSiteSettings()]);
   if (!project) return {};
   return {
-    title: `${project.name} — Shivansh Saxena`,
+    title: `${project.name} — ${settings.personName}`,
     description: project.tagline,
   };
 }

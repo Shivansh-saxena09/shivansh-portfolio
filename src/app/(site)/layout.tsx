@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "../globals.css";
 import { getSiteSettings, getContactInfo, getPageMeta } from "@/lib/data/site";
+import { pageMetadata, siteBaseUrl } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Preloader } from "@/components/layout/Preloader";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SmoothScrollProvider } from "@/components/layout/SmoothScrollProvider";
 import { MobileStickyCta } from "@/components/layout/MobileStickyCta";
+import { PersonOrganizationJsonLd } from "@/components/seo/JsonLd";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -21,13 +23,13 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const meta = await getPageMeta("home");
-  if (meta) return { title: meta.metaTitle, description: meta.metaDescription };
-
-  const settings = await getSiteSettings();
+  const [meta, settings] = await Promise.all([getPageMeta("home"), getSiteSettings()]);
   return {
-    title: `${settings.personName} — ${settings.personTagline}`,
-    description: settings.heroSubheading,
+    ...pageMetadata(meta, {
+      title: `${settings.personName} — ${settings.personTagline}`,
+      description: settings.heroSubheading,
+    }),
+    metadataBase: new URL(siteBaseUrl(settings.personDomain)),
   };
 }
 
@@ -40,6 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream text-charcoal">
+        <PersonOrganizationJsonLd settings={settings} contact={contact} />
         <Preloader personName={settings.personName} />
         <ScrollProgress />
         <SmoothScrollProvider>

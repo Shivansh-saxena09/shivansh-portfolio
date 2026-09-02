@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllCaseStudySlugs, getCaseStudy } from "@/lib/data/caseStudies";
+import { getSiteSettings } from "@/lib/data/site";
 import {
   aggregate,
   cardSummary,
@@ -16,6 +17,7 @@ import { StatTile } from "@/components/case-study/StatTile";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
 import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTable";
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
+import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
 
 const categoryLabel = {
   standard: "Campaign",
@@ -43,18 +45,18 @@ export async function generateMetadata({
   params,
 }: PageProps<"/case-study/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const caseStudy = await getCaseStudy(slug);
+  const [caseStudy, settings] = await Promise.all([getCaseStudy(slug), getSiteSettings()]);
   if (!caseStudy) return {};
   const { oneLiner } = cardSummary(caseStudy);
   return {
-    title: `${caseStudy.campaignName} — Shivansh Saxena`,
+    title: `${caseStudy.campaignName} — ${settings.personName}`,
     description: oneLiner,
   };
 }
 
 export default async function CaseStudyPage({ params }: PageProps<"/case-study/[slug]">) {
   const { slug } = await params;
-  const caseStudy = await getCaseStudy(slug);
+  const [caseStudy, settings] = await Promise.all([getCaseStudy(slug), getSiteSettings()]);
   if (!caseStudy) notFound();
 
   const totals = aggregate(caseStudy.adSets);
@@ -71,6 +73,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
 
   return (
     <article className="py-16 sm:py-24">
+      <CaseStudyJsonLd caseStudy={caseStudy} settings={settings} />
       <Container>
         <Link href="/marketing" className="nav-underline font-body text-sm text-terracotta">
           ← All marketing work
