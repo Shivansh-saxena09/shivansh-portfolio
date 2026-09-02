@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProject, projects } from "@/content/projects";
+import { getProject, getAllProjectSlugs } from "@/lib/data/projects";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
@@ -20,15 +20,16 @@ const arrowRight = (
 
 // Static generation — mirrors /case-study/[slug]: every project page is
 // prerendered at build time.
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const slugs = await getAllProjectSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/project/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   if (!project) return {};
   return {
     title: `${project.name} — Shivansh Saxena`,
@@ -38,7 +39,7 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: PageProps<"/project/[slug]">) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   if (!project) notFound();
 
   return (
@@ -113,7 +114,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             {project.challenges.map((challenge) => (
               <div
-                key={challenge.title}
+                key={challenge.id}
                 className="flex min-w-0 flex-col rounded-2xl border border-beige-border bg-ivory p-6 shadow-[0_1px_3px_rgba(43,38,34,0.05)]"
               >
                 <h3 className="font-heading text-lg text-charcoal">{challenge.title}</h3>

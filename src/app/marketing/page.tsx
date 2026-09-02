@@ -1,24 +1,33 @@
 import type { Metadata } from "next";
-import { caseStudiesBySkill } from "@/content/caseStudies";
-import { skillLabel } from "@/content/skills";
+import { getCaseStudiesBySkill } from "@/lib/data/caseStudies";
+import { skillLabel } from "@/lib/data/skills";
+import { getContactInfo, getPageMeta } from "@/lib/data/site";
 import { CaseStudyCard } from "@/components/marketing/CaseStudyCard";
 import { ServicesSection } from "@/components/marketing/ServicesSection";
 import { ContactCTA } from "@/components/marketing/ContactCTA";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
-export const metadata: Metadata = {
-  title: "Marketing Work — Shivansh Saxena",
-  description:
-    "Meta Ads and Google Ads campaign case studies with real, structured performance data — lead generation for real estate.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const meta = await getPageMeta("marketing");
+  return {
+    title: meta?.metaTitle ?? "Marketing Work — Shivansh Saxena",
+    description:
+      meta?.metaDescription ??
+      "Meta Ads and Google Ads campaign case studies with real, structured performance data — lead generation for real estate.",
+  };
+}
 
 export default async function MarketingPage({
   searchParams,
 }: PageProps<"/marketing">) {
   const { skill } = await searchParams;
   const activeSkill = typeof skill === "string" ? skill : undefined;
-  const filtered = caseStudiesBySkill(activeSkill);
+  const [filtered, activeSkillLabel, contact] = await Promise.all([
+    getCaseStudiesBySkill(activeSkill),
+    activeSkill ? skillLabel(activeSkill) : Promise.resolve(undefined),
+    getContactInfo(),
+  ]);
 
   return (
     <>
@@ -38,7 +47,7 @@ export default async function MarketingPage({
           {activeSkill && (
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <span className="font-body text-sm text-warm-grey">Filtered by:</span>
-              <Tag active>{skillLabel(activeSkill)}</Tag>
+              <Tag active>{activeSkillLabel}</Tag>
               <a href="/marketing" className="nav-underline font-body text-sm text-terracotta">
                 Clear filter
               </a>
@@ -84,7 +93,7 @@ export default async function MarketingPage({
       </section>
 
       <ServicesSection />
-      <ContactCTA />
+      <ContactCTA contact={contact} />
     </>
   );
 }

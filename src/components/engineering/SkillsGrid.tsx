@@ -1,4 +1,4 @@
-import { skills, type SkillCategory } from "@/content/skills";
+import { getSkills, type SkillCategory } from "@/lib/data/skills";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
@@ -18,7 +18,9 @@ const categoryAccent: Record<SkillCategory, string> = {
 };
 
 /** Tag-based skills grid, one card per category; each tag links to /marketing filtered to that skill. */
-export function SkillsGrid() {
+export async function SkillsGrid() {
+  const skills = await getSkills();
+
   return (
     <section className="border-t border-beige-border/70 bg-cream py-20 sm:py-24">
       <Container>

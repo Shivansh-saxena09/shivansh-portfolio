@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { CaseStudyDetail } from "@/content/caseStudies";
-import { skillLabel } from "@/content/skills";
+import type { CaseStudyDetail } from "@/lib/data/caseStudies";
 import { cardSummary } from "@/lib/caseStudyNarrative";
 import { statHeadline } from "@/lib/highlightStats";
 import { useCardCursorFollow } from "@/lib/useCardCursorFollow";
@@ -53,8 +52,8 @@ export function CaseStudyCard({ caseStudy }: { caseStudy: CaseStudyDetail }) {
           push the icon to the bottom-LEFT instead of staying put. */}
       <div className="mt-auto flex flex-wrap gap-2 pt-2 pr-12">
         <Tag>{caseStudy.platform}</Tag>
-        {caseStudy.skills.slice(0, 3).map((slug) => (
-          <Tag key={slug}>{skillLabel(slug)}</Tag>
+        {caseStudy.skills.slice(0, 3).map((skill) => (
+          <Tag key={skill.slug}>{skill.label}</Tag>
         ))}
       </div>
 

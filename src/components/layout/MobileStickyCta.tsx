@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { contact } from "@/content/site";
 import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 
 // Scoped to the lead-gen pages only (home, marketing hub, and every case
@@ -30,7 +29,7 @@ function isEnabledPath(pathname: string) {
  * rAF-throttled listener that only calls setState on an actual boundary
  * crossing, never on every scroll pixel.
  */
-export function MobileStickyCta() {
+export function MobileStickyCta({ whatsapp }: { whatsapp: string }) {
   const pathname = usePathname();
   const enabled = isEnabledPath(pathname);
   const [pastHero, setPastHero] = useState(false);
@@ -97,7 +96,7 @@ export function MobileStickyCta() {
       }`}
     >
       <a
-        href={contact.whatsapp}
+        href={whatsapp}
         target="_blank"
         rel="noopener noreferrer"
         tabIndex={visible ? 0 : -1}

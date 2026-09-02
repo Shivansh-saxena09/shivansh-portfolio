@@ -1,4 +1,4 @@
-import { education } from "@/content/about";
+import { getEducation } from "@/lib/data/about";
 
 /**
  * Accent color echoes the site's marketing=terracotta / engineering=sage
@@ -6,7 +6,9 @@ import { education } from "@/content/about";
  * sage, the MBA reads terracotta, tying each credential to the identity
  * it feeds.
  */
-export function Education() {
+export async function Education() {
+  const education = await getEducation();
+
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       {education.map((entry) => {
@@ -15,7 +17,7 @@ export function Education() {
           entry.accent === "sage" ? "text-sage-dark bg-sage/15" : "text-terracotta bg-terracotta/10";
         return (
           <div
-            key={entry.credential}
+            key={entry.id}
             className={`rounded-2xl border border-beige-border ${accent} border-l-4 bg-cream p-7 shadow-[0_1px_3px_rgba(43,38,34,0.05)]`}
           >
             <span

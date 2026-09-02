@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { contact } from "@/content/site";
+import type { ContactInfo } from "@/lib/data/site";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 
@@ -12,7 +12,7 @@ import { Container } from "@/components/ui/Container";
  * opens a prefilled mailto: as a working fallback rather than silently
  * doing nothing.
  */
-export function ContactCTA() {
+export function ContactCTA({ contact }: { contact: ContactInfo }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");

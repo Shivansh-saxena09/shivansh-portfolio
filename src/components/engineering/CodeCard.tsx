@@ -2,23 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { getFeaturedProject } from "@/content/projects";
 import { highlightCode } from "@/lib/highlightCode";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+
+type Snippet = { filename: string; code: string };
 
 /**
  * Floating "code editor" card in the /engineering hero — the page's own
  * echo of the homepage's floating glass card and /about's marketing-
- * concept panel. Rotates through the three real snippets that illustrate
- * the featured project's actual challenges (not placeholder/decorative
- * code), auto-advancing on a timer since it's above the fold and not
- * scroll-linked. Pauses on reduced-motion, matching the rest of the site.
+ * concept panel. Rotates through the featured project's real challenge
+ * snippets (not placeholder/decorative code, fetched server-side by the
+ * page and passed down since this component itself needs client state
+ * for the auto-advance timer), auto-advancing since it's above the fold
+ * and not scroll-linked. Pauses on reduced-motion, matching the rest of
+ * the site.
  */
-export function CodeCard() {
+export function CodeCard({ snippets }: { snippets: Snippet[] }) {
   const [index, setIndex] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
-  const project = getFeaturedProject();
-  const snippets = project?.challenges.map((c) => c.snippet) ?? [];
 
   useEffect(() => {
     if (reducedMotion || snippets.length === 0) return;

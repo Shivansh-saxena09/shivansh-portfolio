@@ -2,14 +2,8 @@
 
 import { useRef, useSyncExternalStore, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
-import {
-  person,
-  nav,
-  contact,
-  location,
-  availability,
-  footerCta,
-} from "@/content/site";
+import { nav } from "@/lib/data/site";
+import type { ContactInfo } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { Button } from "@/components/ui/Button";
@@ -59,14 +53,28 @@ function PinIcon(props: React.SVGProps<SVGSVGElement>) {
  * then a four-column utility grid (identity+location+live clock / explore
  * / get in touch / the interactive signature wordmark), then copyright.
  *
- * The signature column's wordmark is `person.name`, scoped via container-
+ * The signature column's wordmark is `personName`, scoped via container-
  * query units to that column's own width — a hollow outline that fills
  * with the terracotta→sage gradient inside a soft circle following the
  * cursor or a dragged finger. See globals.css' .footer-wordmark-* rules.
  */
-export function Footer() {
+export function Footer({
+  personName,
+  personTagline,
+  location,
+  availability,
+  footerCta,
+  contact,
+}: {
+  personName: string;
+  personTagline: string;
+  location: string;
+  availability: string;
+  footerCta: { heading: string; ctaLabel: string };
+  contact: ContactInfo;
+}) {
   const fillLayerRef = useRef<HTMLDivElement>(null);
-  const [firstName, ...restName] = person.name.split(" ");
+  const [firstName, ...restName] = personName.split(" ");
   const lastName = restName.join(" ");
   const localTime = useSyncExternalStore(subscribeClock, getClockSnapshot, getClockServerSnapshot);
 
@@ -126,11 +134,11 @@ export function Footer() {
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-base font-semibold text-ivory">
                 S
               </span>
-              <p className="font-heading text-xl font-bold text-charcoal">{person.name}</p>
+              <p className="font-heading text-xl font-bold text-charcoal">{personName}</p>
             </div>
 
             <p className="mt-6 max-w-xs font-body text-sm leading-relaxed text-warm-grey">
-              {person.tagline}
+              {personTagline}
             </p>
 
             <div className="mt-5 flex items-center gap-1.5 font-body text-sm text-charcoal">
@@ -218,14 +226,14 @@ export function Footer() {
             </div>
 
             <div className="glass-card mt-6 inline-flex rounded-full px-2 py-1">
-              <SocialLinks />
+              <SocialLinks contact={contact} />
             </div>
           </div>
         </div>
 
         <div className="mt-16 border-t border-beige-border/70 pt-6 text-center">
           <p className="font-body text-xs text-warm-grey">
-            © {new Date().getFullYear()} {person.name}. All rights reserved.
+            © {new Date().getFullYear()} {personName}. All rights reserved.
           </p>
         </div>
       </Container>

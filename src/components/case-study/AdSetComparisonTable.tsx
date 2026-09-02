@@ -1,4 +1,4 @@
-import type { AdSet } from "@/content/caseStudies";
+import type { AdSet } from "@/lib/data/caseStudies";
 import { formatINR, formatNumber, formatPct } from "@/lib/caseStudyNarrative";
 
 /**

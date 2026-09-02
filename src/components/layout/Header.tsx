@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav, person } from "@/content/site";
+import { nav } from "@/lib/data/site";
+import type { ContactInfo } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { MobileNav } from "./MobileNav";
 
-export function Header() {
+export function Header({ personName, contact }: { personName: string; contact: ContactInfo }) {
   const pathname = usePathname();
 
   return (
@@ -18,7 +19,7 @@ export function Header() {
             S
           </span>
           <span className="font-heading text-lg font-semibold tracking-tight text-charcoal">
-            {person.name}
+            {personName}
           </span>
         </Link>
 
@@ -36,10 +37,10 @@ export function Header() {
             ))}
           </nav>
           <div className="h-6 w-px bg-beige-border" aria-hidden="true" />
-          <SocialLinks className="pl-4" />
+          <SocialLinks contact={contact} className="pl-4" />
         </div>
 
-        <MobileNav />
+        <MobileNav personName={personName} contact={contact} />
       </Container>
     </header>
   );

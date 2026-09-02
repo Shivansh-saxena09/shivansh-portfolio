@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import { person, heroCopy } from "@/content/site";
+import { getSiteSettings, getContactInfo, getPageMeta } from "@/lib/data/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Preloader } from "@/components/layout/Preloader";
@@ -20,26 +20,41 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: `${person.name} — ${person.tagline}`,
-  description: heroCopy.subheading,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const meta = await getPageMeta("home");
+  if (meta) return { title: meta.metaTitle, description: meta.metaDescription };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+  const settings = await getSiteSettings();
+  return {
+    title: `${settings.personName} — ${settings.personTagline}`,
+    description: settings.heroSubheading,
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const [settings, contact] = await Promise.all([getSiteSettings(), getContactInfo()]);
+
   return (
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream text-charcoal">
-        <Preloader />
+        <Preloader personName={settings.personName} />
         <ScrollProgress />
         <SmoothScrollProvider>
-          <Header />
+          <Header personName={settings.personName} contact={contact} />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <Footer
+            personName={settings.personName}
+            personTagline={settings.personTagline}
+            location={settings.location}
+            availability={settings.availability}
+            footerCta={settings.footerCta}
+            contact={contact}
+          />
         </SmoothScrollProvider>
-        <MobileStickyCta />
+        <MobileStickyCta whatsapp={contact.whatsapp} />
       </body>
     </html>
   );

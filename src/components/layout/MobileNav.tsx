@@ -5,7 +5,8 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav, person } from "@/content/site";
+import { nav } from "@/lib/data/site";
+import type { ContactInfo } from "@/lib/data/site";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 
 /**
@@ -51,7 +52,7 @@ const linkVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_PREMIUM } },
 };
 
-export function MobileNav() {
+export function MobileNav({ personName, contact }: { personName: string; contact: ContactInfo }) {
   const [open, setOpen] = useState(false);
   const mounted = useSyncExternalStore(subscribe, getMountedSnapshot, getMountedServerSnapshot);
   const pathname = usePathname();
@@ -153,7 +154,7 @@ export function MobileNav() {
                   >
                     <div className="flex items-center justify-between px-6 py-5">
                       <span className="font-heading text-lg font-semibold text-charcoal">
-                        {person.name}
+                        {personName}
                       </span>
                       <button
                         ref={closeButtonRef}
@@ -200,7 +201,7 @@ export function MobileNav() {
                         <span className="font-body text-xs font-medium uppercase tracking-[0.15em] text-warm-grey">
                           Elsewhere
                         </span>
-                        <SocialLinks iconClassName="h-5 w-5" />
+                        <SocialLinks contact={contact} iconClassName="h-5 w-5" />
                       </motion.div>
                     </motion.nav>
                   </motion.div>

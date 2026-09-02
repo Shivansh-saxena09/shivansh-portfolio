@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { caseStudies, getCaseStudy } from "@/content/caseStudies";
-import { skillLabel } from "@/content/skills";
+import { getAllCaseStudySlugs, getCaseStudy } from "@/lib/data/caseStudies";
 import {
   aggregate,
   cardSummary,
@@ -35,15 +34,16 @@ const narrativeBlocks = [
 
 // Static generation — every case study page is prerendered at build time,
 // so visiting one is a static HTML fetch, not a server round-trip.
-export function generateStaticParams() {
-  return caseStudies.map((c) => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  const slugs = await getAllCaseStudySlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/case-study/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const caseStudy = getCaseStudy(slug);
+  const caseStudy = await getCaseStudy(slug);
   if (!caseStudy) return {};
   const { oneLiner } = cardSummary(caseStudy);
   return {
@@ -54,7 +54,7 @@ export async function generateMetadata({
 
 export default async function CaseStudyPage({ params }: PageProps<"/case-study/[slug]">) {
   const { slug } = await params;
-  const caseStudy = getCaseStudy(slug);
+  const caseStudy = await getCaseStudy(slug);
   if (!caseStudy) notFound();
 
   const totals = aggregate(caseStudy.adSets);
@@ -127,7 +127,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
 
               <div className="relative z-10 mt-6 flex flex-wrap gap-2 border-t border-beige-border/70 pt-6">
                 {caseStudy.skills.map((s) => (
-                  <Tag key={s}>{skillLabel(s)}</Tag>
+                  <Tag key={s.slug}>{s.label}</Tag>
                 ))}
               </div>
 
@@ -166,7 +166,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               </h2>
               <div className="mt-6 flex flex-col gap-8">
                 {caseStudy.adSets.map((adSet) => (
-                  <AdSetSection key={adSet.name} adSet={adSet} showName={multiAdSet} />
+                  <AdSetSection key={adSet.id} adSet={adSet} showName={multiAdSet} />
                 ))}
               </div>
             </div>

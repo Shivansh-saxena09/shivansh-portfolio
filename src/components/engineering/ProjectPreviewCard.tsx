@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Project } from "@/content/projects";
+import type { Project } from "@/lib/data/projects";
 import { useCardCursorFollow } from "@/lib/useCardCursorFollow";
 import { Tag } from "@/components/ui/Tag";
 import { CursorFollowBadge, CornerArrow } from "@/components/ui/CardAffordance";

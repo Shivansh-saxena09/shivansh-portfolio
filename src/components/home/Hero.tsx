@@ -2,14 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { heroCopy } from "@/content/site";
-import { skills } from "@/content/skills";
+import type { Skill } from "@/lib/data/skills";
 import { useReferrerBias } from "@/lib/useReferrerBias";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Tag } from "@/components/ui/Tag";
-
-const focusSkills = skills.filter((s) => s.category === "marketing").slice(0, 4);
 
 /**
  * Splits text into word spans for a GSAP stagger reveal. `accent` marks one
@@ -27,7 +24,9 @@ function splitWords(text: string, accent?: string) {
   ));
 }
 
-export function Hero() {
+type HeroCopy = { eyebrow: string; heading: string; subheading: string };
+
+export function Hero({ heroCopy, focusSkills }: { heroCopy: HeroCopy; focusSkills: Skill[] }) {
   const bias = useReferrerBias();
   const headingRef = useRef<HTMLHeadingElement>(null);
 

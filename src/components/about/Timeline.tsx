@@ -3,8 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { experienceTimeline } from "@/content/about";
-import { skillLabel } from "@/content/skills";
+import type { TimelineEntry } from "@/lib/data/about";
 import { Tag } from "@/components/ui/Tag";
 import { TimelineChallenge } from "./TimelineChallenge";
 import { timelineIcons } from "./TimelineIcons";
@@ -27,7 +26,7 @@ gsap.registerPlugin(ScrollTrigger);
  * distinct class so it can't interfere with anything indexed off
  * .timeline-item.
  */
-export function Timeline() {
+export function Timeline({ entries }: { entries: TimelineEntry[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,12 +80,12 @@ export function Timeline() {
         className="absolute top-2 bottom-2 left-2 w-px bg-beige-border lg:left-1/2 lg:-translate-x-1/2 lg:bg-gradient-to-b lg:from-terracotta lg:via-beige-border lg:to-sage"
       />
 
-      {experienceTimeline.map((entry, i) => {
+      {entries.map((entry, i) => {
         const onLeft = i % 2 === 0;
         const Icon = timelineIcons[entry.icon];
         return (
           <div
-            key={`${entry.org}-${entry.range}`}
+            key={entry.id}
             className="timeline-item relative mb-10 last:mb-0 lg:mb-6"
             style={{ gridColumn: onLeft ? 1 : 3, gridRow: i + 1 }}
           >
@@ -131,8 +130,8 @@ export function Timeline() {
                 </p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {entry.skills.map((slug) => (
-                    <Tag key={slug}>{skillLabel(slug)}</Tag>
+                  {entry.skills.map((skill) => (
+                    <Tag key={skill.slug}>{skill.label}</Tag>
                   ))}
                 </div>
 
@@ -150,11 +149,11 @@ export function Timeline() {
 
       {/* The space opposite each card at lg+ — an interactive "Quick
           Take" challenge instead of empty gutter space. */}
-      {experienceTimeline.map((entry, i) => {
+      {entries.map((entry, i) => {
         const onLeft = i % 2 === 0;
         return (
           <div
-            key={`challenge-${entry.org}-${entry.range}`}
+            key={`challenge-${entry.id}`}
             className="timeline-challenge hidden lg:flex lg:items-center"
             style={{ gridColumn: onLeft ? 3 : 1, gridRow: i + 1 }}
           >
@@ -170,9 +169,9 @@ export function Timeline() {
           (via negative margins sized to match), never crossing over
           either box's own surface. Desktop only — mirrors where the
           alternating layout itself only exists at lg+. */}
-      {experienceTimeline.map((entry, i) => (
+      {entries.map((entry, i) => (
         <div
-          key={`connector-${entry.org}-${entry.range}`}
+          key={`connector-${entry.id}`}
           aria-hidden="true"
           className="relative hidden h-0 lg:block"
           style={{ gridColumn: 2, gridRow: i + 1 }}

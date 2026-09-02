@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-import type { TimelineIconName } from "@/content/about";
+import type { TimelineIconName } from "@/lib/data/about";
 
 /**
  * Small per-role badge icons for the experience timeline — custom

@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { person } from "@/content/site";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 /**
  * Branded preloader — a brief logo/wordmark reveal before site content
  * shows (CLAUDE.md → Animations & Interactions). Runs once per page load.
  */
-export function Preloader() {
+export function Preloader({ personName }: { personName: string }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
@@ -48,7 +47,7 @@ export function Preloader() {
 
   if (done || prefersReducedMotion) return null;
 
-  const chars = person.name.split("");
+  const chars = personName.split("");
 
   return (
     <div

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { TimelineChallenge as TimelineChallengeData, TimelineIconName } from "@/content/about";
+import type { TimelineChallenge as TimelineChallengeData, TimelineIconName } from "@/lib/data/about";
 import { timelineIcons } from "./TimelineIcons";
 
 // Small, fixed burst of emoji particles for the "correct" reveal — no

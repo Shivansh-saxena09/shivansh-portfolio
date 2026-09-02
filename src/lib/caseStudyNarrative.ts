@@ -1,4 +1,4 @@
-import type { AdSet, AudienceType, CaseStudyDetail } from "@/content/caseStudies";
+import type { AdSet, AudienceType, CaseStudyDetail } from "@/lib/data/caseStudies";
 
 /**
  * Structured-fields → readable-prose templating (CLAUDE.md → Campaign /

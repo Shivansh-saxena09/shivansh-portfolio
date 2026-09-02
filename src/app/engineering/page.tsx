@@ -4,15 +4,23 @@ import { SkillsGrid } from "@/components/engineering/SkillsGrid";
 import { CodeCard } from "@/components/engineering/CodeCard";
 import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
-import { projects } from "@/content/projects";
+import { getProjects, getFeaturedProject } from "@/lib/data/projects";
+import { getPageMeta } from "@/lib/data/site";
 
-export const metadata: Metadata = {
-  title: "Engineering — Shivansh Saxena",
-  description:
-    "Full-stack systems built to support performance marketing work: Next.js, React, and Supabase — the differentiator behind the campaigns.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const meta = await getPageMeta("engineering");
+  return {
+    title: meta?.metaTitle ?? "Engineering — Shivansh Saxena",
+    description:
+      meta?.metaDescription ??
+      "Full-stack systems built to support performance marketing work: Next.js, React, and Supabase — the differentiator behind the campaigns.",
+  };
+}
 
-export default function EngineeringPage() {
+export default async function EngineeringPage() {
+  const [projects, featuredProject] = await Promise.all([getProjects(), getFeaturedProject()]);
+  const snippets = featuredProject?.challenges.map((c) => c.snippet) ?? [];
+
   return (
     <>
       {/* Hero — the same two-column + floating-card motif as the homepage
@@ -51,7 +59,7 @@ export default function EngineeringPage() {
                 className="absolute -bottom-8 left-6 h-40 w-40 rounded-full bg-terracotta/20 blur-3xl"
               />
               <div className="relative -rotate-1">
-                <CodeCard />
+                <CodeCard snippets={snippets} />
               </div>
             </div>
           </div>

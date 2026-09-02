@@ -1,19 +1,20 @@
-import { resumeUrl, person } from "@/content/site";
+import { getSiteSettings } from "@/lib/data/site";
 
 /**
  * Resume download (CLAUDE.md → /engineering + /about → vitals card). The
- * linked file is a generated placeholder (public/resume-placeholder.pdf,
- * a real one-page PDF that says as much) — swap `resumeUrl` in
- * src/content/site.ts for a real uploaded PDF once the admin's Resume
- * Manager exists; every usage of this button updates automatically.
+ * linked file defaults to a generated placeholder
+ * (public/resume-placeholder.pdf) until a real PDF is uploaded via the
+ * admin's Resume Manager — every usage of this button reads `resumeUrl`
+ * from site_settings, so uploading a new one there updates it everywhere.
  */
-export function ResumeButton({
+export async function ResumeButton({
   variant = "secondary",
   className = "",
 }: {
   variant?: "primary" | "secondary";
   className?: string;
 }) {
+  const { resumeUrl, personName } = await getSiteSettings();
   const base =
     "group inline-flex items-center justify-center gap-2.5 rounded-full px-8 py-4 font-body text-sm font-medium tracking-wide transition-colors duration-300";
   const styles =
@@ -24,7 +25,7 @@ export function ResumeButton({
   return (
     <a
       href={resumeUrl}
-      download={`${person.name.replace(/\s+/g, "-")}-Resume.pdf`}
+      download={`${personName.replace(/\s+/g, "-")}-Resume.pdf`}
       className={`${base} ${styles} ${className}`}
     >
       <svg

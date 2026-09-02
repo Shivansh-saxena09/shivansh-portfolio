@@ -1,13 +1,13 @@
-import { currentlyWorkingOn } from "@/content/site";
+import { getSiteSettings } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 
 /**
  * "Currently Working On" live-status widget (CLAUDE.md → Homepage).
- * Renders a single admin-editable line. Today it reads from the static
- * content module; once Supabase is wired up this becomes a server-fetched
- * row from a `site_settings` table — the component's shape doesn't change.
+ * Renders the single admin-editable line straight from `site_settings`.
  */
-export function CurrentlyWorkingOn() {
+export async function CurrentlyWorkingOn() {
+  const { currentlyWorkingOnText } = await getSiteSettings();
+
   return (
     <section className="py-14 sm:py-16">
       <Container>
@@ -20,7 +20,7 @@ export function CurrentlyWorkingOn() {
             Currently working on
           </span>
           <p className="relative z-10 font-body text-base leading-relaxed text-charcoal">
-            {currentlyWorkingOn.text}
+            {currentlyWorkingOnText}
           </p>
         </div>
       </Container>
