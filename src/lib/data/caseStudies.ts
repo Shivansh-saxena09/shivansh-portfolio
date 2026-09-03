@@ -68,6 +68,13 @@ export type CaseStudyDetail = {
   galleryPlaceholderCount: number;
   galleryImages: { id: string; url: string; altText: string | null }[];
   overrideResultHeadline?: string | null;
+  aiInsight: {
+    whatsWorking: string[];
+    likelyIssues: string[];
+    recommendedAction: string;
+    timeframe: string;
+    generatedAt: string;
+  } | null;
 };
 
 export type AdSetRow = {
@@ -115,6 +122,12 @@ type CaseStudyRow = {
   narrative_decision: string;
   narrative_outcome: string;
   narrative_what_id_do_differently: string;
+  ai_insight_whats_working: string[] | null;
+  ai_insight_likely_issues: string[] | null;
+  ai_insight_recommended_action: string | null;
+  ai_insight_timeframe: string | null;
+  ai_insight_generated_at: string | null;
+  ai_insight_published: boolean;
   case_study_skills: { skill_slug: string }[];
   ad_sets: AdSetRow[];
   case_study_images: { id: string; storage_path: string; alt_text: string | null; sort_order: number }[];
@@ -175,6 +188,21 @@ function mapCaseStudyRow(row: CaseStudyRow, skillsMap: Record<string, Skill>): C
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((img) => ({ id: img.id, url: mediaPublicUrl(img.storage_path), altText: img.alt_text })),
     overrideResultHeadline: row.override_result_headline,
+    aiInsight:
+      row.ai_insight_published &&
+      row.ai_insight_whats_working &&
+      row.ai_insight_likely_issues &&
+      row.ai_insight_recommended_action &&
+      row.ai_insight_timeframe &&
+      row.ai_insight_generated_at
+        ? {
+            whatsWorking: row.ai_insight_whats_working,
+            likelyIssues: row.ai_insight_likely_issues,
+            recommendedAction: row.ai_insight_recommended_action,
+            timeframe: row.ai_insight_timeframe,
+            generatedAt: row.ai_insight_generated_at,
+          }
+        : null,
     adSets: [...row.ad_sets].sort((a, b) => a.sort_order - b.sort_order).map(mapAdSetRow),
     narrative: {
       objective: row.narrative_objective,
@@ -190,6 +218,7 @@ function mapCaseStudyRow(row: CaseStudyRow, skillsMap: Record<string, Skill>): C
 const CASE_STUDY_SELECT = `slug, campaign_name, project_name, objective, platform, budget_type, special_ad_category,
   date_range, status, category, last_verified, gallery_placeholder_count, override_result_headline,
   narrative_objective, narrative_strategy, narrative_challenge, narrative_decision, narrative_outcome, narrative_what_id_do_differently,
+  ai_insight_whats_working, ai_insight_likely_issues, ai_insight_recommended_action, ai_insight_timeframe, ai_insight_generated_at, ai_insight_published,
   case_study_skills ( skill_slug ),
   ad_sets ( * ),
   case_study_images ( id, storage_path, alt_text, sort_order )`;

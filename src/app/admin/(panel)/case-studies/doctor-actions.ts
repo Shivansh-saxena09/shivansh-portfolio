@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getSkillsMap } from "@/lib/data/skills";
 import { mapAdSetRow, type AdSetRow } from "@/lib/data/caseStudies";
@@ -51,6 +52,7 @@ export async function runCampaignDoctor(
     galleryPlaceholderCount: csRow.gallery_placeholder_count,
     galleryImages: [],
     overrideResultHeadline: csRow.override_result_headline,
+    aiInsight: null,
     adSets: (csRow.ad_sets as AdSetRow[]).map(mapAdSetRow),
     narrative: {
       objective: csRow.narrative_objective,
@@ -72,4 +74,47 @@ export async function runCampaignDoctor(
   } catch (e) {
     return { result: null, error: e instanceof Error ? e.message : "Analysis failed." };
   }
+}
+
+/**
+ * Publishes one reviewed analysis result to the case study's public page
+ * (CLAUDE.md's "Campaign Doctor Insight" showcase) — a static snapshot,
+ * not a live call, so visitors never trigger paid API usage. The admin
+ * reviews the result in the panel first; nothing reaches the public site
+ * automatically the moment Claude responds.
+ */
+export async function publishInsight(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated.");
+
+  const slug = String(formData.get("slug"));
+  const analysis = JSON.parse(String(formData.get("analysis"))) as CampaignAnalysis;
+
+  const { error } = await supabase
+    .from("case_studies")
+    .update({
+      ai_insight_whats_working: analysis.whatsWorking,
+      ai_insight_likely_issues: analysis.likelyIssues,
+      ai_insight_recommended_action: analysis.recommendedAction,
+      ai_insight_timeframe: analysis.timeframe,
+      ai_insight_generated_at: new Date().toISOString(),
+      ai_insight_published: true,
+    })
+    .eq("slug", slug);
+  if (error) throw error;
+  revalidatePath("/", "layout");
+}
+
+export async function unpublishInsight(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const slug = String(formData.get("slug"));
+  const { error } = await supabase
+    .from("case_studies")
+    .update({ ai_insight_published: false })
+    .eq("slug", slug);
+  if (error) throw error;
+  revalidatePath("/", "layout");
 }

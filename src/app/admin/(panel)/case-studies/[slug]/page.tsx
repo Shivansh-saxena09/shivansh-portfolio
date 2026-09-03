@@ -185,7 +185,21 @@ export default async function AdminCaseStudyEditPage({ params }: { params: Promi
       </div>
 
       <div className="mt-10">
-        <CampaignDoctor slug={caseStudy.slug} isLive={caseStudy.status === "Active"} />
+        <CampaignDoctor
+          slug={caseStudy.slug}
+          isLive={caseStudy.status === "Active"}
+          publishedInsight={
+            caseStudy.ai_insight_published
+              ? {
+                  whatsWorking: caseStudy.ai_insight_whats_working,
+                  likelyIssues: caseStudy.ai_insight_likely_issues,
+                  recommendedAction: caseStudy.ai_insight_recommended_action,
+                  timeframe: caseStudy.ai_insight_timeframe,
+                  generatedAt: caseStudy.ai_insight_generated_at,
+                }
+              : null
+          }
+        />
       </div>
 
       <div className="mt-10">

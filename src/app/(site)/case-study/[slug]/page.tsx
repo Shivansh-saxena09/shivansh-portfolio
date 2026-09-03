@@ -17,6 +17,7 @@ import { StatTile } from "@/components/case-study/StatTile";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
 import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTable";
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
+import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
 
 const categoryLabel = {
@@ -180,6 +181,18 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 <div className="mt-5">
                   <AdSetComparisonTable adSets={caseStudy.adSets} />
                 </div>
+              </div>
+            )}
+
+            {caseStudy.aiInsight && (
+              <div className="mt-14">
+                <CampaignDoctorInsight
+                  whatsWorking={caseStudy.aiInsight.whatsWorking}
+                  likelyIssues={caseStudy.aiInsight.likelyIssues}
+                  recommendedAction={caseStudy.aiInsight.recommendedAction}
+                  timeframe={caseStudy.aiInsight.timeframe}
+                  generatedAt={caseStudy.aiInsight.generatedAt}
+                />
               </div>
             )}
 
