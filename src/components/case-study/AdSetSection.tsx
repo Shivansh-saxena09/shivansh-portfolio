@@ -29,11 +29,15 @@ function AdSetBody({ adSet }: { adSet: AdSet }) {
           section), and a viewport-based sm:grid-cols-4 would cram four
           tiles into that narrower space regardless of how wide the
           browser window itself is. */}
+      {/* compact sizing — these cards can end up half-width once two ad
+          sets sit side-by-side, and the larger (non-compact) scale
+          genuinely doesn't fit a value like "6,20,000" in that narrower
+          space (confirmed via screenshot: it was clipping mid-digit). */}
       <dl className="mt-5 grid grid-cols-2 gap-3">
-        <StatTile label="Reach" value={formatNumber(metrics.reach)} />
-        <StatTile label="CPM" value={formatINR(metrics.cpm)} />
-        <StatTile label="Link CTR" value={formatPct(ctrLink)} />
-        <StatTile label="Cost / Lead" value={metrics.leads > 0 ? formatINR(costPerLead) : "—"} />
+        <StatTile compact label="Reach" value={formatNumber(metrics.reach)} />
+        <StatTile compact label="CPM" value={formatINR(metrics.cpm)} />
+        <StatTile compact label="Link CTR" value={formatPct(ctrLink)} />
+        <StatTile compact label="Cost / Lead" value={metrics.leads > 0 ? formatINR(costPerLead) : "—"} />
       </dl>
 
       <p className="mt-4 font-body text-sm text-warm-grey">

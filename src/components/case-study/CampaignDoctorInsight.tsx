@@ -1,3 +1,5 @@
+import { highlightStats } from "@/lib/highlightStats";
+
 function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
@@ -18,6 +20,38 @@ function AlertIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function ClockIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** One diagnostic-report row — icon badge + a single short line, in its
+ *  own bounded box so each point stays visually distinct from its
+ *  neighbors regardless of exact length. */
+function DiagnosticRow({
+  tone,
+  icon,
+  children,
+}: {
+  tone: "positive" | "negative";
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const toneClass = tone === "positive" ? "bg-sage/15 text-sage" : "bg-terracotta/15 text-terracotta";
+  return (
+    <li className="flex items-start gap-2.5 rounded-lg bg-cream/[0.06] p-2.5">
+      <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${toneClass}`}>
+        {icon}
+      </span>
+      <span className="font-body text-sm leading-snug text-cream/90">{children}</span>
+    </li>
+  );
+}
+
 /**
  * "Campaign Doctor Insight" — a real, admin-approved AI analysis result
  * shown publicly (CLAUDE.md's Campaign Doctor is admin-only to *run*;
@@ -25,6 +59,12 @@ function AlertIcon(props: React.SVGProps<SVGSVGElement>) {
  * happens here — every field is a static snapshot published from
  * /admin/case-studies (see doctor-actions.ts's publishInsight), so this
  * costs nothing per visitor no matter how much traffic the page gets.
+ *
+ * Reads as a diagnostic report, not an essay: each point is its own
+ * bounded row (DiagnosticRow) with a tone-coded icon badge, numbers
+ * pulled out via the same highlightStats() treatment the rest of the
+ * page uses for prose, so a number is the first thing that lands when
+ * scanning down the list rather than reading full sentences.
  *
  * Deliberately reuses the site's "Quick Take" dark-card treatment
  * (rotating conic-gradient ring + drifting ambient glows, see
@@ -90,12 +130,11 @@ export function CampaignDoctorInsight({
             <p className="font-body text-xs font-bold tracking-[0.15em] text-sage uppercase">
               What&apos;s Working
             </p>
-            <ul className="mt-2.5 flex flex-col gap-2">
+            <ul className="mt-2.5 flex flex-col gap-1.5">
               {whatsWorking.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 font-body text-sm leading-relaxed text-cream/90">
-                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-sage" />
-                  {point}
-                </li>
+                <DiagnosticRow key={i} tone="positive" icon={<CheckIcon className="h-3 w-3" />}>
+                  {highlightStats(point, `working-${i}`)}
+                </DiagnosticRow>
               ))}
             </ul>
           </div>
@@ -104,23 +143,35 @@ export function CampaignDoctorInsight({
             <p className="font-body text-xs font-bold tracking-[0.15em] text-terracotta uppercase">
               Likely Issues
             </p>
-            <ul className="mt-2.5 flex flex-col gap-2">
+            <ul className="mt-2.5 flex flex-col gap-1.5">
               {likelyIssues.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 font-body text-sm leading-relaxed text-cream/90">
-                  <AlertIcon className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
-                  {point}
-                </li>
+                <DiagnosticRow key={i} tone="negative" icon={<AlertIcon className="h-3 w-3" />}>
+                  {highlightStats(point, `issue-${i}`)}
+                </DiagnosticRow>
               ))}
             </ul>
           </div>
         </div>
 
         <div className="relative z-10 mt-5 rounded-xl bg-cream/[0.07] p-4">
-          <p className="font-body text-xs font-bold tracking-[0.15em] text-cream uppercase">
-            Recommended Action
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <p className="font-body text-xs font-bold tracking-[0.15em] text-cream uppercase">
+              Recommended Action
+            </p>
+            {/* No shrink-0/nowrap assumption on the timeframe text — it's
+                meant to be a short phrase ("Within 3-5 days"), but this
+                has to stay robust against a longer one without breaking
+                layout (confirmed via screenshot: a full-sentence
+                timeframe from data generated before the schema tightened
+                its length was overflowing badly here). */}
+            <span className="flex max-w-full items-center gap-1.5 rounded-full bg-cream/10 px-2.5 py-1 font-body text-[11px] font-semibold text-cream/80">
+              <ClockIcon className="h-3 w-3 shrink-0" />
+              {timeframe}
+            </span>
+          </div>
+          <p className="mt-2 font-body text-sm leading-relaxed text-cream/90">
+            {highlightStats(recommendedAction, "action")}
           </p>
-          <p className="mt-1.5 font-body text-sm leading-relaxed text-cream/90">{recommendedAction}</p>
-          <p className="mt-2 font-body text-xs font-medium text-cream/50">Timeframe: {timeframe}</p>
         </div>
 
         <p className="relative z-10 mt-5 font-body text-[11px] text-cream/40">

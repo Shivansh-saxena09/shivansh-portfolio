@@ -14,11 +14,25 @@ import { aggregate } from "@/lib/caseStudyNarrative";
  * prefix, so Next.js never bundles it into client JS.
  */
 
+// One clause per point, not a paragraph — this renders as a scannable
+// diagnostic-report row (icon + short line), and a wall-of-text sentence
+// defeats that regardless of how the UI styles it. Zod's .max() length
+// caps plus an explicit instruction in the prompt below are belt-and-
+// suspenders for the same constraint, since a schema description alone
+// is a suggestion the model can drift from under real data.
 const AnalysisSchema = z.object({
-  whatsWorking: z.array(z.string()).describe("Specific things performing well, cite real numbers from the data."),
-  likelyIssues: z.array(z.string()).describe("Specific probable problems, e.g. creative fatigue, audience saturation, weak CTR vs strong CPM."),
-  recommendedAction: z.string().describe("One specific, concrete next action — not generic advice."),
-  timeframe: z.string().describe("A rough timeframe for the recommended action, e.g. 'within 3-5 days'."),
+  whatsWorking: z
+    .array(z.string().max(110))
+    .min(2)
+    .max(4)
+    .describe("Short, punchy points (under ~18 words each) — one specific thing working, with a real number, per point."),
+  likelyIssues: z
+    .array(z.string().max(110))
+    .min(2)
+    .max(4)
+    .describe("Short, punchy points (under ~18 words each) — one specific probable problem, with a real number, per point."),
+  recommendedAction: z.string().max(200).describe("One specific, concrete next action in 1-2 short sentences — not generic advice."),
+  timeframe: z.string().max(40).describe("A short timeframe phrase, e.g. 'Within 3-5 days'."),
 });
 
 export type CampaignAnalysis = z.infer<typeof AnalysisSchema>;
@@ -52,7 +66,9 @@ Reach: ${totals.reach}, CPM: ₹${totals.cpm.toFixed(0)}, Link CTR: ${totals.ctr
 Per-ad-set breakdown:
 ${adSetLines.join("\n\n")}
 
-Analyze this campaign's performance data. Identify what's genuinely working (cite real numbers), the most likely underlying issue(s) if performance is weak anywhere (e.g. creative fatigue from high frequency, audience saturation, a weak CTR against a strong CPM signaling a creative problem, budget misallocation between ad sets), one specific recommended action, and a rough timeframe for taking it. Be specific and grounded in the actual numbers given — never generic advice that could apply to any campaign.`;
+Analyze this campaign's performance data. Identify what's genuinely working (cite real numbers), the most likely underlying issue(s) if performance is weak anywhere (e.g. creative fatigue from high frequency, audience saturation, a weak CTR against a strong CPM signaling a creative problem, budget misallocation between ad sets), one specific recommended action, and a rough timeframe for taking it. Be specific and grounded in the actual numbers given — never generic advice that could apply to any campaign.
+
+Formatting is as important as the analysis itself: this renders as a scannable diagnostic report, not an essay. Each point in whatsWorking and likelyIssues must be ONE short, punchy clause — a single idea with one supporting number, read in under 3 seconds, not a multi-clause sentence stacking several numbers and reasons together. Write it the way a doctor writes a chart note, not the way a consultant writes a report: "Interest set: ₹225/lead vs Broad's ₹400 — 44% cheaper", not a full paragraph explaining why. Save the connecting reasoning, caveats, and "because..." explanations for recommendedAction, where a sentence or two of real prose is appropriate.`;
 }
 
 let client: Anthropic | null = null;

@@ -15,7 +15,6 @@ import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTab
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
 import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
 import { TableOfContents, type TocSection } from "@/components/case-study/TableOfContents";
-import { CaseStudySidebarPanel } from "@/components/case-study/CaseStudySidebarPanel";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
 
 const categoryLabel = {
@@ -57,25 +56,13 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
   const totals = aggregate(caseStudy.adSets);
   const { resultHeadline } = cardSummary(caseStudy);
   const multiAdSet = caseStudy.adSets.length > 1;
-  // Fills what would otherwise be dead space below the (deliberately
-  // short, sticky) nav card once it runs out of page to pin against —
-  // real navigational value (keep reading) rather than decoration.
+  // Genuine navigational value for whoever's reading, not filler — two
+  // sticky variations here both caused real problems (a static card
+  // leaving dead space once it ran out of relevance, then a sticky+
+  // backdrop-filter combination causing visible ghosting during real
+  // scrolling), so this now lives in plain document flow instead of
+  // trying to persist artificially via position:sticky.
   const otherCaseStudies = allCaseStudies.filter((c) => c.slug !== slug).slice(0, 2);
-
-  // Feeds the sticky sidebar panel's contextual content — a real value
-  // to show while a visitor is deep in Results, computed once here
-  // rather than in a client component so it costs nothing at runtime.
-  const bestAdSet = multiAdSet
-    ? [...caseStudy.adSets]
-        .filter((a) => a.metrics.leads > 0)
-        .sort((a, b) => a.metrics.amountSpent / a.metrics.leads - b.metrics.amountSpent / b.metrics.leads)[0]
-    : null;
-  const bestPerformerLabel = bestAdSet
-    ? `${bestAdSet.name} — ${formatINR(bestAdSet.metrics.amountSpent / bestAdSet.metrics.leads)}/lead`
-    : null;
-  const aiInsightCounts = caseStudy.aiInsight
-    ? { working: caseStudy.aiInsight.whatsWorking.length, issues: caseStudy.aiInsight.likelyIssues.length }
-    : null;
 
   const metaFacts: { label: string; value: string }[] = [
     { label: "Platform", value: caseStudy.platform },
@@ -131,42 +118,21 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           <TableOfContents sections={tocSections} variant="pills" />
         </div>
 
-        {/* No lg:items-start here (deliberately) — the aside's own
-            content is much shorter than the main column's, and grid's
-            default item-stretch is exactly what's needed: it gives the
-            aside cell the main column's full height, so its sticky-top
-            nav and sticky-bottom CTA (below) each have real room to
-            operate across the whole scroll instead of the aside ending
-            early and leaving the entire rest of the right column blank
-            (confirmed as a real issue via a scrolled screenshot, not
-            assumed). */}
-        <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-14">
-          {/* Right rail — the sticky nav's own content adapts to
-              whichever section is being read (CaseStudySidebarPanel),
-              rather than staying static. A single sticky card with fixed
-              content (tried first) either left a visible gap once it ran
-              out of relevance, or — sticky-to-bottom, tried next —
-              turned out unreliable nested this deep in flex/grid
-              (confirmed via computed-style diagnostics). Sticky-top is
-              the one direction that provably holds for the entire
-              scroll, so the sidebar keeps producing genuinely relevant
-              content (a best-performer stat during Results, insight
-              counts during Campaign Doctor, a closing CTA during
-              Creatives) instead of just a static list. The grid row
-              still stretches this column to the main column's full
-              height so that sticky-top has room to keep working for the
-              whole page, not just its own short natural height. Appears
-              first on mobile as a stack of summary blocks, moves to the
-              right on desktop via order utilities. */}
+        <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
+          {/* Right rail — a plain, non-sticky stack of cards. Two sticky
+              variations were tried here and both caused real, visible
+              problems (documented above), so this deliberately doesn't
+              try to persist beyond its own natural length — it's normal
+              for an editorial sidebar to be shorter than the article
+              beside it. Appears first on mobile as a stack of summary
+              blocks, moves to the right on desktop via order utilities. */}
           <aside className="flex flex-col gap-6 lg:order-2 lg:col-span-4">
-            <div className="glass-card hidden rounded-2xl px-6 py-5 shadow-lg lg:sticky lg:top-24 lg:block">
-              <div className="relative z-10">
-                <CaseStudySidebarPanel
-                  sections={tocSections}
-                  bestPerformer={bestPerformerLabel}
-                  aiInsightCounts={aiInsightCounts}
-                  whatsapp={contact.whatsapp}
-                />
+            <div className="hidden rounded-2xl border border-beige-border bg-ivory px-6 py-5 lg:block">
+              <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
+                On This Page
+              </p>
+              <div className="mt-3">
+                <TableOfContents sections={tocSections} variant="list" />
               </div>
             </div>
 
