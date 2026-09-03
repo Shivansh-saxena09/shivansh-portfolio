@@ -46,14 +46,6 @@ function PinIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function ChevronIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
-      <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 /**
  * The interactive signature — hollow outline that fills with the
  * terracotta→sage gradient inside a soft circle following the cursor or a
@@ -279,12 +271,10 @@ export function Footer({
         {/* ------------------------------------------------------------ */}
         {/* Mobile — a hand-ordered flow, not the grid above simply       */}
         {/* stacked. Priority order: identity → social (high-value,       */}
-        {/* short, so it stays visible) → contact (ditto) → Explore       */}
-        {/* tucked into a collapsed accordion, since those same links     */}
-        {/* already live in the sticky header and the nav drawer a        */}
-        {/* mobile visitor just closed — duplicating them in full here    */}
-        {/* just makes the footer longer for no new information → a       */}
-        {/* small closing signature instead of a full column-width one.   */}
+        {/* short, so it stays visible) → contact (ditto) → a small       */}
+        {/* closing signature instead of a full column-width one. No      */}
+        {/* "Explore" links block at all — see the comment further down   */}
+        {/* for why that's deliberate, not a missing section.             */}
         {/* ------------------------------------------------------------ */}
         <div className="mt-12 sm:hidden">
           <div className="flex items-center gap-3">
@@ -353,29 +343,19 @@ export function Footer({
             </div>
           </div>
 
-          {/* Explore — collapsed by default. Native <details>, matching
-              the case-study ad-set accordion's exact visual language
-              (rounded card, chevron rotate) so the pattern reads as one
-              site-wide convention rather than a one-off. */}
-          <details className="group mt-6 rounded-2xl border border-beige-border bg-ivory">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
-              <span className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
-                Explore
-              </span>
-              <ChevronIcon className="h-4 w-4 shrink-0 text-warm-grey transition-transform duration-300 group-open:rotate-180" />
-            </summary>
-            <nav className="flex flex-col border-t border-beige-border/70 px-5">
-              {footerNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="border-b border-beige-border/60 py-3.5 font-body text-sm text-charcoal last:border-0"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </details>
+          {/* No "Explore" block here — deliberately, not an oversight.
+              Those links are already one tap away at every scroll
+              position via the sticky header's hamburger (it's pinned to
+              the top of the screen even down here at the footer, as the
+              screenshots confirm), and are what a mobile visitor most
+              likely just came from if they used the nav drawer. Repeating
+              them a third time on the same screen added length without
+              adding a new way to get anywhere — cutting the block
+              entirely is the more considered choice than re-housing it
+              in a different widget. (An earlier version tried a
+              collapsed <details> accordion here; removed per explicit
+              feedback, and the redundancy above is the real reason it
+              shouldn't come back in another form.) */}
 
           {/* Closing signature — a small centered flourish rather than a
               full-width column filler (mobile has no column to balance),
