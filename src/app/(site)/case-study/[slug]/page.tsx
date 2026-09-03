@@ -3,21 +3,17 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllCaseStudySlugs, getCaseStudy } from "@/lib/data/caseStudies";
 import { getSiteSettings } from "@/lib/data/site";
-import {
-  aggregate,
-  cardSummary,
-  composeCampaignIntro,
-  formatINR,
-  formatNumber,
-} from "@/lib/caseStudyNarrative";
+import { aggregate, cardSummary, composeCampaignIntro, formatINR, formatNumber } from "@/lib/caseStudyNarrative";
 import { highlightStats, statHeadline } from "@/lib/highlightStats";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 import { StatTile } from "@/components/case-study/StatTile";
+import { StoryChapters } from "@/components/case-study/StoryChapters";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
 import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTable";
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
 import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
+import { TableOfContents, type TocSection } from "@/components/case-study/TableOfContents";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
 
 const categoryLabel = {
@@ -25,15 +21,6 @@ const categoryLabel = {
   learning: "Learning",
   "dual-skill-fusion": "Marketing × Engineering",
 } as const;
-
-const narrativeBlocks = [
-  { key: "objective", label: "The Objective" },
-  { key: "strategy", label: "The Strategy" },
-  { key: "challenge", label: "The Challenge" },
-  { key: "decision", label: "The Decision" },
-  { key: "outcome", label: "The Outcome" },
-  { key: "whatIdDoDifferently", label: "What I'd Do Differently" },
-] as const;
 
 // Static generation — every case study page is prerendered at build time,
 // so visiting one is a static HTML fetch, not a server round-trip.
@@ -72,6 +59,18 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
     { label: "Dates", value: caseStudy.dateRange },
   ];
 
+  // Drives both the mobile pill nav and the desktop sidebar list from one
+  // source of truth, so a section can never appear in one and not the
+  // other — Campaign Doctor only exists here at all once an insight has
+  // actually been published for this case study.
+  const tocSections: TocSection[] = [
+    { id: "overview", label: "Overview" },
+    { id: "story", label: "The Story" },
+    { id: "results", label: "Results" },
+    ...(caseStudy.aiInsight ? [{ id: "campaign-doctor", label: "Campaign Doctor" }] : []),
+    { id: "creatives", label: "Creatives" },
+  ];
+
   return (
     <article className="py-16 sm:py-24">
       <CaseStudyJsonLd caseStudy={caseStudy} settings={settings} />
@@ -80,7 +79,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           ← All marketing work
         </Link>
 
-        <div className="mt-8 max-w-3xl">
+        <div id="overview" className="mt-8 max-w-3xl scroll-mt-24">
           <div className="flex flex-wrap items-center gap-3">
             <span className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-terracotta">
               {categoryLabel[caseStudy.category]}
@@ -98,14 +97,32 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           <p className="mt-6 leading-tight">{statHeadline(resultHeadline, caseStudy.slug, "page")}</p>
         </div>
 
-        <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
-          {/* Sticky quick-facts rail — appears first on mobile as a summary
-              card, moves to the right on desktop via order utilities so the
-              wide viewport gets a real two-column editorial layout instead
-              of one narrow column drowning in whitespace. */}
+        {/* Mobile/tablet jump nav — the sticky sidebar below is desktop-only
+            (lg:sticky), so this horizontally-scrollable pill row gives
+            everything below that breakpoint the same fast way to skip
+            straight to Results or Campaign Doctor on a page this long. */}
+        <div className="mt-6 lg:hidden">
+          <TableOfContents sections={tocSections} variant="pills" />
+        </div>
+
+        <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
+          {/* Sticky rail — jump nav, then the quick-facts card. Appears
+              first on mobile as a summary block, moves to the right on
+              desktop via order utilities so the wide viewport gets a real
+              two-column editorial layout instead of one narrow column
+              drowning in whitespace. */}
           <aside className="lg:order-2 lg:col-span-4">
             <div className="glass-card paper-grain rounded-2xl px-6 py-7 shadow-lg lg:sticky lg:top-24">
-              <dl className="relative z-10 grid grid-cols-2 gap-3">
+              <div className="relative z-10 hidden lg:block">
+                <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
+                  On This Page
+                </p>
+                <div className="mt-3">
+                  <TableOfContents sections={tocSections} variant="list" />
+                </div>
+              </div>
+
+              <dl className="relative z-10 grid grid-cols-2 gap-3 lg:mt-6 lg:border-t lg:border-beige-border/70 lg:pt-6">
                 <StatTile compact label="Reach" value={formatNumber(totals.reach)} />
                 <StatTile
                   compact
@@ -146,46 +163,50 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               {highlightStats(composeCampaignIntro(caseStudy), "intro")}
             </p>
 
-            {/* Narrative — auto-composed metrics prose interleaved with the
-                author's own words, per CLAUDE.md's case-study spec. Numbers
-                get the same inline callout treatment here as in the
-                auto-generated copy — a reader scanning "The Challenge"
-                should catch the ₹540 CPL failure number as fast as the
-                sentence around it. */}
-            <div className="mt-12 flex flex-col gap-10">
-              {narrativeBlocks.map((block) => (
-                <div key={block.key}>
-                  <h2 className="font-heading text-xl text-charcoal">{block.label}</h2>
-                  <p className="mt-2 font-body text-base leading-relaxed text-warm-grey">
-                    {highlightStats(caseStudy.narrative[block.key], block.key)}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Per-ad-set breakdown */}
-            <div className="mt-14">
-              <h2 className="font-heading text-2xl text-charcoal">
-                {multiAdSet ? "Ad Set Breakdown" : "Campaign Performance"}
-              </h2>
-              <div className="mt-6 flex flex-col gap-8">
-                {caseStudy.adSets.map((adSet) => (
-                  <AdSetSection key={adSet.id} adSet={adSet} showName={multiAdSet} />
-                ))}
+            {/* The Story — the six narrative fields as one connected
+                sequence (see StoryChapters.tsx) rather than six identical
+                stacked heading/paragraph pairs, with auto-composed metrics
+                prose interleaved with the author's own words per
+                CLAUDE.md's case-study spec. Numbers get the same inline
+                callout treatment here as in the auto-generated copy above
+                — a reader scanning "The Challenge" should catch the ₹540
+                CPL failure number as fast as the sentence around it. */}
+            <section id="story" className="mt-14 scroll-mt-24">
+              <h2 className="font-heading text-2xl text-charcoal">The Story</h2>
+              <div className="mt-8">
+                <StoryChapters narrative={caseStudy.narrative} />
               </div>
-            </div>
+            </section>
 
-            {multiAdSet && (
-              <div className="mt-10">
-                <h2 className="font-heading text-xl text-charcoal">Side-by-Side Comparison</h2>
-                <div className="mt-5">
+            {/* Results — the always-visible comparison table (when there's
+                more than one ad set to compare) answers "which one won"
+                immediately; the full per-ad-set breakdown underneath is
+                progressive disclosure for whoever wants the deep numbers,
+                collapsed by default except the first (see AdSetSection). */}
+            <section id="results" className="mt-14 scroll-mt-24">
+              <h2 className="font-heading text-2xl text-charcoal">Results</h2>
+
+              {multiAdSet && (
+                <div className="mt-6">
                   <AdSetComparisonTable adSets={caseStudy.adSets} />
                 </div>
+              )}
+
+              <div className="mt-6 flex flex-col gap-4">
+                {caseStudy.adSets.map((adSet, i) => (
+                  <AdSetSection
+                    key={adSet.id}
+                    adSet={adSet}
+                    showName={multiAdSet}
+                    collapsible={multiAdSet}
+                    defaultOpen={i === 0}
+                  />
+                ))}
               </div>
-            )}
+            </section>
 
             {caseStudy.aiInsight && (
-              <div className="mt-14">
+              <section id="campaign-doctor" className="mt-14 scroll-mt-24">
                 <CampaignDoctorInsight
                   whatsWorking={caseStudy.aiInsight.whatsWorking}
                   likelyIssues={caseStudy.aiInsight.likelyIssues}
@@ -193,15 +214,15 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                   timeframe={caseStudy.aiInsight.timeframe}
                   generatedAt={caseStudy.aiInsight.generatedAt}
                 />
-              </div>
+              </section>
             )}
 
-            <div className="mt-14">
+            <section id="creatives" className="mt-14 scroll-mt-24">
               <h2 className="font-heading text-xl text-charcoal">Creatives</h2>
               <div className="mt-5">
                 <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </Container>

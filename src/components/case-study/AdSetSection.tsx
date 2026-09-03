@@ -2,17 +2,24 @@ import type { AdSet } from "@/lib/data/caseStudies";
 import { composeAdSetNarrative, formatINR, formatNumber, formatPct } from "@/lib/caseStudyNarrative";
 import { highlightStats } from "@/lib/highlightStats";
 import { StatTile } from "./StatTile";
+import { ChevronIcon } from "./StoryIcons";
 
-export function AdSetSection({ adSet, showName }: { adSet: AdSet; showName: boolean }) {
+function shortHeadline(adSet: AdSet): string {
+  const { metrics } = adSet;
+  if (metrics.leads > 0) {
+    return `${formatNumber(metrics.leads)} leads at ${formatINR(metrics.amountSpent / metrics.leads)}/lead`;
+  }
+  return `${formatINR(metrics.amountSpent)} spent`;
+}
+
+function AdSetBody({ adSet }: { adSet: AdSet }) {
   const { metrics, targeting, businessOutcome } = adSet;
   const ctrLink = metrics.impressions > 0 ? (metrics.linkClicks / metrics.impressions) * 100 : 0;
   const costPerLead = metrics.leads > 0 ? metrics.amountSpent / metrics.leads : 0;
 
   return (
-    <div className="border-l-2 border-terracotta pl-6">
-      {showName && <h3 className="font-heading text-xl text-charcoal">{adSet.name}</h3>}
-
-      <p className="mt-2 font-body text-base leading-relaxed text-charcoal">
+    <>
+      <p className="font-body text-base leading-relaxed text-charcoal">
         {highlightStats(composeAdSetNarrative(adSet), adSet.name)}
       </p>
 
@@ -20,10 +27,7 @@ export function AdSetSection({ adSet, showName }: { adSet: AdSet; showName: bool
         <StatTile label="Reach" value={formatNumber(metrics.reach)} />
         <StatTile label="CPM" value={formatINR(metrics.cpm)} />
         <StatTile label="Link CTR" value={formatPct(ctrLink)} />
-        <StatTile
-          label="Cost / Lead"
-          value={metrics.leads > 0 ? formatINR(costPerLead) : "—"}
-        />
+        <StatTile label="Cost / Lead" value={metrics.leads > 0 ? formatINR(costPerLead) : "—"} />
       </dl>
 
       <p className="mt-4 font-body text-sm text-warm-grey">
@@ -39,6 +43,61 @@ export function AdSetSection({ adSet, showName }: { adSet: AdSet; showName: bool
           {businessOutcome.bookings ? ` · ${businessOutcome.bookings} bookings` : ""}
         </p>
       ) : null}
-    </div>
+    </>
+  );
+}
+
+/**
+ * One ad set's full breakdown, as a card rather than the old plain
+ * left-border strip — gives it the same "boxed" visual grouping as
+ * every other content block on the page, so the page reads as a set of
+ * consistent sections instead of ad-hoc treatments.
+ *
+ * `collapsible` (true whenever a case study has more than one ad set)
+ * wraps the metrics/targeting detail in a native <details> — the
+ * always-visible comparison table above already answers "which ad set
+ * won," so the deep per-ad-set numbers are progressive disclosure, not
+ * the first thing a scanning visitor needs. A single-ad-set case study
+ * has nothing to compare against, so it renders fully open with no
+ * accordion chrome at all.
+ */
+export function AdSetSection({
+  adSet,
+  showName,
+  collapsible,
+  defaultOpen = false,
+}: {
+  adSet: AdSet;
+  showName: boolean;
+  collapsible: boolean;
+  defaultOpen?: boolean;
+}) {
+  if (!collapsible) {
+    return (
+      <div className="rounded-2xl border border-beige-border bg-ivory p-6">
+        {showName && <h3 className="font-heading text-xl text-charcoal">{adSet.name}</h3>}
+        <div className={showName ? "mt-2" : ""}>
+          <AdSetBody adSet={adSet} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <details
+      open={defaultOpen}
+      className="group rounded-2xl border border-beige-border bg-ivory open:shadow-[0_1px_2px_rgba(43,38,34,0.04),0_16px_32px_-14px_rgba(43,38,34,0.1)]"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 [&::-webkit-details-marker]:hidden">
+        <div>
+          <h3 className="font-heading text-xl text-charcoal">{adSet.name}</h3>
+          <p className="mt-1 font-body text-sm font-medium text-sage-dark">{shortHeadline(adSet)}</p>
+        </div>
+        <ChevronIcon className="h-5 w-5 shrink-0 text-warm-grey transition-transform duration-300 group-open:rotate-180" />
+      </summary>
+      <div className="border-t border-beige-border/70 px-6 pt-5 pb-6">
+        <AdSetBody adSet={adSet} />
+      </div>
+    </details>
   );
 }
