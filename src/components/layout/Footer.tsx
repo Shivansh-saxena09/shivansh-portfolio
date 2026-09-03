@@ -2,7 +2,7 @@
 
 import { useRef, useSyncExternalStore, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
-import { nav } from "@/lib/data/site";
+import { nav } from "@/lib/data/nav";
 import type { ContactInfo } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";

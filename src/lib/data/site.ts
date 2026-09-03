@@ -25,13 +25,10 @@ export type ContactInfo = {
   github: string;
 };
 
-/** Structural nav — not admin-editable per CLAUDE.md's spec (only content
- *  is), so this stays a plain constant rather than a table. */
-export const nav = [
-  { label: "Marketing Work", href: "/marketing" },
-  { label: "Engineering", href: "/engineering" },
-  { label: "About", href: "/about" },
-] as const;
+// `nav` used to live here, but this file also exports Supabase-backed
+// server functions, and the Client Components that need `nav` (Header/
+// Footer/MobileNav) are mounted on every page — see lib/data/nav.ts for
+// why it moved to its own module.
 
 export const getSiteSettings = cache(async function getSiteSettings(): Promise<SiteSettings> {
   const supabase = createClient();

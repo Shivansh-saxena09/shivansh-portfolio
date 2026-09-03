@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav } from "@/lib/data/site";
+import { nav } from "@/lib/data/nav";
 import type { ContactInfo, SiteSettings } from "@/lib/data/site";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { Button } from "@/components/ui/Button";

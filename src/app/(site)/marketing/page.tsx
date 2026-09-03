@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { getCaseStudiesBySkill } from "@/lib/data/caseStudies";
-import { skillLabel } from "@/lib/data/skills";
+import { Suspense } from "react";
+import { getCaseStudies } from "@/lib/data/caseStudies";
+import { getSkills } from "@/lib/data/skills";
 import { getContactInfo, getPageMeta } from "@/lib/data/site";
 import { pageMetadata } from "@/lib/seo";
-import { CaseStudyCard } from "@/components/marketing/CaseStudyCard";
+import { FilterBadge } from "@/components/marketing/FilterBadge";
+import { CaseStudyResults } from "@/components/marketing/CaseStudyResults";
 import { ServicesSection } from "@/components/marketing/ServicesSection";
 import { ContactCTA } from "@/components/marketing/ContactCTA";
-import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,14 +19,19 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function MarketingPage({
-  searchParams,
-}: PageProps<"/marketing">) {
-  const { skill } = await searchParams;
-  const activeSkill = typeof skill === "string" ? skill : undefined;
-  const [filtered, activeSkillLabel, contact] = await Promise.all([
-    getCaseStudiesBySkill(activeSkill),
-    activeSkill ? skillLabel(activeSkill) : Promise.resolve(undefined),
+// No searchParams here (unlike the old version of this page) — the
+// ?skill= filter is now resolved client-side (see FilterBadge and
+// CaseStudyResults), specifically so this page has nothing forcing
+// dynamic rendering. Reading searchParams in a Server Component opts
+// the entire route out of static generation, which meant every single
+// visit — including the overwhelming majority with no filter at all —
+// was paying for a fresh server render and a live Supabase query. This
+// is also the site's primary client-facing path (CLAUDE.md), so it's
+// the page that most needed to be instant.
+export default async function MarketingPage() {
+  const [caseStudies, skills, contact] = await Promise.all([
+    getCaseStudies(),
+    getSkills(),
     getContactInfo(),
   ]);
 
@@ -44,51 +50,15 @@ export default async function MarketingPage({
             spend, results, and what I&apos;d do differently — not rewritten after the fact.
           </p>
 
-          {activeSkill && (
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <span className="font-body text-sm text-warm-grey">Filtered by:</span>
-              <Tag active>{activeSkillLabel}</Tag>
-              <a href="/marketing" className="nav-underline font-body text-sm text-terracotta">
-                Clear filter
-              </a>
-            </div>
-          )}
+          <Suspense fallback={null}>
+            <FilterBadge skills={skills} />
+          </Suspense>
         </Container>
       </section>
 
       <section className="py-16 sm:py-20">
         <Container>
-          {filtered.length > 0 ? (
-            <>
-              {/* Mobile: a swipeable, snap-to-card carousel (one card at a
-                  time, next card peeking at the edge) rather than a long
-                  vertical stack of five near-identical cards — the
-                  textbook case for a horizontal pattern on a small screen.
-                  Desktop: unchanged responsive grid. Pure CSS scroll-snap,
-                  no JS/library cost. */}
-              <p className="mb-4 font-body text-xs font-medium text-warm-grey sm:hidden">
-                Swipe to explore →
-              </p>
-              <div className="relative sm:contents">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-cream to-transparent sm:hidden"
-                />
-                <div className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
-                  {filtered.map((caseStudy) => (
-                    <div
-                      key={caseStudy.slug}
-                      className="w-[82vw] shrink-0 snap-start sm:w-auto sm:shrink"
-                    >
-                      <CaseStudyCard caseStudy={caseStudy} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            <p className="font-body text-warm-grey">No case studies tagged with this skill yet.</p>
-          )}
+          <CaseStudyResults caseStudies={caseStudies} />
         </Container>
       </section>
 

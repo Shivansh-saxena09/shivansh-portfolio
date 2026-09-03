@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav } from "@/lib/data/site";
+import { nav } from "@/lib/data/nav";
 import type { ContactInfo, SiteSettings } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
