@@ -26,7 +26,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const [meta, settings] = await Promise.all([getPageMeta("home"), getSiteSettings()]);
   return {
     ...pageMetadata(meta, {
-      title: `${settings.personName} — ${settings.personTagline}`,
+      // The default site title/tab title — used for home whenever no
+      // "home" row exists in page_meta, and as the fallback for any
+      // future route that doesn't set its own title. Built from
+      // settings.personName + settings.heroEyebrow ("Performance
+      // Marketing Manager") rather than a hardcoded string, so it stays
+      // admin-editable and in sync with the hero section's own copy —
+      // personTagline ("Performance Marketing Manager. Full-stack
+      // builder.") reads fine as hero body copy but is too long and
+      // sentence-punctuated for a concise, SEO-friendly <title>.
+      title: `${settings.personName} — ${settings.heroEyebrow}`,
       description: settings.heroSubheading,
     }),
     metadataBase: new URL(siteBaseUrl(settings.personDomain)),
