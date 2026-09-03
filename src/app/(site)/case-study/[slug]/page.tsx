@@ -118,25 +118,28 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           <TableOfContents sections={tocSections} variant="pills" />
         </div>
 
-        {/* This 2-column grid deliberately wraps only Overview + The
-            Story, not the whole page. Results/Campaign Doctor/Creatives
-            (below, outside the grid) are the densest, most data-heavy
-            content on the page, and confining them to this column's 8/12
-            width for their entire length was actively working against
-            them — permanently narrower than they needed to be even once
-            the sidebar itself had nothing left to say (the sidebar's own
-            content roughly matches Overview + The Story in length, so
-            the two columns here end at close to the same height, which a
-            monitored screenshot confirmed). Letting the data sections use
-            the full container width is a genuine, considered use of
-            horizontal space, not just a sidebar-emptiness workaround. */}
+        {/* Overview + The Story + Results share this grid row with the
+            sidebar — deliberately extended to include Results (not just
+            Story), because the sidebar (nav + quick facts + more case
+            studies + contact CTA) measures taller than Overview + Story
+            alone (~1408px vs ~988px, not assumed — measured). A shared
+            row is always exactly as tall as its tallest child, so ending
+            the grid right after Story left the sidebar's tail end
+            visually colliding with the full-width Results section below
+            it once tried (position:absolute was tried as a fix and
+            caused exactly that overlap, confirmed via screenshot, since
+            it doesn't stop a too-tall sidebar from bleeding into
+            whatever comes after). Including the comparison table and
+            ad-set cards in the grid grows the main column comfortably
+            past the sidebar's height, so by the time Campaign Doctor and
+            Creatives break out to full width below, the sidebar has long
+            since finished within this same row — no gap, no overlap. */}
         <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
           {/* Right rail — a plain, non-sticky stack of cards. Two sticky
               variations were tried here and both caused real, visible
-              problems (documented above), so this deliberately doesn't
-              try to persist beyond its own natural length — it's normal
-              for an editorial sidebar to be shorter than the article
-              beside it. Appears first on mobile as a stack of summary
+              problems (documented in earlier commits), so this
+              deliberately doesn't try to persist beyond its own natural
+              length. Appears first on mobile as a stack of summary
               blocks, moves to the right on desktop via order utilities. */}
           <aside className="flex flex-col gap-6 lg:order-2 lg:col-span-4">
             <div className="hidden rounded-2xl border border-beige-border bg-ivory px-6 py-5 lg:block">
@@ -220,7 +223,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             </div>
           </aside>
 
-          <div className="mt-10 max-w-[42rem] lg:order-1 lg:col-span-8 lg:mt-0">
+          <div className="mt-10 max-w-[42rem] lg:order-1 lg:col-span-8 lg:mt-0 lg:max-w-none">
             <p className="font-body text-base leading-relaxed text-charcoal">
               {highlightStats(composeCampaignIntro(caseStudy), "intro")}
             </p>
@@ -239,47 +242,46 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 <StoryChapters narrative={caseStudy.narrative} />
               </div>
             </section>
+
+            {/* Results — the always-visible comparison table (when
+                there's more than one ad set) answers "which one won"
+                immediately; the full per-ad-set breakdown underneath is
+                progressive disclosure for whoever wants the deep
+                numbers, collapsed by default except the first (see
+                AdSetSection). Still inside the 8/12 column (not full
+                width, see the note above the grid) — this is what grows
+                the column comfortably past the sidebar's height. */}
+            <section id="results" className="mt-14 scroll-mt-24">
+              <h2 className="font-heading text-2xl text-charcoal">Results</h2>
+
+              {multiAdSet && (
+                <div className="mt-6">
+                  <AdSetComparisonTable adSets={caseStudy.adSets} />
+                </div>
+              )}
+
+              <div className={multiAdSet ? "mt-6 grid items-start gap-4 lg:grid-cols-2" : "mt-6 flex flex-col gap-4"}>
+                {caseStudy.adSets.map((adSet, i) => (
+                  <AdSetSection
+                    key={adSet.id}
+                    adSet={adSet}
+                    showName={multiAdSet}
+                    collapsible={multiAdSet}
+                    defaultOpen={i === 0}
+                  />
+                ))}
+              </div>
+            </section>
           </div>
         </div>
 
-        {/* Everything below runs the full container width — the densest,
-            most data-heavy content on the page (comparison table, ad-set
-            metrics, the Campaign Doctor panel, the creative gallery)
-            genuinely benefits from the room the 8/12 column above
-            couldn't offer for its whole length. */}
-
-        {/* Results — the always-visible comparison table (when there's
-            more than one ad set to compare) answers "which one won"
-            immediately; the full per-ad-set breakdown underneath is
-            progressive disclosure for whoever wants the deep numbers,
-            collapsed by default except the first (see AdSetSection). */}
-        <section id="results" className="mt-16 scroll-mt-24">
-          <h2 className="font-heading text-2xl text-charcoal">Results</h2>
-
-          {multiAdSet && (
-            <div className="mt-6">
-              <AdSetComparisonTable adSets={caseStudy.adSets} />
-            </div>
-          )}
-
-          {/* Side-by-side once there's more than one ad set — comparing
-              two collapsible cards next to each other is a genuinely
-              better use of the now-full-width space than stacking them,
-              and it's the same information a visitor would otherwise
-              scroll twice as far to compare. */}
-          <div className={multiAdSet ? "mt-6 grid items-start gap-5 lg:grid-cols-2" : "mt-6 flex max-w-[42rem] flex-col gap-4"}>
-            {caseStudy.adSets.map((adSet, i) => (
-              <AdSetSection
-                key={adSet.id}
-                adSet={adSet}
-                showName={multiAdSet}
-                collapsible={multiAdSet}
-                defaultOpen={i === 0}
-              />
-            ))}
-          </div>
-        </section>
-
+        {/* Campaign Doctor and Creatives run the full container width —
+            by now the sidebar (inside the grid above) has long since
+            finished, so there's no risk of the overlap a too-early full-
+            width break caused earlier. These two also benefit the most
+            from it: Campaign Doctor's dark card reads as substantially
+            more premium at full width, and the gallery grid gains a
+            column it didn't have room for before. */}
         {caseStudy.aiInsight && (
           <section id="campaign-doctor" className="mt-16 scroll-mt-24">
             <CampaignDoctorInsight
