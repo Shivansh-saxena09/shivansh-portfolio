@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-cream text-charcoal">
         <PersonOrganizationJsonLd settings={settings} contact={contact} />
-        <Preloader personName={settings.personName} />
+        <Preloader personName={settings.personName} personTagline={settings.personTagline} />
         <ScrollProgress />
         <SmoothScrollProvider>
           <Header settings={settings} contact={contact} />

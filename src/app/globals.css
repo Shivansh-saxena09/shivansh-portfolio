@@ -247,3 +247,23 @@ h4 {
   -webkit-background-clip: text;
   color: transparent;
 }
+
+/* ---------------------------------------------------------------------- */
+/* Preloader wordmark — the same outline/gradient-fill recipe as the      */
+/* footer's signature above, but scripted (Framer Motion animates a       */
+/* clip-path across the fill layer) rather than cursor-driven, and with a */
+/* light stroke instead of a dark one since the preloader sits on a       */
+/* charcoal ground rather than cream.                                     */
+/* ---------------------------------------------------------------------- */
+.preloader-wordmark-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.25px rgba(253, 251, 247, 0.32);
+  text-stroke: 1.25px rgba(253, 251, 247, 0.32);
+}
+
+.preloader-wordmark-fill {
+  background: linear-gradient(100deg, var(--color-terracotta), var(--color-sage));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
