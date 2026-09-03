@@ -7,6 +7,7 @@ import { Field, TextInput, TextArea, SelectInput, Checkbox, FieldGrid } from "@/
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { AdSetsManager } from "@/components/admin/AdSetsManager";
 import { GalleryManager } from "@/components/admin/GalleryManager";
+import { CampaignDoctor } from "@/components/admin/CampaignDoctor";
 import { updateCaseStudySetup, updateCaseStudyNarrative, deleteCaseStudy } from "../actions";
 
 const NARRATIVE_FIELDS = [
@@ -181,6 +182,10 @@ export default async function AdminCaseStudyEditPage({ params }: { params: Promi
         <div className="mt-4">
           <AdSetsManager caseStudySlug={caseStudy.slug} adSets={adSets} />
         </div>
+      </div>
+
+      <div className="mt-10">
+        <CampaignDoctor slug={caseStudy.slug} isLive={caseStudy.status === "Active"} />
       </div>
 
       <div className="mt-10">
