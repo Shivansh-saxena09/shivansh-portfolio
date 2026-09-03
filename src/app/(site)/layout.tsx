@@ -46,7 +46,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <Preloader personName={settings.personName} />
         <ScrollProgress />
         <SmoothScrollProvider>
-          <Header personName={settings.personName} contact={contact} />
+          <Header settings={settings} contact={contact} />
           <main className="flex-1">{children}</main>
           <Footer
             personName={settings.personName}
