@@ -17,14 +17,14 @@ export function Gallery({
 }) {
   if (images.length > 0) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {images.map((image) => (
           <div key={image.id} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-beige-border bg-ivory">
             <Image
               src={image.url}
               alt={image.altText ?? ""}
               fill
-              sizes="(min-width: 640px) 33vw, 50vw"
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
               className="object-cover"
             />
           </div>
@@ -34,7 +34,7 @@ export function Gallery({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: placeholderCount }).map((_, i) => (
         <div
           key={i}

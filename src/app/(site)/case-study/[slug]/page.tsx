@@ -118,6 +118,18 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           <TableOfContents sections={tocSections} variant="pills" />
         </div>
 
+        {/* This 2-column grid deliberately wraps only Overview + The
+            Story, not the whole page. Results/Campaign Doctor/Creatives
+            (below, outside the grid) are the densest, most data-heavy
+            content on the page, and confining them to this column's 8/12
+            width for their entire length was actively working against
+            them — permanently narrower than they needed to be even once
+            the sidebar itself had nothing left to say (the sidebar's own
+            content roughly matches Overview + The Story in length, so
+            the two columns here end at close to the same height, which a
+            monitored screenshot confirmed). Letting the data sections use
+            the full container width is a genuine, considered use of
+            horizontal space, not just a sidebar-emptiness workaround. */}
         <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
           {/* Right rail — a plain, non-sticky stack of cards. Two sticky
               variations were tried here and both caused real, visible
@@ -227,59 +239,65 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 <StoryChapters narrative={caseStudy.narrative} />
               </div>
             </section>
-
-            {/* Results — the always-visible comparison table (when there's
-                more than one ad set to compare) answers "which one won"
-                immediately; the full per-ad-set breakdown underneath is
-                progressive disclosure for whoever wants the deep numbers,
-                collapsed by default except the first (see AdSetSection). */}
-            <section id="results" className="mt-14 scroll-mt-24">
-              <h2 className="font-heading text-2xl text-charcoal">Results</h2>
-
-              {multiAdSet && (
-                <div className="mt-6">
-                  <AdSetComparisonTable adSets={caseStudy.adSets} />
-                </div>
-              )}
-
-              {/* Side-by-side on wide screens once there's more than one
-                  ad set — comparing two collapsible cards next to each
-                  other is a genuinely better use of the extra width than
-                  stacking them, and it's the same information a visitor
-                  would otherwise scroll twice as far to compare. */}
-              <div className={multiAdSet ? "mt-6 grid items-start gap-4 lg:grid-cols-2" : "mt-6 flex flex-col gap-4"}>
-                {caseStudy.adSets.map((adSet, i) => (
-                  <AdSetSection
-                    key={adSet.id}
-                    adSet={adSet}
-                    showName={multiAdSet}
-                    collapsible={multiAdSet}
-                    defaultOpen={i === 0}
-                  />
-                ))}
-              </div>
-            </section>
-
-            {caseStudy.aiInsight && (
-              <section id="campaign-doctor" className="mt-14 scroll-mt-24">
-                <CampaignDoctorInsight
-                  whatsWorking={caseStudy.aiInsight.whatsWorking}
-                  likelyIssues={caseStudy.aiInsight.likelyIssues}
-                  recommendedAction={caseStudy.aiInsight.recommendedAction}
-                  timeframe={caseStudy.aiInsight.timeframe}
-                  generatedAt={caseStudy.aiInsight.generatedAt}
-                />
-              </section>
-            )}
-
-            <section id="creatives" className="mt-14 scroll-mt-24">
-              <h2 className="font-heading text-xl text-charcoal">Creatives</h2>
-              <div className="mt-5">
-                <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
-              </div>
-            </section>
           </div>
         </div>
+
+        {/* Everything below runs the full container width — the densest,
+            most data-heavy content on the page (comparison table, ad-set
+            metrics, the Campaign Doctor panel, the creative gallery)
+            genuinely benefits from the room the 8/12 column above
+            couldn't offer for its whole length. */}
+
+        {/* Results — the always-visible comparison table (when there's
+            more than one ad set to compare) answers "which one won"
+            immediately; the full per-ad-set breakdown underneath is
+            progressive disclosure for whoever wants the deep numbers,
+            collapsed by default except the first (see AdSetSection). */}
+        <section id="results" className="mt-16 scroll-mt-24">
+          <h2 className="font-heading text-2xl text-charcoal">Results</h2>
+
+          {multiAdSet && (
+            <div className="mt-6">
+              <AdSetComparisonTable adSets={caseStudy.adSets} />
+            </div>
+          )}
+
+          {/* Side-by-side once there's more than one ad set — comparing
+              two collapsible cards next to each other is a genuinely
+              better use of the now-full-width space than stacking them,
+              and it's the same information a visitor would otherwise
+              scroll twice as far to compare. */}
+          <div className={multiAdSet ? "mt-6 grid items-start gap-5 lg:grid-cols-2" : "mt-6 flex max-w-[42rem] flex-col gap-4"}>
+            {caseStudy.adSets.map((adSet, i) => (
+              <AdSetSection
+                key={adSet.id}
+                adSet={adSet}
+                showName={multiAdSet}
+                collapsible={multiAdSet}
+                defaultOpen={i === 0}
+              />
+            ))}
+          </div>
+        </section>
+
+        {caseStudy.aiInsight && (
+          <section id="campaign-doctor" className="mt-16 scroll-mt-24">
+            <CampaignDoctorInsight
+              whatsWorking={caseStudy.aiInsight.whatsWorking}
+              likelyIssues={caseStudy.aiInsight.likelyIssues}
+              recommendedAction={caseStudy.aiInsight.recommendedAction}
+              timeframe={caseStudy.aiInsight.timeframe}
+              generatedAt={caseStudy.aiInsight.generatedAt}
+            />
+          </section>
+        )}
+
+        <section id="creatives" className="mt-16 scroll-mt-24">
+          <h2 className="font-heading text-xl text-charcoal">Creatives</h2>
+          <div className="mt-5">
+            <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
+          </div>
+        </section>
       </Container>
     </article>
   );
