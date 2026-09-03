@@ -23,7 +23,13 @@ function AdSetBody({ adSet }: { adSet: AdSet }) {
         {highlightStats(composeAdSetNarrative(adSet), adSet.name)}
       </p>
 
-      <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* Fixed 2x2 rather than a wider breakpoint-based grid — these
+          cards can sit side-by-side in a narrower half-width column once
+          there's more than one ad set (see the case-study page's Results
+          section), and a viewport-based sm:grid-cols-4 would cram four
+          tiles into that narrower space regardless of how wide the
+          browser window itself is. */}
+      <dl className="mt-5 grid grid-cols-2 gap-3">
         <StatTile label="Reach" value={formatNumber(metrics.reach)} />
         <StatTile label="CPM" value={formatINR(metrics.cpm)} />
         <StatTile label="Link CTR" value={formatPct(ctrLink)} />

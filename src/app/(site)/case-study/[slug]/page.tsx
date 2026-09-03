@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllCaseStudySlugs, getCaseStudy } from "@/lib/data/caseStudies";
-import { getSiteSettings } from "@/lib/data/site";
+import { getAllCaseStudySlugs, getCaseStudy, getCaseStudies } from "@/lib/data/caseStudies";
+import { getSiteSettings, getContactInfo } from "@/lib/data/site";
 import { aggregate, cardSummary, composeCampaignIntro, formatINR, formatNumber } from "@/lib/caseStudyNarrative";
 import { highlightStats, statHeadline } from "@/lib/highlightStats";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
 import { StatTile } from "@/components/case-study/StatTile";
 import { StoryChapters } from "@/components/case-study/StoryChapters";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
@@ -14,6 +15,7 @@ import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTab
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
 import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
 import { TableOfContents, type TocSection } from "@/components/case-study/TableOfContents";
+import { CaseStudySidebarPanel } from "@/components/case-study/CaseStudySidebarPanel";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
 
 const categoryLabel = {
@@ -44,12 +46,36 @@ export async function generateMetadata({
 
 export default async function CaseStudyPage({ params }: PageProps<"/case-study/[slug]">) {
   const { slug } = await params;
-  const [caseStudy, settings] = await Promise.all([getCaseStudy(slug), getSiteSettings()]);
+  const [caseStudy, settings, contact, allCaseStudies] = await Promise.all([
+    getCaseStudy(slug),
+    getSiteSettings(),
+    getContactInfo(),
+    getCaseStudies(),
+  ]);
   if (!caseStudy) notFound();
 
   const totals = aggregate(caseStudy.adSets);
   const { resultHeadline } = cardSummary(caseStudy);
   const multiAdSet = caseStudy.adSets.length > 1;
+  // Fills what would otherwise be dead space below the (deliberately
+  // short, sticky) nav card once it runs out of page to pin against —
+  // real navigational value (keep reading) rather than decoration.
+  const otherCaseStudies = allCaseStudies.filter((c) => c.slug !== slug).slice(0, 2);
+
+  // Feeds the sticky sidebar panel's contextual content — a real value
+  // to show while a visitor is deep in Results, computed once here
+  // rather than in a client component so it costs nothing at runtime.
+  const bestAdSet = multiAdSet
+    ? [...caseStudy.adSets]
+        .filter((a) => a.metrics.leads > 0)
+        .sort((a, b) => a.metrics.amountSpent / a.metrics.leads - b.metrics.amountSpent / b.metrics.leads)[0]
+    : null;
+  const bestPerformerLabel = bestAdSet
+    ? `${bestAdSet.name} — ${formatINR(bestAdSet.metrics.amountSpent / bestAdSet.metrics.leads)}/lead`
+    : null;
+  const aiInsightCounts = caseStudy.aiInsight
+    ? { working: caseStudy.aiInsight.whatsWorking.length, issues: caseStudy.aiInsight.likelyIssues.length }
+    : null;
 
   const metaFacts: { label: string; value: string }[] = [
     { label: "Platform", value: caseStudy.platform },
@@ -105,24 +131,47 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
           <TableOfContents sections={tocSections} variant="pills" />
         </div>
 
-        <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
-          {/* Sticky rail — jump nav, then the quick-facts card. Appears
-              first on mobile as a summary block, moves to the right on
-              desktop via order utilities so the wide viewport gets a real
-              two-column editorial layout instead of one narrow column
-              drowning in whitespace. */}
-          <aside className="lg:order-2 lg:col-span-4">
-            <div className="glass-card paper-grain rounded-2xl px-6 py-7 shadow-lg lg:sticky lg:top-24">
-              <div className="relative z-10 hidden lg:block">
-                <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
-                  On This Page
-                </p>
-                <div className="mt-3">
-                  <TableOfContents sections={tocSections} variant="list" />
-                </div>
+        {/* No lg:items-start here (deliberately) — the aside's own
+            content is much shorter than the main column's, and grid's
+            default item-stretch is exactly what's needed: it gives the
+            aside cell the main column's full height, so its sticky-top
+            nav and sticky-bottom CTA (below) each have real room to
+            operate across the whole scroll instead of the aside ending
+            early and leaving the entire rest of the right column blank
+            (confirmed as a real issue via a scrolled screenshot, not
+            assumed). */}
+        <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-14">
+          {/* Right rail — the sticky nav's own content adapts to
+              whichever section is being read (CaseStudySidebarPanel),
+              rather than staying static. A single sticky card with fixed
+              content (tried first) either left a visible gap once it ran
+              out of relevance, or — sticky-to-bottom, tried next —
+              turned out unreliable nested this deep in flex/grid
+              (confirmed via computed-style diagnostics). Sticky-top is
+              the one direction that provably holds for the entire
+              scroll, so the sidebar keeps producing genuinely relevant
+              content (a best-performer stat during Results, insight
+              counts during Campaign Doctor, a closing CTA during
+              Creatives) instead of just a static list. The grid row
+              still stretches this column to the main column's full
+              height so that sticky-top has room to keep working for the
+              whole page, not just its own short natural height. Appears
+              first on mobile as a stack of summary blocks, moves to the
+              right on desktop via order utilities. */}
+          <aside className="flex flex-col gap-6 lg:order-2 lg:col-span-4">
+            <div className="glass-card hidden rounded-2xl px-6 py-5 shadow-lg lg:sticky lg:top-24 lg:block">
+              <div className="relative z-10">
+                <CaseStudySidebarPanel
+                  sections={tocSections}
+                  bestPerformer={bestPerformerLabel}
+                  aiInsightCounts={aiInsightCounts}
+                  whatsapp={contact.whatsapp}
+                />
               </div>
+            </div>
 
-              <dl className="relative z-10 grid grid-cols-2 gap-3 lg:mt-6 lg:border-t lg:border-beige-border/70 lg:pt-6">
+            <div className="glass-card paper-grain rounded-2xl px-6 py-7 shadow-lg">
+              <dl className="relative z-10 grid grid-cols-2 gap-3">
                 <StatTile compact label="Reach" value={formatNumber(totals.reach)} />
                 <StatTile
                   compact
@@ -155,6 +204,41 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               <p className="relative z-10 mt-6 border-t border-beige-border/70 pt-4 font-body text-xs text-warm-grey">
                 Last verified {caseStudy.lastVerified}
               </p>
+            </div>
+
+            {otherCaseStudies.length > 0 && (
+              <div className="rounded-2xl border border-beige-border bg-ivory p-6">
+                <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
+                  More Case Studies
+                </p>
+                <div className="mt-4 flex flex-col gap-4">
+                  {otherCaseStudies.map((cs) => {
+                    const { resultHeadline: otherHeadline } = cardSummary(cs);
+                    return (
+                      <Link
+                        key={cs.slug}
+                        href={`/case-study/${cs.slug}`}
+                        className="group block rounded-xl border border-beige-border bg-cream p-4 transition-colors hover:border-terracotta/40"
+                      >
+                        <p className="font-heading text-base font-bold text-charcoal transition-colors group-hover:text-terracotta-dark">
+                          {cs.campaignName}
+                        </p>
+                        <p className="mt-1 font-body text-sm text-sage-dark">{otherHeadline}</p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-2xl border border-terracotta/20 bg-terracotta/5 p-6">
+              <p className="font-heading text-lg font-bold text-charcoal">Want results like this?</p>
+              <p className="mt-1.5 font-body text-sm leading-relaxed text-warm-grey">
+                Let&apos;s talk about your next campaign.
+              </p>
+              <Button href={contact.whatsapp} variant="primary" className="js-whatsapp-cta mt-4 w-full">
+                Message on WhatsApp
+              </Button>
             </div>
           </aside>
 
@@ -192,7 +276,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 </div>
               )}
 
-              <div className="mt-6 flex flex-col gap-4">
+              {/* Side-by-side on wide screens once there's more than one
+                  ad set — comparing two collapsible cards next to each
+                  other is a genuinely better use of the extra width than
+                  stacking them, and it's the same information a visitor
+                  would otherwise scroll twice as far to compare. */}
+              <div className={multiAdSet ? "mt-6 grid items-start gap-4 lg:grid-cols-2" : "mt-6 flex flex-col gap-4"}>
                 {caseStudy.adSets.map((adSet, i) => (
                   <AdSetSection
                     key={adSet.id}

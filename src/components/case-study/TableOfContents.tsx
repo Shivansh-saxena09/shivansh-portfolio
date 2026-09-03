@@ -1,18 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useActiveSection } from "./useActiveSection";
 
 export type TocSection = { id: string; label: string };
 
 /**
- * In-page jump nav for the case-study page, with scroll-spy (an
- * IntersectionObserver watching each section, no scroll-event polling)
- * highlighting whichever one currently owns the reading position. One
- * component serves both placements this page needs — the sticky
- * sidebar's vertical list on desktop (`variant="list"`) and a
- * horizontally-scrollable pill row for everything below `lg`
- * (`variant="pills"`), where the sidebar isn't sticky (or present)
- * — same active-section logic either way, just different chrome.
+ * In-page jump nav for the case-study page, with scroll-spy highlighting
+ * whichever section currently owns the reading position (see
+ * useActiveSection.ts). Used for the mobile/tablet horizontally-
+ * scrollable pill row (`variant="pills"`) — the desktop sticky sidebar
+ * uses CaseStudySidebarPanel.tsx instead, which pairs the same nav list
+ * with a contextual content panel that changes with the active section.
  */
 export function TableOfContents({
   sections,
@@ -21,28 +19,7 @@ export function TableOfContents({
   sections: TocSection[];
   variant: "list" | "pills";
 }) {
-  const [active, setActive] = useState(sections[0]?.id);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      // Treats a section as "current" once it crosses a band near the
-      // top of the viewport, not merely once any part of it is visible
-      // — otherwise a short section barely peeking into view would
-      // steal the highlight before a visitor has actually reached it.
-      { rootMargin: "-15% 0px -70% 0px", threshold: 0 },
-    );
-
-    const elements = sections
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => el !== null);
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [sections]);
+  const active = useActiveSection(sections.map((s) => s.id));
 
   if (variant === "pills") {
     return (
