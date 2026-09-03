@@ -158,15 +158,21 @@ export function CampaignDoctorInsight({
             <p className="font-body text-xs font-bold tracking-[0.15em] text-cream uppercase">
               Recommended Action
             </p>
-            {/* No shrink-0/nowrap assumption on the timeframe text — it's
-                meant to be a short phrase ("Within 3-5 days"), but this
-                has to stay robust against a longer one without breaking
-                layout (confirmed via screenshot: a full-sentence
-                timeframe from data generated before the schema tightened
-                its length was overflowing badly here). */}
+            {/* The schema caps timeframe at 40 chars going forward, but
+                older published data predates that cap — one real insight
+                has a full-sentence timeframe. flex-wrap alone let that
+                wrap across many lines, and rounded-full on a multi-line
+                box renders as a tall, distorted stadium/oval rather than
+                a badge (confirmed via screenshot — worse at narrower
+                widths, since more wrapping means a taller shape). line-
+                clamp-1 forces a single line unconditionally: legitimate
+                short timeframes render as a normal pill exactly as
+                before, and anything longer truncates with an ellipsis
+                instead of deforming the badge. min-w-0 is required for
+                the clamp to actually apply inside a flex row. */}
             <span className="flex max-w-full items-center gap-1.5 rounded-full bg-cream/10 px-2.5 py-1 font-body text-[11px] font-semibold text-cream/80">
               <ClockIcon className="h-3 w-3 shrink-0" />
-              {timeframe}
+              <span className="line-clamp-1 min-w-0">{timeframe}</span>
             </span>
           </div>
           <p className="mt-2 font-body text-sm leading-relaxed text-cream/90">
