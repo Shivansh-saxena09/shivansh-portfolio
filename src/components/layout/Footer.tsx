@@ -46,37 +46,37 @@ function PinIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function ChevronIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+      <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /**
- * Site footer, composed as one deliberate closing sequence rather than a
- * grid of stacked links: a full-width closing CTA panel first (the "one
- * more chance to reach out" a page's content already made the case for),
- * then a four-column utility grid (identity+location+live clock / explore
- * / get in touch / the interactive signature wordmark), then copyright.
- *
- * The signature column's wordmark is `personName`, scoped via container-
- * query units to that column's own width — a hollow outline that fills
- * with the terracotta→sage gradient inside a soft circle following the
- * cursor or a dragged finger. See globals.css' .footer-wordmark-* rules.
+ * The interactive signature — hollow outline that fills with the
+ * terracotta→sage gradient inside a soft circle following the cursor or a
+ * dragged finger (see globals.css' .footer-wordmark-* rules). Pulled into
+ * its own component (rather than inlined once) because the mobile layout
+ * renders a second, smaller instance of it as a standalone closing
+ * flourish instead of a desktop column filler — two instances mounted at
+ * once (one hidden via CSS per breakpoint, not conditionally unmounted)
+ * need their own ref/handlers each, not one shared ref fighting over two
+ * DOM nodes.
  */
-export function Footer({
-  personName,
-  personTagline,
-  location,
-  availability,
-  footerCta,
-  contact,
+function Wordmark({
+  firstName,
+  lastName,
+  textClass,
+  className = "",
 }: {
-  personName: string;
-  personTagline: string;
-  location: string;
-  availability: string;
-  footerCta: { heading: string; ctaLabel: string };
-  contact: ContactInfo;
+  firstName: string;
+  lastName: string;
+  textClass: string;
+  className?: string;
 }) {
   const fillLayerRef = useRef<HTMLDivElement>(null);
-  const [firstName, ...restName] = personName.split(" ");
-  const lastName = restName.join(" ");
-  const localTime = useSyncExternalStore(subscribeClock, getClockSnapshot, getClockServerSnapshot);
 
   function setSpot(clientX: number, clientY: number, target: HTMLElement) {
     const el = fillLayerRef.current;
@@ -100,8 +100,70 @@ export function Footer({
     fillLayerRef.current?.style.setProperty("--spot-opacity", "0");
   }
 
+  return (
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={hideSpot}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={hideSpot}
+      className={`relative cursor-default ${className}`}
+    >
+      <div aria-hidden="true" className="pointer-events-none relative flex select-none flex-col">
+        <p className={`footer-wordmark-outline ${textClass}`}>{firstName}</p>
+        <p className={`footer-wordmark-outline ${textClass}`}>{lastName}</p>
+      </div>
+      <div
+        ref={fillLayerRef}
+        aria-hidden="true"
+        className="footer-wordmark-mask pointer-events-none absolute inset-0 flex select-none flex-col"
+      >
+        <p className={`footer-wordmark-fill ${textClass}`}>{firstName}</p>
+        <p className={`footer-wordmark-fill ${textClass}`}>{lastName}</p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Site footer, composed as one deliberate closing sequence rather than a
+ * grid of stacked links: a full-width closing CTA panel first (the "one
+ * more chance to reach out" a page's content already made the case for),
+ * then desktop gets a four-column utility grid (identity+location+live
+ * clock / explore / get in touch / the interactive signature wordmark);
+ * mobile (below sm:) gets its own hand-ordered flow instead of that grid
+ * simply stacked — see the two `hidden sm:…` / `sm:hidden` blocks below.
+ */
+export function Footer({
+  personName,
+  personTagline,
+  location,
+  availability,
+  footerCta,
+  contact,
+}: {
+  personName: string;
+  personTagline: string;
+  location: string;
+  availability: string;
+  footerCta: { heading: string; ctaLabel: string };
+  contact: ContactInfo;
+}) {
+  const [firstName, ...restName] = personName.split(" ");
+  const lastName = restName.join(" ");
+  const localTime = useSyncExternalStore(subscribeClock, getClockSnapshot, getClockServerSnapshot);
+
   const wordmarkTextClass =
     "font-heading text-[clamp(1.75rem,15cqw,2.75rem)] leading-[1.05] font-bold";
+  // The mobile instance is a fixed-position closing flourish, not a
+  // column filler proportional to some ancestor's width — so it sizes
+  // off the viewport (vw) directly rather than a container query. A
+  // @container element needs inline-size containment, which — combined
+  // with this instance sitting in an auto-width flex item (centered, no
+  // explicit width) rather than a grid column with a definite track
+  // width like the desktop instance — risks the container's content-
+  // based sizing input being stripped out and collapsing toward 0.
+  const mobileWordmarkTextClass =
+    "font-heading text-[clamp(1.5rem,9vw,2.125rem)] leading-[1.05] font-bold";
 
   return (
     <footer className="paper-grain relative overflow-hidden border-t border-beige-border/70 bg-cream">
@@ -127,8 +189,10 @@ export function Footer({
           </div>
         </div>
 
-        {/* Utility grid */}
-        <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        {/* ------------------------------------------------------------ */}
+        {/* Desktop / tablet — the four-column utility grid, unchanged.   */}
+        {/* ------------------------------------------------------------ */}
+        <div className="mt-16 hidden grid-cols-2 gap-12 sm:grid lg:grid-cols-4 lg:gap-10">
           <div>
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-base font-semibold text-ivory">
@@ -196,34 +260,15 @@ export function Footer({
           <div>
             <div className="h-1 w-8 rounded-full bg-terracotta" />
 
-            {/* Interactive wordmark — scoped to this column's own width
-                via a container query (cqw units), so it stays a small,
-                proportionate signature detail regardless of whether this
-                column is full-width (mobile) or a quarter of the footer
-                (desktop). */}
-            <div
-              onMouseMove={handleMouseMove}
-              onMouseLeave={hideSpot}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={hideSpot}
-              className="@container relative mt-4 cursor-default"
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none relative flex select-none flex-col"
-              >
-                <p className={`footer-wordmark-outline ${wordmarkTextClass}`}>{firstName}</p>
-                <p className={`footer-wordmark-outline ${wordmarkTextClass}`}>{lastName}</p>
-              </div>
-              <div
-                ref={fillLayerRef}
-                aria-hidden="true"
-                className="footer-wordmark-mask pointer-events-none absolute inset-0 flex select-none flex-col"
-              >
-                <p className={`footer-wordmark-fill ${wordmarkTextClass}`}>{firstName}</p>
-                <p className={`footer-wordmark-fill ${wordmarkTextClass}`}>{lastName}</p>
-              </div>
-            </div>
+            {/* Scoped to this column's own width via a container query
+                (cqw units), so it stays a proportionate signature detail
+                regardless of the column's share of the four-column grid. */}
+            <Wordmark
+              firstName={firstName}
+              lastName={lastName}
+              textClass={wordmarkTextClass}
+              className="@container mt-4"
+            />
 
             <div className="glass-card mt-6 inline-flex rounded-full px-2 py-1">
               <SocialLinks contact={contact} />
@@ -231,7 +276,121 @@ export function Footer({
           </div>
         </div>
 
-        <div className="mt-16 border-t border-beige-border/70 pt-6 text-center">
+        {/* ------------------------------------------------------------ */}
+        {/* Mobile — a hand-ordered flow, not the grid above simply       */}
+        {/* stacked. Priority order: identity → social (high-value,       */}
+        {/* short, so it stays visible) → contact (ditto) → Explore       */}
+        {/* tucked into a collapsed accordion, since those same links     */}
+        {/* already live in the sticky header and the nav drawer a        */}
+        {/* mobile visitor just closed — duplicating them in full here    */}
+        {/* just makes the footer longer for no new information → a       */}
+        {/* small closing signature instead of a full column-width one.   */}
+        {/* ------------------------------------------------------------ */}
+        <div className="mt-12 sm:hidden">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-base font-semibold text-ivory">
+              S
+            </span>
+            <p className="font-heading text-xl font-bold text-charcoal">{personName}</p>
+          </div>
+
+          <p className="mt-5 max-w-xs font-body text-sm leading-relaxed text-warm-grey">
+            {personTagline}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="flex items-center gap-1.5 font-body text-sm text-charcoal">
+              <PinIcon className="h-4 w-4 shrink-0 text-terracotta" />
+              {location}
+              {localTime && <span className="text-warm-grey">· {localTime} IST</span>}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-sage/15 px-2.5 py-1 font-body text-xs font-semibold text-sage-dark">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+              {availability}
+            </span>
+          </div>
+
+          {/* Elsewhere — same glass-card social row + label convention
+              as the nav drawer, so the two touch surfaces feel like one
+              system rather than two different treatments of the same
+              four icons. Bigger icons than the desktop row (h-5 vs the
+              default h-[18px]) inside the same 40px tap target. */}
+          <div className="mt-6">
+            <p className="font-body text-xs font-medium tracking-[0.15em] text-warm-grey uppercase">
+              Elsewhere
+            </p>
+            <div className="glass-card mt-3 inline-flex rounded-full px-2 py-1">
+              <SocialLinks contact={contact} iconClassName="h-5 w-5" />
+            </div>
+          </div>
+
+          {/* Get in Touch — kept always visible (not tucked into the
+              accordion below) since it's two short, high-value lines,
+              not a list worth an extra tap to reveal. Each row padded to
+              a proper ~44px tap target, not the desktop column's tighter
+              text-height links. */}
+          <div className="mt-7 border-t border-beige-border/70 pt-6">
+            <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
+              Get in Touch
+            </p>
+            <div className="mt-1 flex flex-col">
+              <a
+                href={`mailto:${contact.email}`}
+                className="flex items-center gap-3 border-b border-beige-border/60 py-3.5 font-body text-sm text-charcoal"
+              >
+                <EmailIcon className="h-4 w-4 shrink-0 text-warm-grey" />
+                {contact.email}
+              </a>
+              <a
+                href={contact.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="js-whatsapp-cta flex items-center gap-3 py-3.5 font-body text-sm text-charcoal"
+              >
+                <WhatsAppIcon className="h-4 w-4 shrink-0 text-warm-grey" />
+                Message on WhatsApp
+              </a>
+            </div>
+          </div>
+
+          {/* Explore — collapsed by default. Native <details>, matching
+              the case-study ad-set accordion's exact visual language
+              (rounded card, chevron rotate) so the pattern reads as one
+              site-wide convention rather than a one-off. */}
+          <details className="group mt-6 rounded-2xl border border-beige-border bg-ivory">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
+              <span className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
+                Explore
+              </span>
+              <ChevronIcon className="h-4 w-4 shrink-0 text-warm-grey transition-transform duration-300 group-open:rotate-180" />
+            </summary>
+            <nav className="flex flex-col border-t border-beige-border/70 px-5">
+              {footerNav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="border-b border-beige-border/60 py-3.5 font-body text-sm text-charcoal last:border-0"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </details>
+
+          {/* Closing signature — a small centered flourish rather than a
+              full-width column filler (mobile has no column to balance),
+              touch-drag still reveals the gradient fill. */}
+          <div className="mt-10 flex justify-center">
+            <Wordmark
+              firstName={firstName}
+              lastName={lastName}
+              textClass={mobileWordmarkTextClass}
+              className="text-center"
+            />
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-beige-border/70 pt-6 text-center sm:mt-16">
           <p className="font-body text-xs text-warm-grey">
             © {new Date().getFullYear()} {personName}. All rights reserved.
           </p>
