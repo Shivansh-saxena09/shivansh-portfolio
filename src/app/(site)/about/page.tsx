@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Timeline } from "@/components/about/Timeline";
 import { Education } from "@/components/about/Education";
+import { DestinationCard, ChartIcon, CodeIcon } from "@/components/ui/DestinationCard";
 
 export async function generateMetadata(): Promise<Metadata> {
   const meta = await getPageMeta("about");
@@ -51,7 +52,12 @@ export default async function AboutPage() {
                 className="absolute -bottom-8 left-6 h-40 w-40 rounded-full bg-terracotta/20 blur-3xl"
               />
 
-              <div className="glass-card relative mx-auto max-w-sm rotate-1 rounded-2xl px-7 py-8 shadow-xl sm:px-8">
+              {/* Upright on mobile — full-width, a tilt reads as an
+                  accident rather than a flourish; it only earns its
+                  keep once there's negative space around the card to
+                  show it's deliberate (matches the homepage hero's
+                  identical fix). */}
+              <div className="glass-card relative mx-auto max-w-sm rounded-2xl px-7 py-8 shadow-xl sm:px-8 lg:rotate-1">
                 <span className="relative z-10 font-body text-xs font-semibold uppercase tracking-[0.15em] text-warm-grey">
                   Currently
                 </span>
@@ -140,13 +146,35 @@ export default async function AboutPage() {
           <h2 className="max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
             See the work that comes out of it.
           </h2>
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Button href="/marketing" variant="primary" className="w-full sm:w-auto">
+          {/* Desktop/tablet: plain pill pair. Mobile: the same rich
+              destination-card treatment as the homepage hero — this
+              closing CTA has the exact same job (get to Marketing or
+              Engineering work), so it should feel like the same site,
+              not a plainer afterthought version. */}
+          <div className="mt-8 hidden gap-4 sm:flex sm:items-center">
+            <Button href="/marketing" variant="primary">
               View Marketing Work
             </Button>
-            <Button href="/engineering" variant="secondary" className="w-full sm:w-auto">
+            <Button href="/engineering" variant="secondary">
               View Engineering Work
             </Button>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:hidden">
+            <DestinationCard
+              href="/marketing"
+              icon={<ChartIcon className="h-5 w-5" />}
+              label="View Marketing Work"
+              description="Campaign case studies & real results"
+              vivid
+            />
+            <DestinationCard
+              href="/engineering"
+              icon={<CodeIcon className="h-5 w-5" />}
+              label="View Engineering Work"
+              description="Full-stack systems & technical builds"
+              vivid={false}
+            />
           </div>
         </Container>
       </section>
