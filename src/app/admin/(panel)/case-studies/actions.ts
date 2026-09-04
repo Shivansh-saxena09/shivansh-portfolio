@@ -202,6 +202,15 @@ export async function uploadCaseStudyImage(
   if (!file.type.startsWith("image/")) {
     return { error: "File must be an image." };
   }
+  // Mirrors GalleryManager's client-side check — that's what catches
+  // this in normal use (before the request is even sent), but this
+  // stays as a second line of defense (JS disabled, a direct POST,
+  // etc.). Comfortably under next.config.ts's bodySizeLimit so a file
+  // that passes this never reaches that raw framework error either.
+  const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { error: `Image is too large (${(file.size / 1024 / 1024).toFixed(1)}MB) — please upload a file under 8MB.` };
+  }
 
   const supabase = await createClient();
   const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
