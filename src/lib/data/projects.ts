@@ -18,6 +18,7 @@ export type Project = {
   stack: string[];
   status: "Active" | "Completed" | "Archived";
   featured: boolean;
+  demoVideoUrl: string | null;
   flow: { label: string; detail: string }[];
   challenges: ProjectChallenge[];
 };
@@ -31,6 +32,7 @@ type ProjectRow = {
   stack: string[];
   status: string;
   featured: boolean;
+  demo_video_url: string | null;
   project_flow_steps: { label: string; detail: string; sort_order: number }[];
   project_challenges: {
     id: string;
@@ -53,6 +55,7 @@ function mapProjectRow(row: ProjectRow): Project {
     stack: row.stack,
     status: row.status as Project["status"],
     featured: row.featured,
+    demoVideoUrl: row.demo_video_url,
     flow: [...row.project_flow_steps]
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((s) => ({ label: s.label, detail: s.detail })),
@@ -68,7 +71,7 @@ function mapProjectRow(row: ProjectRow): Project {
   };
 }
 
-const PROJECT_SELECT = `slug, name, tagline, description, github_url, stack, status, featured,
+const PROJECT_SELECT = `slug, name, tagline, description, github_url, stack, status, featured, demo_video_url,
   project_flow_steps ( label, detail, sort_order ),
   project_challenges ( id, title, problem, fix, snippet_filename, snippet_code, sort_order )`;
 

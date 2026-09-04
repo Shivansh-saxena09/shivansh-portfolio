@@ -5,6 +5,7 @@ import { getProject, getAllProjectSlugs } from "@/lib/data/projects";
 import { getSiteSettings } from "@/lib/data/site";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
+import { YouTubeEmbed } from "@/components/project/YouTubeEmbed";
 
 const arrowRight = (
   <svg
@@ -84,6 +85,12 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             <Tag key={tech}>{tech}</Tag>
           ))}
         </div>
+
+        {project.demoVideoUrl && (
+          <div className="mt-10 max-w-3xl">
+            <YouTubeEmbed url={project.demoVideoUrl} title={project.name} />
+          </div>
+        )}
 
         {/* How it works — plain HTML/CSS boxes+arrows, no diagramming
             library needed for a 4-step pipeline. */}

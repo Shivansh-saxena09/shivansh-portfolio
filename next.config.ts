@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        // YouTube video thumbnails, for the lite demo-video embed on
+        // project pages (src/components/project/YouTubeEmbed.tsx).
+        protocol: "https",
+        hostname: "i.ytimg.com",
+      },
     ],
   },
 };

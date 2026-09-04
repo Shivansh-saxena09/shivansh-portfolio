@@ -58,6 +58,19 @@ export default async function AdminProjectEditPage({ params }: { params: Promise
         <Field label="Tech stack" htmlFor="stack" hint="Comma-separated, shown as tags.">
           <TextInput id="stack" name="stack" required defaultValue={(project.stack as string[]).join(", ")} />
         </Field>
+        <Field
+          label="Demo Video URL"
+          htmlFor="demo_video_url"
+          hint="Optional. Any YouTube link (watch, youtu.be, or shorts) — shown as a click-to-play embed on the public page."
+        >
+          <TextInput
+            id="demo_video_url"
+            name="demo_video_url"
+            type="url"
+            placeholder="https://www.youtube.com/watch?v=..."
+            defaultValue={project.demo_video_url ?? ""}
+          />
+        </Field>
 
         <FieldGrid>
           <Field label="Status" htmlFor="status">

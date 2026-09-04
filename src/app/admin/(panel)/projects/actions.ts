@@ -58,6 +58,7 @@ export async function updateProject(formData: FormData): Promise<void> {
       description: String(formData.get("description")),
       github_url: String(formData.get("github_url")),
       stack,
+      demo_video_url: String(formData.get("demo_video_url")).trim() || null,
       status: String(formData.get("status")),
       featured: formData.get("featured") === "on",
       published: formData.get("published") === "on",
