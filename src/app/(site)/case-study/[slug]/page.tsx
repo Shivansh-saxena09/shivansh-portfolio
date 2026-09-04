@@ -134,14 +134,20 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             past the sidebar's height, so by the time Campaign Doctor and
             Creatives break out to full width below, the sidebar has long
             since finished within this same row — no gap, no overlap. */}
-        <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
-          {/* Right rail — a plain, non-sticky stack of cards. Two sticky
+        <div className="mt-10 flex flex-col lg:grid lg:grid-cols-12 lg:items-start lg:gap-14">
+          {/* Right rail — a plain, non-sticky stack of cards (two sticky
               variations were tried here and both caused real, visible
-              problems (documented in earlier commits), so this
-              deliberately doesn't try to persist beyond its own natural
-              length. Appears first on mobile as a stack of summary
-              blocks, moves to the right on desktop via order utilities. */}
-          <aside className="flex flex-col gap-6 lg:order-2 lg:col-span-4">
+              problems, documented in earlier commits). `order-2` here
+              isn't lg:-only: on mobile this is genuinely secondary
+              content (a stats recap, other case studies, a closing CTA)
+              that shouldn't make someone scroll past ~2500px of sidebar
+              before reaching The Story — confirmed via a real screenshot
+              that's exactly what was happening. Reordered to the end on
+              mobile via flex-col + order utilities (order only needs a
+              flex/grid container to work, not specifically a grid one);
+              desktop's side-by-side column position is unaffected since
+              grid also respects order. */}
+          <aside className="order-2 mt-14 flex flex-col gap-6 lg:col-span-4 lg:mt-0">
             <div className="hidden rounded-2xl border border-beige-border bg-ivory px-6 py-5 lg:block">
               <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
                 On This Page
@@ -183,7 +189,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               </div>
 
               <p className="relative z-10 mt-6 border-t border-beige-border/70 pt-4 font-body text-xs text-warm-grey">
-                Last verified {caseStudy.lastVerified}
+                Last verified{" "}
+                {new Date(caseStudy.lastVerified).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </p>
             </div>
 
@@ -223,7 +234,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             </div>
           </aside>
 
-          <div className="mt-10 max-w-[42rem] lg:order-1 lg:col-span-8 lg:mt-0 lg:max-w-none">
+          <div className="order-1 max-w-[42rem] lg:col-span-8 lg:max-w-none">
             <p className="font-body text-base leading-relaxed text-charcoal">
               {highlightStats(composeCampaignIntro(caseStudy), "intro")}
             </p>
