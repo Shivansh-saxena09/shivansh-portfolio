@@ -58,7 +58,10 @@ export default async function EngineeringPage() {
                 aria-hidden="true"
                 className="absolute -bottom-8 left-6 h-40 w-40 rounded-full bg-terracotta/20 blur-3xl"
               />
-              <div className="relative -rotate-1">
+              {/* Upright on mobile — full-width, a tilt reads as an
+                  accident, not a flourish (same fix as the homepage
+                  hero and about's "Currently" card). */}
+              <div className="relative lg:-rotate-1">
                 <CodeCard snippets={snippets} />
               </div>
             </div>
