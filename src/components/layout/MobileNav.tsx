@@ -275,31 +275,9 @@ export function MobileNav({ settings, contact }: { settings: SiteSettings; conta
                         ))}
                       </nav>
 
-                      {/* Currently Working On — the same live-status
-                          widget the homepage shows, so someone who came
-                          in through a subpage still sees it. Real,
-                          admin-editable content, not filler. */}
                       <motion.div
                         variants={itemVariants}
-                        className="glass-card mt-6 flex items-start gap-3 rounded-2xl px-4 py-3.5"
-                      >
-                        <span className="relative mt-1 flex h-2 w-2 shrink-0">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-60" />
-                          <span className="relative inline-flex h-2 w-2 rounded-full bg-sage" />
-                        </span>
-                        <div>
-                          <p className="font-body text-[11px] font-semibold tracking-[0.1em] text-sage-dark uppercase">
-                            Currently working on
-                          </p>
-                          <p className="mt-1 font-body text-sm leading-relaxed text-charcoal">
-                            {settings.currentlyWorkingOnText}
-                          </p>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        variants={itemVariants}
-                        className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2"
+                        className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2"
                       >
                         <span className="flex items-center gap-1.5 font-body text-sm text-charcoal">
                           <PinIcon className="h-4 w-4 shrink-0 text-terracotta" />
