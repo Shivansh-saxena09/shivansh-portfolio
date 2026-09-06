@@ -67,6 +67,7 @@ export type CaseStudyDetail = {
   narrative: NarrativeFields;
   galleryPlaceholderCount: number;
   galleryImages: { id: string; url: string; altText: string | null }[];
+  proofImages: { id: string; url: string; altText: string | null }[];
   overrideResultHeadline?: string | null;
   aiInsight: {
     whatsWorking: string[];
@@ -130,7 +131,13 @@ type CaseStudyRow = {
   ai_insight_published: boolean;
   case_study_skills: { skill_slug: string }[];
   ad_sets: AdSetRow[];
-  case_study_images: { id: string; storage_path: string; alt_text: string | null; sort_order: number }[];
+  case_study_images: {
+    id: string;
+    storage_path: string;
+    alt_text: string | null;
+    sort_order: number;
+    image_type: string;
+  }[];
 };
 
 export function mapAdSetRow(row: AdSetRow): AdSet {
@@ -185,6 +192,11 @@ function mapCaseStudyRow(row: CaseStudyRow, skillsMap: Record<string, Skill>): C
     lastVerified: row.last_verified,
     galleryPlaceholderCount: row.gallery_placeholder_count,
     galleryImages: [...row.case_study_images]
+      .filter((img) => img.image_type === "creative")
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((img) => ({ id: img.id, url: mediaPublicUrl(img.storage_path), altText: img.alt_text })),
+    proofImages: [...row.case_study_images]
+      .filter((img) => img.image_type === "proof")
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((img) => ({ id: img.id, url: mediaPublicUrl(img.storage_path), altText: img.alt_text })),
     overrideResultHeadline: row.override_result_headline,
@@ -221,7 +233,7 @@ const CASE_STUDY_SELECT = `slug, campaign_name, project_name, objective, platfor
   ai_insight_whats_working, ai_insight_likely_issues, ai_insight_recommended_action, ai_insight_timeframe, ai_insight_generated_at, ai_insight_published,
   case_study_skills ( skill_slug ),
   ad_sets ( * ),
-  case_study_images ( id, storage_path, alt_text, sort_order )`;
+  case_study_images ( id, storage_path, alt_text, sort_order, image_type )`;
 
 export const getCaseStudies = cache(async function getCaseStudies(): Promise<CaseStudyDetail[]> {
   const supabase = createClient();

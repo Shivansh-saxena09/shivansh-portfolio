@@ -31,7 +31,7 @@ export default async function AdminCaseStudyEditPage({ params }: { params: Promi
       supabase.from("ad_sets").select("*").eq("case_study_slug", slug).order("sort_order", { ascending: true }),
       supabase
         .from("case_study_images")
-        .select("id, storage_path, alt_text")
+        .select("id, storage_path, alt_text, image_type")
         .eq("case_study_slug", slug)
         .order("sort_order", { ascending: true }),
     ]);
@@ -40,12 +40,14 @@ export default async function AdminCaseStudyEditPage({ params }: { params: Promi
 
   const selectedSkillSlugs = new Set((skillRows ?? []).map((s) => s.skill_slug));
   const adSets = (adSetRows as AdSetRow[] | null ?? []).map(mapAdSetRow);
-  const images = (imageRows ?? []).map((img) => ({
+  const toGalleryImage = (img: { id: string; storage_path: string; alt_text: string | null }) => ({
     id: img.id,
     url: mediaPublicUrl(img.storage_path),
     altText: img.alt_text,
     storagePath: img.storage_path,
-  }));
+  });
+  const creativeImages = (imageRows ?? []).filter((img) => img.image_type === "creative").map(toGalleryImage);
+  const proofImages = (imageRows ?? []).filter((img) => img.image_type === "proof").map(toGalleryImage);
 
   return (
     <div className="max-w-3xl">
@@ -205,7 +207,19 @@ export default async function AdminCaseStudyEditPage({ params }: { params: Promi
       <div className="mt-10">
         <h2 className="font-heading text-xl font-bold text-charcoal">Creatives Gallery</h2>
         <div className="mt-4">
-          <GalleryManager caseStudySlug={caseStudy.slug} images={images} />
+          <GalleryManager caseStudySlug={caseStudy.slug} images={creativeImages} imageType="creative" />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <h2 className="font-heading text-xl font-bold text-charcoal">Verified Results — Proof Screenshots</h2>
+        <p className="mt-1 font-body text-sm text-warm-grey">
+          Real screenshots from Meta Ads Manager (or Google Ads) proving the numbers above — crop out
+          account IDs and any unrelated campaigns before uploading. Shown as a small gallery on the
+          public page, right after the results.
+        </p>
+        <div className="mt-4">
+          <GalleryManager caseStudySlug={caseStudy.slug} images={proofImages} imageType="proof" />
         </div>
       </div>
 

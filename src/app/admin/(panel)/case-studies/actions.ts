@@ -194,6 +194,7 @@ export async function uploadCaseStudyImage(
 ): Promise<ImageUploadState> {
   const caseStudySlug = String(formData.get("case_study_slug"));
   const altText = String(formData.get("alt_text") ?? "");
+  const imageType = formData.get("image_type") === "proof" ? "proof" : "creative";
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
@@ -221,16 +222,23 @@ export async function uploadCaseStudyImage(
   });
   if (uploadError) return { error: uploadError.message };
 
+  // Scoped to this image_type so Creatives and Verified Results each
+  // get their own independent 0,1,2... ordering — they're rendered (and
+  // reordered) as two separate lists, both in the admin manager and on
+  // the public page, so their sort_order sequences never need to line
+  // up with each other.
   const { count } = await supabase
     .from("case_study_images")
     .select("id", { count: "exact", head: true })
-    .eq("case_study_slug", caseStudySlug);
+    .eq("case_study_slug", caseStudySlug)
+    .eq("image_type", imageType);
 
   const { error } = await supabase.from("case_study_images").insert({
     case_study_slug: caseStudySlug,
     storage_path: path,
     alt_text: altText || null,
     sort_order: count ?? 0,
+    image_type: imageType,
   });
   if (error) return { error: error.message };
 

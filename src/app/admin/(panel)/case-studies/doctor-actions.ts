@@ -51,6 +51,7 @@ export async function runCampaignDoctor(
     lastVerified: csRow.last_verified,
     galleryPlaceholderCount: csRow.gallery_placeholder_count,
     galleryImages: [],
+    proofImages: [],
     overrideResultHeadline: csRow.override_result_headline,
     aiInsight: null,
     adSets: (csRow.ad_sets as AdSetRow[]).map(mapAdSetRow),

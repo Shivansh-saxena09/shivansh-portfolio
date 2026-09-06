@@ -13,6 +13,7 @@ import { StoryChapters } from "@/components/case-study/StoryChapters";
 import { AdSetSection } from "@/components/case-study/AdSetSection";
 import { AdSetComparisonTable } from "@/components/case-study/AdSetComparisonTable";
 import { Gallery } from "@/components/case-study/GalleryPlaceholder";
+import { VerifiedResults } from "@/components/case-study/VerifiedResults";
 import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
 import { TableOfContents, type TocSection } from "@/components/case-study/TableOfContents";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
@@ -282,6 +283,13 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                   />
                 ))}
               </div>
+
+              {/* Direct receipts for the numbers just shown — sits at the
+                  tail of Results rather than as its own ToC entry, since
+                  it's not a new topic. Always renders (see
+                  VerifiedResults.tsx): the disclosure line alone is real
+                  content for case studies without a screenshot yet. */}
+              <VerifiedResults images={caseStudy.proofImages} />
             </section>
           </div>
         </div>

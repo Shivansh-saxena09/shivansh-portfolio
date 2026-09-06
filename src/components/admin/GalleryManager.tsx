@@ -17,8 +17,26 @@ export type GalleryImage = { id: string; url: string; altText: string | null; st
 const initialState: ImageUploadState = { error: null };
 const MAX_UPLOAD_MB = 8;
 
-export function GalleryManager({ caseStudySlug, images }: { caseStudySlug: string; images: GalleryImage[] }) {
+export function GalleryManager({
+  caseStudySlug,
+  images,
+  imageType = "creative",
+}: {
+  caseStudySlug: string;
+  images: GalleryImage[];
+  /** Which of the two case_study_images lists this manages — Creatives
+   *  (ad images) or Verified Results (proof screenshots, e.g. cropped
+   *  Meta Ads Manager screenshots). Same table/storage/upload mechanism
+   *  either way, just scoped by this column so the two never mix. */
+  imageType?: "creative" | "proof";
+}) {
   const [state, formAction] = useActionState(uploadCaseStudyImage, initialState);
+  const noun = imageType === "proof" ? "proof screenshot" : "creative";
+  // Unique per instance — this component renders twice on the same admin
+  // page (once per imageType), and duplicate id/htmlFor pairs on a page
+  // break label association for whichever instance renders second.
+  const fileId = `gallery_file_${imageType}`;
+  const altId = `gallery_alt_${imageType}`;
   // Checked client-side (before the request is even sent) so an
   // oversized file never reaches Next's own request-body-size limit —
   // that rejection happens in the framework's own request parsing,
@@ -45,8 +63,10 @@ export function GalleryManager({ caseStudySlug, images }: { caseStudySlug: strin
     <div>
       <p className="font-body text-sm text-warm-grey">
         {images.length > 0
-          ? `${images.length} real creative${images.length === 1 ? "" : "s"} uploaded — replacing the placeholder tiles on the public page.`
-          : "No real creatives uploaded yet — the public page shows placeholder tiles until at least one image is added."}
+          ? `${images.length} ${noun}${images.length === 1 ? "" : "s"} uploaded${imageType === "creative" ? " — replacing the placeholder tiles on the public page." : "."}`
+          : imageType === "proof"
+            ? "No proof screenshots uploaded yet — the public page shows just the verification note until one is added."
+            : "No real creatives uploaded yet — the public page shows placeholder tiles until at least one image is added."}
       </p>
 
       <ReorderableList
@@ -76,12 +96,13 @@ export function GalleryManager({ caseStudySlug, images }: { caseStudySlug: strin
         className="mt-4 flex flex-wrap items-end gap-3 rounded-xl border border-beige-border bg-ivory p-4"
       >
         <input type="hidden" name="case_study_slug" value={caseStudySlug} />
+        <input type="hidden" name="image_type" value={imageType} />
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="gallery_file" className="font-body text-xs font-medium text-charcoal">
+          <label htmlFor={fileId} className="font-body text-xs font-medium text-charcoal">
             Image file <span className="font-normal text-warm-grey">(up to {MAX_UPLOAD_MB}MB)</span>
           </label>
           <input
-            id="gallery_file"
+            id={fileId}
             name="file"
             type="file"
             accept="image/*"
@@ -91,10 +112,15 @@ export function GalleryManager({ caseStudySlug, images }: { caseStudySlug: strin
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="gallery_alt" className="font-body text-xs font-medium text-charcoal">
+          <label htmlFor={altId} className="font-body text-xs font-medium text-charcoal">
             Alt text
           </label>
-          <TextInput id="gallery_alt" name="alt_text" placeholder="Ad creative — carousel slide 1" className="w-64" />
+          <TextInput
+            id={altId}
+            name="alt_text"
+            placeholder={imageType === "proof" ? "Meta Ads Manager — results overview" : "Ad creative — carousel slide 1"}
+            className="w-64"
+          />
         </div>
         <SubmitButton pendingLabel="Uploading…">Upload</SubmitButton>
       </form>
