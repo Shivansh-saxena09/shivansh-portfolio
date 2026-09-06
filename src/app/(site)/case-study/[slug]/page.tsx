@@ -81,6 +81,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
     { id: "overview", label: "Overview" },
     { id: "story", label: "The Story" },
     { id: "results", label: "Results" },
+    { id: "verified-results", label: "Verified Results" },
     ...(caseStudy.aiInsight ? [{ id: "campaign-doctor", label: "Campaign Doctor" }] : []),
     { id: "creatives", label: "Creatives" },
   ];
@@ -283,24 +284,24 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                   />
                 ))}
               </div>
-
-              {/* Direct receipts for the numbers just shown — sits at the
-                  tail of Results rather than as its own ToC entry, since
-                  it's not a new topic. Always renders (see
-                  VerifiedResults.tsx): the disclosure line alone is real
-                  content for case studies without a screenshot yet. */}
-              <VerifiedResults images={caseStudy.proofImages} />
             </section>
           </div>
         </div>
 
-        {/* Campaign Doctor and Creatives run the full container width —
-            by now the sidebar (inside the grid above) has long since
-            finished, so there's no risk of the overlap a too-early full-
-            width break caused earlier. These two also benefit the most
-            from it: Campaign Doctor's dark card reads as substantially
-            more premium at full width, and the gallery grid gains a
-            column it didn't have room for before. */}
+        {/* Verified Results, Campaign Doctor, and Creatives run the full
+            container width — by now the sidebar (inside the grid above)
+            has long since finished (measured: ~2545px of main column vs
+            ~1058px of sidebar even without this section), so there's no
+            risk of the overlap a too-early full-width break caused
+            earlier. All three benefit from it: cramped into the 8/12
+            column, Verified Results' screenshots were too small to
+            actually read, Campaign Doctor's dark card reads as
+            substantially more premium at full width, and the gallery
+            grid gains a column it didn't have room for before. */}
+        <section id="verified-results" className="mt-16 scroll-mt-24">
+          <VerifiedResults images={caseStudy.proofImages} />
+        </section>
+
         {caseStudy.aiInsight && (
           <section id="campaign-doctor" className="mt-16 scroll-mt-24">
             <CampaignDoctorInsight
