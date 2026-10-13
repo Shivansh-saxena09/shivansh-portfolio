@@ -183,7 +183,7 @@ export function ResumeDoc() {
  * .av-m-{smile,open,flat,o,grin} swap per expression; arms rotate at the
  * shoulder, legs at the hip. SSR markup is the final pose (proud grin).
  */
-export function Avatar({ x, y, s = 1, pose = "hold" }: { x: number; y: number; s?: number; pose?: "hold" | "rest" }) {
+export function Avatar({ x, y, s = 1, ps, pose = "hold" }: { x: number; y: number; s?: number; ps?: number; pose?: "hold" | "rest" }) {
   const [rl, rr] = pose === "hold" ? [-40, 40] : [8, -8];
   const hand = (
     <g transform="translate(0 54)">
@@ -193,7 +193,7 @@ export function Avatar({ x, y, s = 1, pose = "hold" }: { x: number; y: number; s
   );
   const ink = "stroke-charcoal";
   return (
-    <g className="av-pos" transform={`translate(${x} ${y})`}>
+    <g className="av-pos" transform={`translate(${x} ${y})${ps ? ` scale(${ps})` : ""}`}>
       <g transform={`scale(${s})`}>
         <ellipse cx="0" cy="0" rx="32" ry="5" className="av-shadow fill-charcoal" fillOpacity="0.12" />
         <g className="av-legL">

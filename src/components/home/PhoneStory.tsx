@@ -36,13 +36,50 @@ export type PhoneStoryProps = {
 
 const W = 360;
 const H = 420;
-const BEATS = [0, 2.8, 4.8, 6.8, 9.2, 10.6, 12.4, 14.0, 15.0];
+/**
+ * Pacing — the one place to tune the story. Each beat's entrance is authored
+ * on a raw timeline (RAW windows below); `dwell` is how long the beat lasts
+ * on screen in seconds, `hold` how much of that is a still frame after the
+ * last element lands (min 1.5s so every label/number can be read). The
+ * entrance is stretched to fill dwell − hold. The last beat never advances:
+ * its dwell is only its entrance, then it holds until the visitor acts.
+ */
+export const PACING = {
+  beats: [
+    { name: "who", dwell: 4.3, hold: 1.5 },
+    { name: "meta", dwell: 3.6, hold: 1.5 },
+    { name: "google", dwell: 3.7, hold: 1.5 },
+    { name: "results", dwell: 5.0, hold: 1.6 },
+    { name: "tools", dwell: 4.2, hold: 1.6 },
+    { name: "career", dwell: 4.9, hold: 1.5 },
+    { name: "study", dwell: 4.6, hold: 1.6 },
+    { name: "finale", dwell: 1.8, hold: 0 },
+  ],
+  /** Tap-left within this many seconds of a beat's start goes to the previous beat. */
+  backGrace: 1.2,
+} as const;
+// Raw authoring windows (seconds on the raw timeline), one per beat + end.
+const RAW = [0, 2.8, 4.8, 6.8, 9.2, 10.6, 12.4, 14.0, 15.2];
+// Beat start times on the played (master) timeline, + end.
+const BEATS = PACING.beats.reduce<number[]>((a, b) => [...a, a[a.length - 1] + b.dwell], [0]);
 const pct = (x: number, y: number, w: number, h?: number): React.CSSProperties => ({
   left: `${(x / W) * 100}%`,
   top: `${(y / H) * 100}%`,
   width: `${(w / W) * 100}%`,
   ...(h ? { height: `${(h / H) * 100}%` } : {}),
 });
+
+// Layout: b0 lifts the funnel into the empty top; tools/finale scale the character up.
+const UP = -60;
+const TOOL_S = 1.65;
+const FIN_S = 1.95;
+// Career steps [x, top, width] and the résumé box [x, y, w, h] (viewBox units).
+const STEPS = [
+  [8, 330, 112],
+  [124, 250, 112],
+  [240, 170, 112],
+] as const;
+const DOC = [100, 172, 160, 183] as const;
 
 // Funnel (centre 210): Impressions › Clicks › Leads
 const FB = [
@@ -97,7 +134,7 @@ function build(q: Q, low: boolean) {
   gsap.set(q(MOUTHS), { opacity: 0 });
   gsap.set(q(".av-m-smile"), { opacity: 1 });
   gsap.set(q(".av-brL,.av-brR"), { y: 0, rotation: 0 });
-  gsap.set(q(".g-fun,.g-pipe"), { autoAlpha: 1 });
+  gsap.set(q(".g-fun,.g-pipe"), { autoAlpha: 1, y: UP });
   gsap.set(q(".g-meta,.g-goo,.g-capi,.g-res,.g-tool,.g-car,.g-stu,.o-b,.p-form,.p-row,.p-coin,.p-dot,.p-rip,.st-err,.st-ok,.st-errline,.p-pop,.p-prop"), { autoAlpha: 0 });
   gsap.set(q(".g-fin,.p-doc,.st-spark"), { autoAlpha: 0 });
   liq.forEach((l) => gsap.set(l, { y: 70 }));
@@ -109,7 +146,6 @@ function build(q: Q, low: boolean) {
   gsap.set(q(".p-arc"), { strokeDashoffset: 1 });
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
-  BEATS.slice(0, 8).forEach((t, i) => tl.addLabel(`b${i}`, t));
   const face = (e: Expr, at: number) => {
     const [m, yL, yR, rL, rR] = EX[e];
     tl.set(q(MOUTHS), { opacity: 0 }, at)
@@ -155,11 +191,11 @@ function build(q: Q, low: boolean) {
         {
           keyframes: [
             { x: 111, y: 256, autoAlpha: 1, scaleX: 1, scaleY: 1, duration: 0.04 },
-            { x: 160, y: 96, scaleX: 0.82, scaleY: 1.22, duration: 0.26, ease: "power1.out" },
-            { x: i % 2 ? 214 : 122, y: 131, scaleX: 0.85, scaleY: 1.2, duration: 0.18, ease: "power1.in" },
+            { x: 160, y: 96 + UP, scaleX: 0.82, scaleY: 1.22, duration: 0.26, ease: "power1.out" },
+            { x: i % 2 ? 214 : 122, y: 131 + UP, scaleX: 0.85, scaleY: 1.2, duration: 0.18, ease: "power1.in" },
             { scaleX: 1.4, scaleY: 0.6, duration: 0.05 },
-            { x: 190 + i * 8, y: 118, scaleX: 1, scaleY: 1, duration: 0.12 },
-            { y: 150, autoAlpha: 0, duration: 0.14, ease: "power1.in" },
+            { x: 190 + i * 8, y: 118 + UP, scaleX: 1, scaleY: 1, duration: 0.12 },
+            { y: 150 + UP, autoAlpha: 0, duration: 0.14, ease: "power1.in" },
           ],
         },
         t + 0.18,
@@ -168,12 +204,13 @@ function build(q: Q, low: boolean) {
   tl.to(liq[0], { y: 0, duration: 0.6 }, 1.25).to(liq[1], { y: 0, duration: 0.6 }, 1.6).to(liq[2], { y: 0, duration: 0.5 }, 1.9);
   tl.to(lines[0], { strokeDashoffset: 0, duration: 0.35 }, 2.1);
   dots.slice(0, 2).forEach((d, i) =>
-    tl.to(d, { keyframes: [{ x: 210, y: 290, autoAlpha: 1, duration: 0.02 }, { y: 302, duration: 0.1 }, { x: 140, duration: 0.18 }, { y: 318, autoAlpha: 0, duration: 0.1 }] }, 2.15 + i * 0.18),
+    tl.to(d, { keyframes: [{ x: 210, y: 290 + UP, autoAlpha: 1, duration: 0.02 }, { y: 302 + UP, duration: 0.1 }, { x: 140, duration: 0.18 }, { y: 318 + UP, autoAlpha: 0, duration: 0.1 }] }, 2.15 + i * 0.18),
   );
   tl.to(nodes, { opacity: 1, duration: 0.2, stagger: 0.12 }, 2.3).to(lines.slice(1, 3), { strokeDashoffset: 0, duration: 0.2, stagger: 0.12 }, 2.35);
   tl.to(eyes, { x: 3, y: 2, duration: 0.2 }, 2.3);
 
   // ── b1 · Meta Ads: feed card → Instant Form → leads drop into the funnel
+  tl.to(q(".g-fun,.g-pipe"), { y: 0, duration: 0.45, ease: "power2.inOut" }, 2.8);
   tl.to(liq, { y: 70, duration: 0.3 }, 2.8).to(nodes, { opacity: 0.35, duration: 0.2 }, 2.8).set(lines, { strokeDashoffset: 1 }, 2.95);
   face("curious", 2.85);
   tl.to(eyes, { x: 2, y: -3, duration: 0.2 }, 2.85).to(look, { rotation: -3, duration: 0.3 }, 2.85);
@@ -203,8 +240,8 @@ function build(q: Q, low: boolean) {
   tl.to(q(".g-goo"), { opacity: 0.35, duration: 0.3 }, 6.8).to(q(".o-goo"), { opacity: 0.35, duration: 0.3 }, 6.8);
   show(".o-camp", 6.85);
   tl.to(liq.slice(0, 2), { y: 0, duration: 0.7 }, 6.85).to(q(".p-val"), { opacity: 1, duration: 0.3, stagger: 0.1 }, 6.85);
-  count(nums[0], 6.9, 0.8);
-  count(nums[1], 7.0, 0.8);
+  count(nums[0], 6.85, 1.1);
+  count(nums[1], 7.0, 1.0);
   tl.to(lines[0], { strokeDashoffset: 0, duration: 0.3 }, 7.3)
     .to(nodes[0], { opacity: 1, duration: 0.2 }, 7.4)
     .to(q(".st-err"), { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, 7.5)
@@ -222,16 +259,17 @@ function build(q: Q, low: boolean) {
     .to(liq[2], { y: 0, duration: 0.6 }, 8.35)
     .to(armR, { rotation: -8, duration: 0.25 }, 8.45);
   show(".g-res", 8.4);
-  count(nums[2], 8.2, 0.55);
-  count(nums[3], 8.3, 0.5);
-  count(nums[4], 8.35, 0.5);
+  count(nums[2], 8.1, 0.8);
+  count(nums[3], 8.25, 0.7);
+  count(nums[4], 8.3, 0.7);
   face("delight", 8.45);
-  hopTo(80, 404, 8.7);
+  hopTo(80, 404, 8.45);
 
   // ── b4 · toolkit: touch each pictogram, it pops into the scene
   ["g-fun", "g-pipe", "g-meta", "g-goo", "g-capi", "g-res", "o-meta", "o-goo", "o-camp"].forEach((g) => hide(`.${g}`, 9.2));
   tl.set(q(".g-tool"), { autoAlpha: 1 }, 9.2);
   walk(180, 9.25, 0.4);
+  tl.to(pos, { scale: TOOL_S, duration: 0.45, ease: "power2.inOut" }, 9.25);
   face("curious", 9.6);
   const tools = q(".p-tool");
   [
@@ -240,23 +278,19 @@ function build(q: Q, low: boolean) {
     [armR, -160],
     [armR, -120],
   ].forEach(([arm, r], i) => {
-    const t = 9.7 + i * 0.2;
+    const t = 9.62 + i * 0.18;
     tl.to(arm as Element[], { rotation: r as number, duration: 0.12, ease: "back.out(2)" }, t).fromTo(tools[i], { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2.6)" }, t + 0.08);
   });
-  tl.to(armL, { rotation: 8, duration: 0.25 }, 10.45).to(armR, { rotation: -8, duration: 0.25 }, 10.45);
-  face("delight", 10.3);
+  tl.to(armL, { rotation: 8, duration: 0.25 }, 10.3).to(armR, { rotation: -8, duration: 0.25 }, 10.3);
+  face("delight", 10.25);
 
   // ── b5 · career: three steps, each with the role's props
   hide(".g-tool", 10.6);
   tl.set(q(".g-car"), { autoAlpha: 1 }, 10.6).to(q(".p-step"), { scaleY: 1, duration: 0.35, stagger: 0.08 }, 10.6);
   face("neutral", 10.65);
-  const S = [
-    [40, 372],
-    [155, 340],
-    [270, 308],
-  ];
+  const S = STEPS.map(([x, y, w]) => [x + w / 2 - 24, y]);
   S.forEach(([x, y], i) => {
-    const t = 10.75 + i * 0.52;
+    const t = 10.7 + i * 0.5;
     hopTo(x, y, t, 0.85);
     tl.to(q(".p-prop")[i], { autoAlpha: 1, duration: 0.01 }, t + 0.4)
       .fromTo(q(".p-prop")[i], { scale: 0.2 }, { scale: 1, duration: 0.3, ease: "back.out(2.6)" }, t + 0.4)
@@ -284,13 +318,23 @@ function build(q: Q, low: boolean) {
   ["g-stu", "o-edu", "o-place"].forEach((g) => hide(`.${g}`, 14.0));
   tl.set(q(".g-fin"), { autoAlpha: 1 }, 14.0);
   walk(180, 14.05, 0.45);
+  tl.to(pos, { scale: FIN_S, duration: 0.5, ease: "power2.inOut" }, 14.05);
   tl.to(eyes, { x: 0, y: 0, duration: 0.2 }, 14.45)
     .to(armL, { rotation: -40, duration: 0.35, ease: "back.out(1.6)" }, 14.5)
     .to(armR, { rotation: 40, duration: 0.35, ease: "back.out(1.6)" }, 14.52)
     .fromTo(q(".p-doc"), { autoAlpha: 0, scale: 0.5, y: 20 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(1.8)" }, 14.55);
   if (!low) tl.to(q(".st-spark"), { keyframes: [{ autoAlpha: 1, scale: 0.4, duration: 0.01 }, { scale: 1.3, duration: 0.25 }, { autoAlpha: 0, duration: 0.15 }] }, 14.75);
   face("proud", 14.6);
-  return tl;
+
+  // Played timeline: each beat scrubs its raw window over (dwell − hold),
+  // then holds. Seeking to a beat's start renders the raw timeline at that
+  // window's start, so a tapped-to beat always re-enters from clean.
+  const master = gsap.timeline({ paused: true });
+  PACING.beats.forEach((b, i) => {
+    master.addLabel(`b${i}`, BEATS[i]);
+    master.add(tl.tweenFromTo(RAW[i], RAW[i + 1], { duration: Math.max(0.3, b.dwell - b.hold), ease: "none", immediateRender: false }), BEATS[i]);
+  });
+  return master;
 }
 
 export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeFileName }: PhoneStoryProps) {
@@ -442,7 +486,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
     const box = root.current!.getBoundingClientRect();
     const t = tl.time();
     const cur = Math.max(0, BEATS.findIndex((b, i) => t >= b && t < BEATS[i + 1]));
-    if (e.clientX < box.left + box.width / 3) tl.seek(t - BEATS[cur] < 0.6 && cur > 0 ? BEATS[cur - 1] : BEATS[cur]);
+    if (e.clientX < box.left + box.width / 3) tl.seek(t - BEATS[cur] < PACING.backGrace && cur > 0 ? BEATS[cur - 1] : BEATS[cur]);
     else if (cur >= 7) tl.progress(1);
     else tl.seek(BEATS[cur + 1]);
     tl.resume();
@@ -470,7 +514,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
     hud &&
     createPortal(
       <>
-        <div className="absolute top-[21px] right-14 left-0 flex gap-1" aria-hidden="true">
+        <div className="absolute top-5 right-14 left-0 flex gap-1" aria-hidden="true">
           {BEATS.slice(0, 8).map((b) => (
             <span key={b} className="p-seg relative h-[3px] flex-1 overflow-hidden rounded-full bg-beige-border">
               <i className="absolute inset-0 origin-left bg-terracotta" style={{ transform: `scaleX(${phase === "playing" ? 0 : 1})` }} />
@@ -593,12 +637,12 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
         {/* Toolkit pictograms */}
         <g className="g-tool" opacity="0">
           {[
-            [98, 262, <path key="a" d="M-4 -9 v5 M4 -9 v5 M-7 -4 h14 v4 a7 6 0 0 1 -14 0 z M0 6 v5 M-12 -2 a12 12 0 0 1 0 -4 M12 -2 a12 12 0 0 0 0 -4" />],
-            [132, 222, <path key="b" d="M-4 -9 Q-9 -9 -9 -4 V-2 Q-9 0 -12 0 Q-9 0 -9 2 V4 Q-9 9 -4 9 M4 -9 Q9 -9 9 -4 V-2 Q9 0 12 0 Q9 0 9 2 V4 Q9 9 4 9" />],
-            [228, 222, <path key="c" d="M-9 -6 a9 3.5 0 0 0 18 0 a9 3.5 0 0 0 -18 0 v12 a9 3.5 0 0 0 18 0 v-12 M-9 0 a9 3.5 0 0 0 18 0" />],
-            [262, 262, <path key="d" d="M-8 -5 h16 v12 h-16 z M0 -5 v-5 M-3 1 h0.1 M3 1 h0.1 M-11 0 v4 M11 0 v4" />],
+            [50, 150, <path key="a" d="M-4 -9 v5 M4 -9 v5 M-7 -4 h14 v4 a7 6 0 0 1 -14 0 z M0 6 v5 M-12 -2 a12 12 0 0 1 0 -4 M12 -2 a12 12 0 0 0 0 -4" />],
+            [102, 96, <path key="b" d="M-4 -9 Q-9 -9 -9 -4 V-2 Q-9 0 -12 0 Q-9 0 -9 2 V4 Q-9 9 -4 9 M4 -9 Q9 -9 9 -4 V-2 Q9 0 12 0 Q9 0 9 2 V4 Q9 9 4 9" />],
+            [258, 96, <path key="c" d="M-9 -6 a9 3.5 0 0 0 18 0 a9 3.5 0 0 0 -18 0 v12 a9 3.5 0 0 0 18 0 v-12 M-9 0 a9 3.5 0 0 0 18 0" />],
+            [310, 150, <path key="d" d="M-8 -5 h16 v12 h-16 z M0 -5 v-5 M-3 1 h0.1 M3 1 h0.1 M-11 0 v4 M11 0 v4" />],
           ].map(([x, y, d], i) => (
-            <g key={i} transform={`translate(${x} ${y})`} role="img" aria-label={c.toolLabels[i]}>
+            <g key={i} transform={`translate(${x} ${y}) scale(1.4)`} role="img" aria-label={c.toolLabels[i]}>
               <g className="p-tool p-pop">
                 <circle r="20" className="fill-ivory stroke-sage" strokeWidth="1.4" />
                 <g className={`fill-none ${i === 3 ? "stroke-terracotta" : "stroke-sage-dark"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -611,24 +655,25 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
 
         {/* Career steps + role props */}
         <g className="g-car" opacity="0">
-          {[
-            [8, 372, 112],
-            [120, 340, 120],
-            [240, 308, 112],
-          ].map(([x, y, w]) => (
+          {STEPS.map(([x, y, w]) => (
             <rect key={x} className="p-step fill-ivory stroke-beige-border" x={x} y={y} width={w} height={H - y} strokeWidth="1.5" />
           ))}
+          <g transform={`translate(4 ${STEPS[0][1] - 372})`}>
           <g className="p-prop p-pop" role="img" aria-label={milestones[0]?.org}>
             <rect x="82" y="320" width="28" height="46" rx="5" className="fill-ivory stroke-charcoal" strokeOpacity="0.55" />
             <rect x="87" y="327" width="18" height="12" rx="2" className="fill-sage" fillOpacity="0.4" />
             <path d="M96 352 c-3 -4 -8 0 0 5 c8 -5 3 -9 0 -5z" className="fill-terracotta" />
           </g>
+          </g>
+          <g transform={`translate(-2 ${STEPS[1][1] - 340})`}>
           <g className="p-prop p-pop" role="img" aria-label={milestones[1]?.org}>
             <rect x="188" y="292" width="46" height="36" rx="4" className={ink} strokeWidth="1.2" />
             {[10, 16, 13, 22].map((h, i) => (
               <rect key={i} x={194 + i * 9} y={322 - h} width="6" height={h} rx="1" className={i === 3 ? "fill-terracotta" : "fill-sage"} />
             ))}
           </g>
+          </g>
+          <g transform={`translate(0 ${STEPS[2][1] - 308})`}>
           <g className="p-prop p-pop" role="img" aria-label={milestones[2]?.org}>
             <circle cx="326" cy="238" r="12" className="fill-none stroke-terracotta" strokeWidth="1.6" />
             <circle cx="326" cy="238" r="6" className="fill-none stroke-terracotta" strokeWidth="1.6" />
@@ -639,6 +684,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
                 <path d={`M${x - 8} 290 a8 8 0 0 1 16 0 z`} className={i === 1 ? "fill-terracotta" : "fill-sage"} fillOpacity="0.8" />
               </g>
             ))}
+          </g>
           </g>
         </g>
 
@@ -677,10 +723,10 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
         </g>
 
         <g className="g-fin">
-          <circle cx="180" cy="300" r="92" className="fill-terracotta" fillOpacity="0.06" />
+          <circle cx="180" cy="262" r="142" className="fill-terracotta" fillOpacity="0.06" />
         </g>
-        <Spark x={236} y={262} />
-        <Avatar x={180} y={404} s={0.9} pose="hold" />
+        <Spark x={DOC[0] + DOC[2] - 6} y={DOC[1] + 8} />
+        <Avatar x={180} y={404} s={0.9} ps={FIN_S} pose="hold" />
         {[0, 1, 2, 3].map((i) => (
           <g key={i} className="p-coin" opacity="0">
             <circle r="6" className="fill-terracotta" />
@@ -697,7 +743,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
       <span className={`o-b o-goo ${tag} font-semibold text-sage-dark`} style={pct(190, 114, 160)}>{c.channelLabels[1]}</span>
       <span className={`o-b o-camp ${tag} text-warm-grey`} style={pct(4, 140, 90)}>{c.campaignLabel}</span>
       {milestones.slice(0, 3).map((m, i) => (
-        <span key={m.org} className={`o-b o-step ${tag}`} style={pct([12, 124, 244][i], [376, 344, 312][i] + 2, 104)}>
+        <span key={m.org} className={`o-b o-step ${tag}`} style={pct(STEPS[i][0] + 4, STEPS[i][1] + 5, STEPS[i][2] - 8)}>
           <b className={`block text-[2.6cqw] tracking-[0.08em] uppercase ${m.current ? "text-terracotta" : "text-warm-grey"}`}>{m.date}</b>
           <span className="font-heading text-[3.2cqw] font-semibold text-charcoal">{m.org}</span>
         </span>
@@ -712,7 +758,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
         <span className="text-warm-grey">{place.availability}</span>
       </span>
 
-      <a href={resumeUrl} download={resumeFileName} tabIndex={-1} aria-hidden="true" className="p-doc absolute z-10 block" style={pct(152, 288, 56, 64)}>
+      <a href={resumeUrl} download={resumeFileName} tabIndex={-1} aria-hidden="true" className="p-doc absolute z-10 block" style={pct(...DOC)}>
         <svg viewBox="0 0 140 160" className="h-full w-full overflow-visible">
           <ResumeDoc />
         </svg>

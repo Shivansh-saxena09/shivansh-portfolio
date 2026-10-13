@@ -58,9 +58,10 @@ export function Hero({
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
-      <Container>
-        <div className="relative mx-auto max-w-[520px] [container-type:inline-size] lg:max-w-none">
+    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 max-sm:flex max-sm:max-h-[calc(100svh-var(--hdr-h))] max-sm:flex-col max-sm:pt-3 max-sm:pb-4 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
+      {/* Phones: the hero fits the viewport under the header; only the film shrinks. */}
+      <Container className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
+        <div className="relative mx-auto max-w-[520px] [container-type:inline-size] max-sm:flex max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:flex-col lg:max-w-none">
           <div className="relative z-30 lg:absolute lg:top-0 lg:left-0 lg:w-[46%]">
             <h1 className="font-heading text-charcoal">
               <span className="block text-[8.6cqw] leading-[1.05] font-bold tracking-tight lg:text-[5.2cqw]">
@@ -78,9 +79,9 @@ export function Hero({
 
           {/* Phones (<640): wordless Stories film + a server-rendered link dock.
               The dock sits outside the tap stage, so links always win. */}
-          <div className="mt-[4cqw] sm:hidden">
+          <div className="mt-[3cqw] flex min-h-0 flex-1 flex-col sm:hidden">
             <p className="sr-only">{visual.storyText}</p>
-            <div id="p-hud" className="relative pt-14 [container-type:size]" style={{ height: "calc(min(116.7cqw, 62svh) + 3.5rem)" }}>
+            <div id="p-hud" className="relative min-h-0 pt-11 [container-type:size]" style={{ flex: "0 1 calc(116.7cqw + 2.75rem)" }}>
               {phone && (
                 <PhoneStory
                   c={visual}
@@ -92,7 +93,7 @@ export function Hero({
                 />
               )}
             </div>
-            <nav className="mt-[4cqw] grid grid-cols-2 gap-2">
+            <nav className="mt-3 grid shrink-0 grid-cols-2 gap-2">
               {(
                 [
                   ["/marketing", visual.linkLabels[0], true],
