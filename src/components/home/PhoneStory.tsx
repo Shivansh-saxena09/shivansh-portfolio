@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { gsap } from "gsap";
 import type { HeroVisualContent } from "@/lib/data/heroVisual";
-import { Avatar, Liquid, ResumeDoc, Spark, StatusBadge } from "@/components/home/sceneParts";
+import { Avatar, Liquid, Spark, StatusBadge } from "@/components/home/sceneParts";
 
 /**
  * Phone-only (<640px) hero: a wordless, Stories-style film in 8 beats —
@@ -27,6 +27,8 @@ type Milestone = { date: string; org: string; current: boolean };
 type Edu = { year: string; credential: string };
 export type PhoneStoryProps = {
   c: HeroVisualContent;
+  /** Person's name (site settings), printed on the résumé. */
+  name: string;
   milestones: Milestone[];
   education: Edu[];
   place: { location: string; availability: string };
@@ -73,6 +75,8 @@ const pct = (x: number, y: number, w: number, h?: number): React.CSSProperties =
 
 // Layout: b0 lifts the funnel into the empty top; tools/finale scale the character up.
 const UP = -60;
+// Text grid: left edge shared by the Meta card, its tags and the result block.
+const GX = 20;
 const TOOL_S = 1.65;
 const FIN_S = 1.95;
 // Career steps [x, top, width] and the résumé box [x, y, w, h] (viewBox units).
@@ -86,7 +90,7 @@ const DOC = [100, 172, 160, 183] as const;
 // Funnel (centre 210): Impressions › Clicks › Leads
 const FB = [
   [130, 180],
-  [186, 234],
+  [185, 235],
   [240, 290],
 ] as const;
 const fh = (y: number) => 100 - 0.27 * (y - 130);
@@ -139,7 +143,7 @@ function build(q: Q, low: boolean) {
   gsap.set(q(".av-m-smile"), { opacity: 1 });
   gsap.set(q(".av-brL,.av-brR"), { y: 0, rotation: 0 });
   gsap.set(q(".g-fun,.g-pipe"), { autoAlpha: 1, y: UP });
-  gsap.set(q(".g-meta,.g-goo,.g-capi,.g-res,.g-tool,.g-car,.g-stu,.o-b,.p-form,.p-row,.p-coin,.p-dot,.p-rip,.st-err,.st-ok,.st-errline,.p-pop,.p-prop"), { autoAlpha: 0 });
+  gsap.set(q(".g-meta,.g-goo,.g-capi,.g-tool,.g-car,.g-stu,.o-b,.p-form,.p-row,.p-coin,.p-dot,.p-rip,.st-err,.st-ok,.st-errline,.p-pop,.p-prop"), { autoAlpha: 0 });
   gsap.set(q(".g-fin,.p-doc,.st-spark"), { autoAlpha: 0 });
   liq.forEach((l) => gsap.set(l, { y: 70 }));
   gsap.set(q(".p-val"), { opacity: 0.3 });
@@ -262,7 +266,6 @@ function build(q: Q, low: boolean) {
     .to(lines, { strokeDashoffset: 0, duration: 0.2 }, 8.35)
     .to(liq[2], { y: 0, duration: 0.6 }, 8.35)
     .to(armR, { rotation: -8, duration: 0.25 }, 8.45);
-  show(".g-res", 8.4);
   count(nums[2], 8.1, 0.8);
   count(nums[3], 8.25, 0.7);
   count(nums[4], 8.3, 0.7);
@@ -270,7 +273,7 @@ function build(q: Q, low: boolean) {
   hopTo(80, 404, 8.45);
 
   // ── b4 · toolkit: touch each pictogram, it pops into the scene
-  ["g-fun", "g-pipe", "g-meta", "g-goo", "g-capi", "g-res", "o-meta", "o-goo", "o-camp"].forEach((g) => hide(`.${g}`, 9.2));
+  ["g-fun", "g-pipe", "g-meta", "g-goo", "g-capi", "o-meta", "o-goo", "o-camp"].forEach((g) => hide(`.${g}`, 9.2));
   tl.set(q(".g-tool"), { autoAlpha: 1 }, 9.2);
   walk(180, 9.25, 0.4);
   tl.to(pos, { scale: TOOL_S, duration: 0.45, ease: "power2.inOut" }, 9.25);
@@ -341,7 +344,30 @@ function build(q: Q, low: boolean) {
   return master;
 }
 
-export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeFileName }: PhoneStoryProps) {
+/** Phone finale's résumé: admin title + name on the page, abstract lines, download badge. */
+function PhoneResume({ title, name }: { title: string; name: string }) {
+  return (
+    <g>
+      <path d="M0 0 H92 L120 28 V150 H0 Z" className="fill-ivory stroke-terracotta" strokeOpacity="0.6" strokeWidth="1.25" />
+      <path d="M92 0 V28 H120" className="fill-cream stroke-terracotta" strokeOpacity="0.6" strokeWidth="1.25" />
+      <text x="60" y="47" textAnchor="middle" className="fill-charcoal font-heading" fontSize="19" fontWeight="700">
+        {title}
+      </text>
+      <rect x="46" y="54" width="28" height="3" rx="1.5" className="fill-terracotta" />
+      <text x="60" y="71" textAnchor="middle" className="fill-warm-grey font-body" fontSize="11.5" fontWeight="500">
+        {name}
+      </text>
+      {[86, 96, 106, 120].map((y, i) => {
+        const w = [76, 64, 70, 48][i];
+        return <rect key={y} x={60 - w / 2} y={y} width={w} height="3.5" rx="1.75" className={i === 3 ? "fill-sage" : "fill-warm-grey"} fillOpacity={i === 3 ? 0.7 : 0.28} />;
+      })}
+      <circle cx="112" cy="140" r="20" className="fill-terracotta" />
+      <path d="M112 130 v17 m0 0 -6 -6 m6 6 6 -6" className="stroke-ivory" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+export function PhoneStory({ c, name, milestones, education, place, resumeUrl, resumeFileName }: PhoneStoryProps) {
   const root = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const idle = useRef<gsap.core.Animation[]>([]);
@@ -596,7 +622,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
 
         {/* Conversions API: dashed signal loops back to both channels */}
         <g className="g-capi" opacity="0" role="img" aria-label="Conversions API">
-          <path d="M110 332 H96 V118 M91 124 L96 116 L101 124" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
+          <path d="M110 332 H104 V118 M99 124 L104 116 L109 124" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
           <path d="M310 332 H352 V38 M347 44 L352 36 L357 44" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
         </g>
 
@@ -606,20 +632,16 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
             <path key={t} d={fBand(t, b)} className="fill-ivory stroke-terracotta" strokeOpacity="0.5" />
           ))}
           <Liquid id="pf" bands={FB} band={fBand} x0={110} x1={310} />
-          {FB.map(([t, b], i) => (
+          {FB.map(([t], i) => (
             <g key={t} className="p-val">
-              <text x="210" y={(t + b) / 2 - 5} textAnchor="middle" className={`font-body ${i === 2 ? "fill-ivory" : "fill-charcoal"}`} fillOpacity="0.75" fontSize="7.5" fontWeight="600" letterSpacing="1.2">
+              <text x="210" y={t + 19} textAnchor="middle" className={`font-body ${i === 2 ? "fill-ivory" : "fill-charcoal"}`} fillOpacity="0.75" fontSize="9" fontWeight="600" letterSpacing="1">
                 {c.stages[i].toUpperCase()}
               </text>
-              <text x="210" y={(t + b) / 2 + 12} textAnchor="middle" className={`p-num font-heading ${i === 2 ? "fill-ivory" : "fill-charcoal"}`} fontSize="15" fontWeight="700" data-v={i === 2 ? String(c.leadsValue) : c.stageValues[i]}>
+              <text x="210" y={t + 38} textAnchor="middle" className={`p-num font-heading ${i === 2 ? "fill-ivory" : "fill-charcoal"}`} fontSize="15" fontWeight="700" data-v={i === 2 ? String(c.leadsValue) : c.stageValues[i]}>
                 {i === 2 ? c.leadsValue.toLocaleString("en-IN") : c.stageValues[i]}
               </text>
             </g>
           ))}
-        </g>
-        <g className="g-res" opacity="0">
-          <text x="280" y="257" className="p-num fill-warm-grey font-body" fontSize="11" data-v={c.metricChips[0]}>{c.metricChips[0]}</text>
-          <text x="280" y="273" className="p-num fill-warm-grey font-body" fontSize="11" data-v={c.metricChips[1]}>{c.metricChips[1]}</text>
         </g>
 
         {/* Systems: Pixel + CAPI → CRM → dashboard */}
@@ -746,26 +768,34 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
       {/* Labels as HTML (wrap cleanly, stay crisp) — all from admin content */}
       <span className={`o-b o-meta ${tag} font-semibold text-terracotta-dark`} style={pct(20, 114, 150)}>{c.channelLabels[0]}</span>
       <span className={`o-b o-goo ${tag} font-semibold text-sage-dark`} style={pct(190, 114, 160)}>{c.channelLabels[1]}</span>
-      <span className={`o-b o-camp ${tag} text-warm-grey`} style={pct(4, 140, 90)}>{c.campaignLabel}</span>
+      {/* Campaign + its results as one left-aligned block: chips flow under the label however it wraps */}
+      <div className={`o-b o-camp ${tag} text-warm-grey`} style={pct(GX, 140, 78)}>
+        {c.campaignLabel}
+        {c.metricChips.map((m, i) => (
+          <span key={i} className={`p-num block font-semibold text-charcoal ${i ? "" : "mt-[1.4cqw]"} text-[max(3.3cqw,10.5px)]`} data-v={m}>
+            {m}
+          </span>
+        ))}
+      </div>
       {milestones.slice(0, 3).map((m, i) => (
-        <span key={m.org} className={`o-b o-step ${tag}`} style={pct(STEPS[i][0] + 4, STEPS[i][1] + 5, STEPS[i][2] - 8)}>
+        <span key={m.org} className={`o-b o-step ${tag}`} style={pct(STEPS[i][0] + 8, STEPS[i][1] + 8, STEPS[i][2] - 16)}>
           <b className={`block text-[max(2.6cqw,8.5px)] tracking-[0.08em] uppercase ${m.current ? "text-terracotta" : "text-warm-grey"}`}>{m.date}</b>
           <span className="font-heading text-[max(3.2cqw,10px)] font-semibold text-charcoal">{m.org}</span>
         </span>
       ))}
       {education.slice(0, 2).map((e, i) => (
-        <span key={e.year} className={`o-b o-edu ${tag} text-center font-semibold text-charcoal`} style={pct([22, 126][i], [86, 104][i], 80)}>
+        <span key={e.year} className={`o-b o-edu ${tag} text-center font-semibold text-charcoal`} style={pct([22, 126][i], 106, 80)}>
           {e.year}
         </span>
       ))}
-      <span className={`o-b o-place ${tag} text-right`} style={pct(110, 288, 240)}>
+      <span className={`o-b o-place ${tag} text-center`} style={pct(185, 276, 200)}>
         <b className="block font-heading text-[max(3.6cqw,11px)] text-charcoal">{place.location}</b>
         <span className="text-warm-grey">{place.availability}</span>
       </span>
 
       <a href={resumeUrl} download={resumeFileName} tabIndex={-1} aria-hidden="true" className="p-doc absolute z-10 block" style={pct(...DOC)}>
         <svg viewBox="0 0 140 160" className="h-full w-full overflow-visible">
-          <ResumeDoc />
+          <PhoneResume title={c.resumeLabel} name={name} />
         </svg>
       </a>
 

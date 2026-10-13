@@ -85,6 +85,7 @@ export function Hero({
               {phone && (
                 <PhoneStory
                   c={visual}
+                  name={identity.name}
                   milestones={milestones}
                   education={education}
                   place={place}
