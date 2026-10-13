@@ -3,13 +3,13 @@
 import type { HeroVisualContent } from "@/lib/data/heroVisual";
 import { useReferrerBias } from "@/lib/useReferrerBias";
 import { Container } from "@/components/ui/Container";
-import { HeroScene, type Milestone } from "@/components/home/HeroScene";
+import { HeroStory, type Milestone } from "@/components/home/HeroStory";
 
 type Identity = { name: string; role: string; tagline: string };
 
 /**
- * The hero is a single scene (HeroScene): the funnel, system layer, AI node
- * and résumé document are the page's four navigation links. The identity
+ * The hero is a single pantomime scene (HeroStory): the funnel, pipeline,
+ * AI agent and résumé document are the page's four navigation links. The identity
  * block is one real h1 (name + role) shared by both compositions — in flow
  * above the scene on phones/tablets, laid into the scene's empty top-left
  * on desktop. Sizes there use cqw so it scales with the scene.
@@ -56,10 +56,10 @@ export function Hero({
           </div>
 
           <div className="mt-[4cqw] lg:hidden">
-            <HeroScene variant="mobile" {...shared} />
+            <HeroStory variant="mobile" {...shared} />
           </div>
           <div className="hidden lg:block">
-            <HeroScene variant="desktop" {...shared} />
+            <HeroStory variant="desktop" {...shared} />
           </div>
         </div>
       </Container>

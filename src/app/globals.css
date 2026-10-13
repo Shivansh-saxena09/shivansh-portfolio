@@ -268,43 +268,8 @@ h4 {
   color: transparent;
 }
 
-/* Hero motion graphic loops (components/home/HeroVisual.tsx). Compositor-
+/* Hero story loops (components/home/HeroStory.tsx). Compositor-
    friendly properties only; paused while the graphic is off-screen. */
-.hv-flow {
-  animation: hv-flow 1.6s linear infinite;
-}
-@keyframes hv-flow {
-  to {
-    stroke-dashoffset: -20;
-  }
-}
-.hv-pulse {
-  opacity: 0;
-  animation: hv-pulse 2.4s ease-out infinite;
-}
-@keyframes hv-pulse {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.45;
-  }
-}
-.hv-paused .hv-flow,
-.hv-paused .hv-pulse {
-  animation-play-state: paused;
-}
-.hv-orbit {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: hv-spin 28s linear infinite;
-}
-@keyframes hv-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 .hv-wave {
   transform-box: fill-box;
   transform-origin: center;
@@ -343,17 +308,13 @@ h4 {
 .scene-obj:focus-visible .scene-arrow {
   transform: translate(2px, -2px);
 }
-.hv-paused .hv-orbit,
 .hv-paused .hv-wave,
 .hv-paused .scene-ping {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
   .hv-wave,
-  .hv-orbit,
-  .scene-ping,
-  .hv-flow,
-  .hv-pulse {
+  .scene-ping {
     animation: none;
   }
   .scene-obj {

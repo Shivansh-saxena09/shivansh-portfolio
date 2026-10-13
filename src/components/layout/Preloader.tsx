@@ -68,7 +68,9 @@ export function Preloader({
   const eyebrow = personTagline.replace(/\.\s+/g, " · ").replace(/\.\s*$/, "");
 
   return (
-    <AnimatePresence>
+    // Signals the end of the exit animation so above-the-fold motion (the
+    // homepage hero story) can start once it's actually visible.
+    <AnimatePresence onExitComplete={() => window.dispatchEvent(new Event("preloader:done"))}>
       {!done && (
         <motion.div
           data-preloader

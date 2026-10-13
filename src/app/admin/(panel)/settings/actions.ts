@@ -48,7 +48,7 @@ export async function updateHeroVisual(formData: FormData): Promise<void> {
     leadsValue: get("leads_value"),
     metricChips: list("chip", 2),
     systemNodes: list("node", 3),
-    feedbackLabel: get("feedback_label"),
+    controlLabels: list("control_label", 2),
     aiLabel: get("ai_label"),
     aiItems: list("ai_item", 2),
     aiStatus: get("ai_status"),

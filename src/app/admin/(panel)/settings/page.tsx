@@ -37,7 +37,6 @@ export default async function AdminSettingsPage() {
       title: "Engineering — system layer",
       fields: [
         ...hv.systemNodes.map((v, i): [string, string, string] => [`node_${i}`, `System node ${i + 1}`, v]),
-        ["feedback_label", "Conversion-signal loop label", hv.feedbackLabel],
       ],
     },
     {
@@ -59,6 +58,8 @@ export default async function AdminSettingsPage() {
         ...(["Marketing", "Engineering", "AI", "Resume"] as const).map(
           (k, i): [string, string, string] => [`link_label_${i}`, `${k} link label`, hv.linkLabels[i]],
         ),
+        ["control_label_0", "Skip button label", hv.controlLabels[0]],
+        ["control_label_1", "Replay button label", hv.controlLabels[1]],
       ],
     },
   ];
@@ -142,7 +143,7 @@ export default async function AdminSettingsPage() {
       <div>
         <h2 className="font-heading text-xl font-bold text-charcoal">Hero Scene</h2>
         <p className="mt-1 font-body text-sm text-warm-grey">
-          Every label, number and link label inside the homepage hero scene. Name, role (hero
+          Every label, number and link label inside the homepage hero story. Name, role (hero
           eyebrow) and the tagline line (hero heading) come from the fields above; career
           milestones come from the Experience timeline; the resume document uses the uploaded PDF.
         </p>

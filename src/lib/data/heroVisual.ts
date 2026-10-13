@@ -1,4 +1,4 @@
-// Content for the homepage hero scene (components/home/HeroScene.tsx). Lives
+// Content for the homepage hero story (components/home/HeroStory.tsx). Lives
 // in Supabase (site_settings.hero_visual, migrations 0007 + 0008) and is
 // edited from /admin/settings → Hero Scene; these defaults only cover the
 // window before a migration is applied, and mirror 0008's seed exactly.
@@ -13,7 +13,8 @@ export type HeroVisualContent = {
   leadsValue: number;
   metricChips: [string, string];
   systemNodes: [string, string, string];
-  feedbackLabel: string;
+  /** Story controls: [skip, replay]. */
+  controlLabels: [string, string];
   aiLabel: string;
   aiItems: [string, string];
   aiStatus: string;
@@ -34,7 +35,7 @@ export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
   leadsValue: 292,
   metricChips: ["₹254 CPL", "112 qualified"],
   systemNodes: ["Pixel + CAPI", "Supabase CRM", "Live dashboard"],
-  feedbackLabel: "conversion signal",
+  controlLabels: ["Skip intro", "Replay"],
   aiLabel: "AI agents",
   aiItems: ["Campaign Doctor", "AI calling agent"],
   aiStatus: "Coming soon",
@@ -66,7 +67,7 @@ export function parseHeroVisual(raw: unknown): HeroVisualContent {
     leadsValue: Number.isFinite(n) && n >= 0 && r.leadsValue !== "" ? Math.round(n) : d.leadsValue,
     metricChips: tuple(r.metricChips, d.metricChips),
     systemNodes: tuple(r.systemNodes, d.systemNodes),
-    feedbackLabel: str("feedbackLabel"),
+    controlLabels: tuple(r.controlLabels, d.controlLabels),
     aiLabel: str("aiLabel"),
     aiItems: tuple(r.aiItems, d.aiItems),
     aiStatus: str("aiStatus"),

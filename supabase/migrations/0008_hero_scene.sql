@@ -1,8 +1,8 @@
 -- ============================================================================
--- Hero scene content (components/home/HeroScene.tsx). Data-only: extends the
+-- Hero story content (components/home/HeroStory.tsx). Data-only: extends the
 -- existing site_settings.hero_visual jsonb (0007) with the scene's new keys
--- (AI node, resume document, career label, link labels, /engineering#ai
--- section copy) and switches the funnel numbers to the Jewar campaign's real
+-- (AI node, resume document, career label, link labels, skip/replay
+-- labels, /engineering#ai section copy) and switches the funnel numbers to the Jewar campaign's real
 -- totals across both ad sets: 7,76,021 impressions, 6,445 link clicks,
 -- 292 leads, ₹74,037 spent (₹254 CPL), 112 qualified. No schema change —
 -- the app falls back to identical defaults (lib/data/heroVisual.ts) if this
@@ -24,7 +24,8 @@ set hero_visual = coalesce(hero_visual, '{}'::jsonb) || '{
   "resumeMeta": "PDF",
   "careerLabel": "Career",
   "linkLabels": ["Marketing work", "Engineering work", "AI work", "Resume"],
+  "controlLabels": ["Skip intro", "Replay"],
   "aiSectionHeading": "AI work",
   "aiSectionBody": "Campaign Doctor — the internal tool I use to analyse campaign metrics — and an AI calling agent I''m building now. Full write-ups are coming soon."
-}'::jsonb - 'leadsLabel'
+}'::jsonb - 'leadsLabel' - 'feedbackLabel'
 where id = 1;
