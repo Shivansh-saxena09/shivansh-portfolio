@@ -3,7 +3,16 @@
 import type { HeroVisualContent } from "@/lib/data/heroVisual";
 import { useReferrerBias } from "@/lib/useReferrerBias";
 import { Container } from "@/components/ui/Container";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
 import { HeroStory, type Milestone } from "@/components/home/HeroStory";
+import type { PhoneStoryProps } from "@/components/home/PhoneStory";
+
+// Phone-only film: fetched only when the phone query matches, so tablet and
+// desktop never download it.
+const PhoneStory = dynamic(() => import("@/components/home/PhoneStory").then((m) => m.PhoneStory), { ssr: false });
+const PHONE = "(max-width: 639.98px)";
 
 type Identity = { name: string; role: string; tagline: string };
 
@@ -19,12 +28,24 @@ export function Hero({
   visual,
   milestones,
   resumeUrl,
+  education,
+  place,
 }: {
   identity: Identity;
   visual: HeroVisualContent;
   milestones: Milestone[];
   resumeUrl: string;
+  education: PhoneStoryProps["education"];
+  place: PhoneStoryProps["place"];
 }) {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(PHONE);
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   // Referrer bias: default (no/unknown referrer) only Marketing is vivid;
   // a LinkedIn referrer also lights Engineering — Marketing never dims.
   const engineeringLeaning = useReferrerBias() === "engineering-leaning";
@@ -55,7 +76,49 @@ export function Hero({
             </p>
           </div>
 
-          <div className="mt-[4cqw] lg:hidden">
+          {/* Phones (<640): wordless Stories film + a server-rendered link dock.
+              The dock sits outside the tap stage, so links always win. */}
+          <div className="mt-[4cqw] sm:hidden">
+            <p className="sr-only">{visual.storyText}</p>
+            <div id="p-hud" className="relative mt-5 [container-type:size]" style={{ height: "min(116.7cqw, 62svh)" }}>
+              {phone && (
+                <PhoneStory
+                  c={visual}
+                  milestones={milestones}
+                  education={education}
+                  place={place}
+                  resumeUrl={resumeUrl}
+                  resumeFileName={shared.resumeFileName}
+                />
+              )}
+            </div>
+            <nav className="mt-[4cqw] grid grid-cols-2 gap-2">
+              {(
+                [
+                  ["/marketing", visual.linkLabels[0], true],
+                  ["/engineering", visual.linkLabels[1], engineeringLeaning],
+                  ["/engineering#ai", visual.linkLabels[2], false],
+                ] as const
+              ).map(([href, label, vivid]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex min-h-12 items-center justify-center rounded-full border px-3 text-center font-body text-sm font-semibold focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none ${vivid ? "border-terracotta bg-terracotta text-ivory" : "border-beige-border bg-ivory text-charcoal"}`}
+                >
+                  {label}
+                </Link>
+              ))}
+              <a
+                href={resumeUrl}
+                download={shared.resumeFileName}
+                aria-label={`${visual.linkLabels[3]} (${visual.resumeMeta} download)`}
+                className="flex min-h-12 items-center justify-center rounded-full border border-sage bg-ivory px-3 font-body text-sm font-semibold text-sage-dark focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none"
+              >
+                {visual.linkLabels[3]}
+              </a>
+            </nav>
+          </div>
+          <div className="mt-[4cqw] hidden sm:block lg:hidden">
             <HeroStory variant="mobile" {...shared} />
           </div>
           <div className="hidden lg:block">
