@@ -134,9 +134,11 @@ function build(q: Q, low: boolean) {
   const count = (el: Element, at: number, dur: number) => {
     const p = numberParts((el as HTMLElement).dataset.v ?? "");
     if (!p) return;
+    // Hidden until it counts, so no "0" ever reads as a real metric.
     el.textContent = p.fmt(0);
+    gsap.set(el, { opacity: 0 });
     const o = { v: 0 };
-    tl.to(o, { v: p.v, duration: dur, ease: "power1.out", onUpdate: () => void (el.textContent = p.fmt(o.v)) }, at);
+    tl.to(el, { opacity: 1, duration: 0.1 }, at).to(o, { v: p.v, duration: dur, ease: "power1.out", onUpdate: () => void (el.textContent = p.fmt(o.v)) }, at);
   };
   const nums = q(".p-num");
 
@@ -220,9 +222,9 @@ function build(q: Q, low: boolean) {
     .to(liq[2], { y: 0, duration: 0.6 }, 8.35)
     .to(armR, { rotation: -8, duration: 0.25 }, 8.45);
   show(".g-res", 8.4);
-  count(nums[2], 8.35, 0.65);
-  count(nums[3], 8.5, 0.6);
-  count(nums[4], 8.55, 0.6);
+  count(nums[2], 8.2, 0.55);
+  count(nums[3], 8.3, 0.5);
+  count(nums[4], 8.35, 0.5);
   face("delight", 8.45);
   hopTo(80, 404, 8.7);
 
@@ -297,11 +299,10 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
   const idle = useRef<gsap.core.Animation[]>([]);
   const [phase, setPhase] = useState<"static" | "playing" | "done">("static");
   const [paused, setPaused] = useState(false);
-  const [hud, setHud] = useState<HTMLElement | null>(null);
+  // Client-only (next/dynamic ssr:false), so the HUD slot already exists.
+  const [hud] = useState<HTMLElement | null>(() => document.getElementById("p-hud"));
   const beat = useRef(-1);
   const started = useRef(false);
-
-  useEffect(() => setHud(document.getElementById("p-hud")), []);
 
   const startIdle = () => {
     const q = gsap.utils.selector(root.current) as Q;
@@ -469,7 +470,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
     hud &&
     createPortal(
       <>
-        <div className="absolute inset-x-0 -top-3.5 flex gap-1" aria-hidden="true">
+        <div className="absolute top-[21px] right-14 left-0 flex gap-1" aria-hidden="true">
           {BEATS.slice(0, 8).map((b) => (
             <span key={b} className="p-seg relative h-[3px] flex-1 overflow-hidden rounded-full bg-beige-border">
               <i className="absolute inset-0 origin-left bg-terracotta" style={{ transform: `scaleX(${phase === "playing" ? 0 : 1})` }} />
@@ -477,7 +478,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
           ))}
         </div>
         {phase !== "static" && (
-          <button type="button" onClick={phase === "playing" ? skip : replay} aria-label={lbl} title={lbl} className="absolute top-0 right-0 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-beige-border bg-ivory/90 text-warm-grey focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none">
+          <button type="button" onClick={phase === "playing" ? skip : replay} aria-label={lbl} title={lbl} className="absolute top-0 right-0 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-beige-border bg-ivory/90 text-warm-grey focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none">
             <svg viewBox="0 0 12 12" className="h-4 w-4" aria-hidden="true">
               {phase === "playing" ? <path d="M2 2.5 6.5 6 2 9.5Z M6.5 2.5 11 6 6.5 9.5Z" className="fill-current" /> : <path d="M2.5 6a3.5 3.5 0 1 0 1.2-2.6M2.5 1.5v2.2h2.2" className="fill-none stroke-current" strokeWidth="1.4" strokeLinecap="round" />}
             </svg>

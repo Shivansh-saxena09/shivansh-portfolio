@@ -80,7 +80,7 @@ export function Hero({
               The dock sits outside the tap stage, so links always win. */}
           <div className="mt-[4cqw] sm:hidden">
             <p className="sr-only">{visual.storyText}</p>
-            <div id="p-hud" className="relative mt-5 [container-type:size]" style={{ height: "min(116.7cqw, 62svh)" }}>
+            <div id="p-hud" className="relative pt-14 [container-type:size]" style={{ height: "calc(min(116.7cqw, 62svh) + 3.5rem)" }}>
               {phone && (
                 <PhoneStory
                   c={visual}
