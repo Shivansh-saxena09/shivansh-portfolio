@@ -31,6 +31,10 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // The spine draws itself as the timeline scrolls past (reduced motion: already drawn).
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+        gsap.fromTo(".tl-spine", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: rootRef.current, start: "top 75%", end: "bottom 75%", scrub: 0.4 } });
+
       gsap.utils.toArray<HTMLElement>(".timeline-item").forEach((item) => {
         gsap.from(item, {
           opacity: 0,
@@ -77,7 +81,7 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
           direction as the scroll-progress bar and footer accent. */}
       <div
         aria-hidden="true"
-        className="absolute top-2 bottom-2 left-2 w-px bg-beige-border lg:left-1/2 lg:-translate-x-1/2 lg:bg-gradient-to-b lg:from-terracotta lg:via-beige-border lg:to-sage"
+        className="tl-spine absolute top-2 bottom-2 left-2 w-px origin-top bg-beige-border lg:left-1/2 lg:-translate-x-1/2 lg:bg-gradient-to-b lg:from-terracotta lg:via-beige-border lg:to-sage"
       />
 
       {entries.map((entry, i) => {

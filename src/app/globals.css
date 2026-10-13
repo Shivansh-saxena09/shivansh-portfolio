@@ -408,3 +408,56 @@ h4 {
     transition: none;
   }
 }
+
+/* Play-once scroll reveals (components/motion/useRevealOnce.ts). Without a
+   data-mo attribute (SSR, no JS, reduced motion, on screen at load) every
+   element below is simply in its finished state. */
+[data-mo="wait"] .mo-pop {
+  opacity: 0;
+}
+[data-mo="play"] .mo-pop {
+  animation: mo-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 110ms) both;
+}
+@keyframes mo-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+.cf-liq {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+[data-mo="wait"] .cf-liq {
+  transform: scaleY(0);
+}
+[data-mo="play"] .cf-liq {
+  animation: cf-fill 0.8s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i, 0) * 350ms + 150ms) both;
+}
+@keyframes cf-fill {
+  from {
+    transform: scaleY(0);
+  }
+}
+[data-mo="wait"].cameo {
+  opacity: 0;
+}
+/* 404: the character looks around, twice */
+.nf-look .av-look {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: nf-look 1.6s 0.4s ease-in-out 2;
+}
+@keyframes nf-look {
+  25% {
+    transform: rotate(-9deg);
+  }
+  75% {
+    transform: rotate(9deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-look .av-look {
+    animation: none;
+  }
+}

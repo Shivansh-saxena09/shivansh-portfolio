@@ -3,6 +3,7 @@
 import { useRef, useSyncExternalStore, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { nav } from "@/lib/data/nav";
+import { Cameo } from "@/components/motion/Cameo";
 import type { ContactInfo } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
@@ -166,6 +167,9 @@ export function Footer({
             paper-grain), giving the paper texture and layered-depth
             language actual structural work to do here, not just a
             barely-visible global wash. */}
+        <div className="relative">
+        {/* Character cameo standing on the panel's top edge, waving once in view */}
+        <Cameo className="absolute right-8 bottom-full h-16 sm:right-14 sm:h-20" />
         <div className="glass-card paper-grain relative overflow-hidden rounded-3xl px-8 py-10 shadow-xl sm:px-12 sm:py-12">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <h2 className="max-w-md font-heading text-3xl leading-tight font-bold text-charcoal sm:text-4xl">
@@ -179,6 +183,7 @@ export function Footer({
               {footerCta.ctaLabel}
             </Button>
           </div>
+        </div>
         </div>
 
         {/* ------------------------------------------------------------ */}

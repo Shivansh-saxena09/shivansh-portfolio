@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Reveal } from "@/components/motion/Reveal";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject, getAllProjectSlugs } from "@/lib/data/projects";
@@ -99,21 +100,27 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             library needed for a 4-step pipeline. */}
         <div className="mt-14">
           <h2 className="font-heading text-2xl font-bold text-charcoal">How It Works</h2>
-          <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+          <Reveal className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
             {project.flow.flatMap((step, i) => {
               const box = (
                 <div
                   key={step.label}
-                  className="flex-1 rounded-xl border border-beige-border bg-ivory px-5 py-4 text-center sm:text-left"
+                  className="mo-pop flex-1 rounded-xl border border-beige-border bg-ivory px-5 py-4 text-center sm:text-left"
+                  style={{ "--i": i * 2 } as React.CSSProperties}
                 >
                   <p className="font-heading text-base font-bold text-charcoal">{step.label}</p>
                   <p className="mt-1 font-body text-xs text-warm-grey">{step.detail}</p>
                 </div>
               );
               if (i === project.flow.length - 1) return [box];
-              return [box, <span key={`${step.label}-arrow`}>{arrowRight}</span>];
+              return [
+                box,
+                <span key={`${step.label}-arrow`} className="mo-pop" style={{ "--i": i * 2 + 1 } as React.CSSProperties}>
+                  {arrowRight}
+                </span>,
+              ];
             })}
-          </div>
+          </Reveal>
         </div>
 
         {/* Challenges — problem/fix split plus the real code that

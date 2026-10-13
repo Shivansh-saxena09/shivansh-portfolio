@@ -17,6 +17,7 @@ import { VerifiedResults } from "@/components/case-study/VerifiedResults";
 import { CampaignDoctorInsight } from "@/components/case-study/CampaignDoctorInsight";
 import { TableOfContents, type TocSection } from "@/components/case-study/TableOfContents";
 import { CaseStudyJsonLd } from "@/components/seo/JsonLd";
+import { CaseFunnel } from "@/components/case-study/CaseFunnel";
 
 const categoryLabel = {
   standard: "Campaign",
@@ -266,6 +267,15 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 the column comfortably past the sidebar's height. */}
             <section id="results" className="mt-14 scroll-mt-24">
               <h2 className="font-heading text-2xl text-charcoal">Results</h2>
+
+              {/* Real totals across ad sets, in the hero's funnel language (stage labels: Hero Scene settings). */}
+              <div className="mt-6">
+                <CaseFunnel
+                  stages={[totals.impressions, totals.linkClicks, totals.leads]
+                    .map((value, i) => ({ label: settings.heroVisual.stages[i], value, text: formatNumber(value) }))
+                    .filter((s) => s.value > 0)}
+                />
+              </div>
 
               {multiAdSet && (
                 <div className="mt-6">
