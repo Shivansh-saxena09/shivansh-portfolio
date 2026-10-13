@@ -40,7 +40,7 @@ export function Hero({
     <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
       <Container>
         <div className="relative mx-auto max-w-[520px] [container-type:inline-size] lg:max-w-none">
-          <div className="relative z-10 lg:absolute lg:top-0 lg:left-0 lg:w-[46%]">
+          <div className="relative z-30 lg:absolute lg:top-0 lg:left-0 lg:w-[46%]">
             <h1 className="font-heading text-charcoal">
               <span className="block text-[8.6cqw] leading-[1.05] font-bold tracking-tight lg:text-[5.2cqw]">
                 {identity.name}
