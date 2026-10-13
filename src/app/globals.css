@@ -248,24 +248,54 @@ h4 {
   color: transparent;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Preloader wordmark — the same outline/gradient-fill recipe as the      */
-/* footer's signature above, but scripted (Framer Motion animates a       */
-/* clip-path across the fill layer) rather than cursor-driven, and with a */
-/* light stroke instead of a dark one since the preloader sits on a       */
-/* charcoal ground rather than cream.                                     */
-/* ---------------------------------------------------------------------- */
-.preloader-wordmark-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.25px rgba(253, 251, 247, 0.32);
-  text-stroke: 1.25px rgba(253, 251, 247, 0.32);
+/* Preloader (components/layout/Preloader.tsx). The opening beats are pure
+   CSS so the first painted frame already moves before any JS runs. */
+.pl-seen [data-preloader] {
+  display: none;
 }
-
-.preloader-wordmark-fill {
-  background: linear-gradient(100deg, var(--color-terracotta), var(--color-sage));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+[data-preloader] {
+  animation: pl-failsafe 0.3s 3.5s forwards;
+}
+.pl-bg {
+  -webkit-mask-image: radial-gradient(circle at var(--px, 50%) var(--py, 50%), transparent var(--pr, 0px), #000 calc(var(--pr, 0px) + 1px));
+  mask-image: radial-gradient(circle at var(--px, 50%) var(--py, 50%), transparent var(--pr, 0px), #000 calc(var(--pr, 0px) + 1px));
+}
+.pl-char {
+  transform-origin: 50% 100%;
+  animation: pl-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.pl-word {
+  animation: pl-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.pl-rule {
+  animation: pl-draw 0.45s 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@keyframes pl-pop {
+  from {
+    transform: translateY(24px) scale(0.55);
+    opacity: 0;
+  }
+}
+@keyframes pl-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes pl-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes pl-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-preloader] {
+    display: none;
+  }
 }
 
 /* Hero story loops (components/home/HeroStory.tsx). Compositor-
@@ -307,6 +337,17 @@ h4 {
 .scene-obj:hover .scene-arrow,
 .scene-obj:focus-visible .scene-arrow {
   transform: translate(2px, -2px);
+}
+/* Hero scene grain: same noise as .paper-grain but without mix-blend-mode,
+   which would force a re-blend of the whole scene on every camera frame. */
+.st-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 /* Liquid surface in the funnel bands; one wavelength = 40 user units. */
 .st-wavex {

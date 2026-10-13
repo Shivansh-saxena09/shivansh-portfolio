@@ -49,10 +49,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Preloader plays once per session: mark repeat views before first
+            paint so CSS hides it with no flash (see Preloader.tsx). */}
+        <script dangerouslySetInnerHTML={{ __html: `try{sessionStorage.getItem("pl-seen")&&document.documentElement.classList.add("pl-seen")}catch(e){}` }} />
+      </head>
       <body className="flex min-h-full flex-col bg-cream text-charcoal">
         <PersonOrganizationJsonLd settings={settings} contact={contact} />
-        <Preloader personName={settings.personName} personTagline={settings.personTagline} />
+        <Preloader personName={settings.personName} />
         <ScrollProgress />
         <SmoothScrollProvider>
           <Header settings={settings} contact={contact} />

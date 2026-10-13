@@ -40,6 +40,9 @@ type Props = {
 };
 type CompositionProps = Props & { animated: boolean; react: (t: Target | null) => void };
 
+/** Solid card surface — no backdrop blur: it would re-blur every frame under the camera moves. */
+const CARD = "border border-beige-border/80 bg-ivory/95 shadow-[0_6px_16px_-10px_rgb(43_38_34/0.3)]";
+
 const reactProps = (react: CompositionProps["react"], t: Target) => ({
   onPointerEnter: () => react(t),
   onPointerLeave: () => react(null),
@@ -210,7 +213,7 @@ const D_STEPS = [
   { x0: 440, x1: 830, top: 490 },
   { x0: 830, x1: 1200, top: 460 },
 ];
-const D_AV = { a: [110, 520], b: [470, 490], c: [1035, 460] } as const;
+const D_AV = { a: [110, 520], b: [460, 490], c: [1035, 460] } as const;
 const fHalf = (y: number) => 100 - 0.37 * (y - 40);
 const F_BANDS = [
   [40, 104],
@@ -219,10 +222,11 @@ const F_BANDS = [
 ] as const;
 const fBand = (t: number, b: number) => `M${110 - fHalf(t)} ${t} H${110 + fHalf(t)} L${110 + fHalf(b)} ${b} H${110 - fHalf(b)} Z`;
 const D_PATHS = {
-  lead: "M310 440 V455 H610 V278 H640",
+  lead: "M310 440 V455 H625 V278 H640",
   spine: "M725 296 V320",
   dash: "M810 338 H850",
-  ai: "M925 230 V196 H1135 V300",
+  // floor cable from the dashboard stand to the robot — no label in its way
+  ai: "M945 457 H1108",
 };
 const CODE = [
   [0, 34, "fill-terracotta"],
@@ -237,7 +241,7 @@ const CODE = [
 function DesktopComposition({ c, milestones, resumeUrl, resumeFileName, engineeringLeaning, animated, react }: CompositionProps) {
   const pill = "text-[1.05cqw]";
   return (
-    <div className="paper-grain relative aspect-[2/1] w-full">
+    <div className="st-grain relative aspect-[2/1] w-full">
       <Ambient motes={16} W={DW} H={DH} />
       <div className="st-cam absolute inset-0">
         <svg viewBox={`0 0 ${DW} ${DH}`} className="st-svg absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
@@ -270,24 +274,26 @@ function DesktopComposition({ c, milestones, resumeUrl, resumeFileName, engineer
             ))}
             <Liquid id="dl" bands={F_BANDS} band={fBand} x0={10} x1={210} />
             <FunnelValues c={c} bands={F_BANDS} cx={110} sizes={[9, 22, 6]} />
-            <text x="110" y="262" textAnchor="middle" className="st-val fill-warm-grey font-body" fontSize="10.5">{c.metricChips.join("  ·  ")}</text>
+            <text x="2" y="214" className="st-val fill-warm-grey font-body" fontSize="10">{c.metricChips[0]}</text>
+            <text x="218" y="214" textAnchor="end" className="st-val fill-warm-grey font-body" fontSize="10">{c.metricChips[1]}</text>
           </svg>
         </Link>
 
-        <Link href="/engineering" aria-label={c.linkLabels[1]} className={`${OBJ} z-10`} style={dBox(455, 230, 375, 240)} {...reactProps(react, "eng")}>
+        {/* Engineering: a dashed "system" frame around the pipeline, its tag
+            sitting on the frame's top edge like a legend. */}
+        <Link href="/engineering" aria-label={c.linkLabels[1]} className={`${OBJ} z-10`} style={dBox(615, 200, 220, 182)} {...reactProps(react, "eng")}>
           <Glow tone="sage" />
-          <Pill tone="sage" vivid={engineeringLeaning} className={`top-0 left-[49%] ${pill}`}>{c.linkLabels[1]}</Pill>
-          <svg viewBox="0 0 375 240" className="relative h-full w-full overflow-visible" aria-hidden="true">
-            <text x="160" y="132" className="fill-sage font-heading" fontSize="118" fillOpacity="0.28">{"{"}</text>
-            <text x="378" y="132" textAnchor="end" className="fill-sage font-heading" fontSize="118" fillOpacity="0.28">{"}"}</text>
+          <Pill tone="sage" vivid={engineeringLeaning} className={`top-0 left-1/2 -translate-x-1/2 ${pill}`}>{c.linkLabels[1]}</Pill>
+          <svg viewBox="0 0 220 182" className="relative h-full w-full overflow-visible" aria-hidden="true">
+            <rect x="10" y="22" width="200" height="150" rx="14" className="fill-sage stroke-sage" fillOpacity="0.06" strokeOpacity="0.55" strokeDasharray="5 5" strokeWidth="1.25" />
             {c.systemNodes.slice(0, 2).map((label, i) => (
               <g key={i} className="st-node">
-                <rect x="185" y={30 + i * 60} width="170" height="36" rx="9" className="scene-node fill-ivory stroke-sage" strokeWidth="1.4" />
-                <text x="270" y={52.5 + i * 60} textAnchor="middle" className="fill-sage-dark font-mono" fontSize="11.5">{label}</text>
+                <rect x="25" y={60 + i * 60} width="170" height="36" rx="9" className="scene-node fill-ivory stroke-sage" strokeWidth="1.4" />
+                <text x="110" y={82.5 + i * 60} textAnchor="middle" className="fill-sage-dark font-mono" fontSize="11.5">{label}</text>
               </g>
             ))}
-            <rect x="185" y="30" width="170" height="36" rx="9" className="st-errline fill-none stroke-terracotta-dark" strokeWidth="2.5" opacity="0" />
-            <StatusBadge x={355} y={30} />
+            <rect x="25" y="60" width="170" height="36" rx="9" className="st-errline fill-none stroke-terracotta-dark" strokeWidth="2.5" opacity="0" />
+            <StatusBadge x={195} y={60} />
           </svg>
         </Link>
 
@@ -307,7 +313,7 @@ function DesktopComposition({ c, milestones, resumeUrl, resumeFileName, engineer
 
         <Link href="/engineering#ai" aria-label={`${c.linkLabels[2]} — ${c.aiStatus}`} className={`${OBJ} z-10`} style={dBox(1075, 290, 120, 170)} {...reactProps(react, "ai")}>
           <Glow tone="sage" />
-          <Pill tone="sage" className={`-top-[2.6cqw] left-1/2 -translate-x-1/2 ${pill}`}>{c.linkLabels[2]}</Pill>
+          <Pill tone="sage" className={`-top-[7.5cqw] left-1/2 -translate-x-1/2 ${pill}`}>{c.linkLabels[2]}</Pill>
           <svg viewBox="0 0 120 170" className="relative h-full w-full overflow-visible" aria-hidden="true">
             <Robot y={10} />
             <rect x="22" y="122" width="76" height="16" rx="8" className="fill-ivory" fillOpacity="0.9" />
@@ -318,44 +324,44 @@ function DesktopComposition({ c, milestones, resumeUrl, resumeFileName, engineer
         {/* Character, desk + laptop, coins — pointer-transparent foreground */}
         <svg viewBox={`0 0 ${DW} ${DH}`} className="pointer-events-none absolute inset-0 z-20 h-full w-full overflow-visible" aria-hidden="true">
           <Avatar x={D_AV.c[0]} y={D_AV.c[1]} pose="hold" />
-          <ellipse cx="565" cy="388" rx="70" ry="46" className="st-glow fill-sage" opacity="0" />
-          <rect x="500" y="420" width="128" height="7" rx="3" className="fill-ivory stroke-beige-border" strokeWidth="1.5" />
-          <rect x="508" y="427" width="5" height="63" className="fill-warm-grey" fillOpacity="0.5" />
-          <rect x="615" y="427" width="5" height="63" className="fill-warm-grey" fillOpacity="0.5" />
-          <rect x="522" y="360" width="86" height="56" rx="5" className="fill-charcoal" />
+          <ellipse cx="555" cy="388" rx="70" ry="46" className="st-glow fill-sage" opacity="0" />
+          <rect x="490" y="420" width="128" height="7" rx="3" className="fill-ivory stroke-beige-border" strokeWidth="1.5" />
+          <rect x="498" y="427" width="5" height="63" className="fill-warm-grey" fillOpacity="0.5" />
+          <rect x="605" y="427" width="5" height="63" className="fill-warm-grey" fillOpacity="0.5" />
+          <rect x="512" y="360" width="86" height="56" rx="5" className="fill-charcoal" />
           <g className="st-code" opacity="0">
             {CODE.map(([ind, w, cls], i) => (
-              <rect key={i} className={`st-cl ${cls}`} x={531 + ind} y={369 + i * 6} width={w} height="2.8" rx="1.4" fillOpacity="0.85" />
+              <rect key={i} className={`st-cl ${cls}`} x={521 + ind} y={369 + i * 6} width={w} height="2.8" rx="1.4" fillOpacity="0.85" />
             ))}
           </g>
           <g className="st-mini">
             {[8, 13, 10, 18, 25].map((h, i) => (
-              <rect key={i} className={`st-mb ${i === 4 ? "fill-terracotta" : "fill-sage"}`} x={532 + i * 9} y={407 - h} width="6" height={h} rx="1" />
+              <rect key={i} className={`st-mb ${i === 4 ? "fill-terracotta" : "fill-sage"}`} x={522 + i * 9} y={407 - h} width="6" height={h} rx="1" />
             ))}
-            <polyline points="578,398 584,394 590,396 596,386 602,380" className="fill-none stroke-ivory" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="602" cy="380" r="2" className="fill-terracotta" />
+            <polyline points="568,398 574,394 580,396 586,386 592,380" className="fill-none stroke-ivory" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="592" cy="380" r="2" className="fill-terracotta" />
           </g>
-          <path d="M514 416 H616 L621 422 H509 Z" className="fill-sage-dark" />
+          <path d="M504 416 H606 L611 422 H499 Z" className="fill-sage-dark" />
           <Spark x={1097} y={376} />
           {Array.from({ length: 6 }, (_, i) => <Coin key={i} />)}
         </svg>
 
         <a href={resumeUrl} download={resumeFileName} aria-label={`${c.linkLabels[3]} (${c.resumeMeta} download)`} className={`st-doc ${OBJ} z-30`} style={dBox(1003, 340, 64, 80)} {...reactProps(react, "cv")}>
           <Glow tone="terracotta" />
-          <svg viewBox="0 0 140 160" className="st-docsvg relative h-full w-full overflow-visible drop-shadow-[0_8px_14px_rgb(43_38_34/0.18)]" aria-hidden="true">
+          <svg viewBox="0 0 140 160" className="st-docsvg relative h-full w-full overflow-visible" aria-hidden="true">
             <ResumeDoc />
           </svg>
-          <Pill tone="terracotta" down className={`top-full left-1/2 mt-[0.6cqw] -translate-x-1/2 ${pill}`}>{c.linkLabels[3]}</Pill>
+          <Pill tone="terracotta" down className={`st-doctag top-full left-1/2 mt-[4.9cqw] -translate-x-1/2 ${pill}`}>{c.linkLabels[3]}</Pill>
         </a>
 
-        <div className="st-spend glass-card absolute z-20 flex items-center justify-center rounded-full" style={dBox(28, 296, 168, 32)}>
+        <div className={`st-spend ${CARD} absolute z-20 flex items-center justify-center rounded-full`} style={dBox(28, 296, 168, 32)}>
           <span className="font-body text-[1cqw] font-semibold whitespace-nowrap text-terracotta">{c.spendLabel}</span>
         </div>
         <span className="absolute font-body text-[0.75cqw] font-semibold tracking-[0.18em] text-warm-grey/80 uppercase" style={dBox(24, 530, 200, 14)}>
           {c.careerLabel}
         </span>
         {milestones.slice(0, 3).map((m, i) => (
-          <StepLabel key={m.org} m={m} big style={dBox(D_STEPS[i].x0 + 24, D_STEPS[i].top + (i === 0 ? 28 : 16), 300, 40)} />
+          <StepLabel key={m.org} m={m} big style={dBox(D_STEPS[i].x0 + 24, D_STEPS[i].top + (i === 0 ? 28 : 16), i === 2 ? 130 : 300, 40)} />
         ))}
       </div>
     </div>
@@ -386,12 +392,16 @@ function buildDesktop(root: HTMLElement) {
   gsap.set(q(".st-mini"), { opacity: 0 });
   gsap.set(q(".st-mb"), { scaleY: 0, transformOrigin: "50% 100%" });
   gsap.set(doc, { xPercent: -117, yPercent: -112, scale: 0.45 });
+  gsap.set(q(".st-doctag"), { opacity: 0 });
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   const { face, walk, hop, coin, counter } = rig(q, tl);
 
   // 1 · walk on, camera eases out from a slight push on the first step
-  tl.to(cam, { scale: 1, duration: 3.2, ease: "power2.inOut" }, 0.2).to(amb, { scale: 1, duration: 3.2, ease: "power2.inOut" }, 0.2);
+  tl.set([cam, amb], { willChange: "transform" }, 0)
+    .to(cam, { scale: 1, duration: 3.2, ease: "power2.inOut" }, 0.2)
+    .to(amb, { scale: 1, duration: 3.2, ease: "power2.inOut" }, 0.2)
+    .set([cam, amb], { willChange: "auto" }, 3.45);
   tl.to(pos, { x: D_AV.a[0], duration: 1.1, ease: "power1.out" }, 0.1);
   walk(0.1, 1.1);
   tl.to(q(".av-body"), { scaleY: 0.95, duration: 0.08, yoyo: true, repeat: 1 }, 1.2).to(steps[0], { opacity: 1, duration: 0.4 }, 0.9);
@@ -431,8 +441,8 @@ function buildDesktop(root: HTMLElement) {
   tl.to(steps[1], { opacity: 1, duration: 0.4 }, 4.6);
 
   // 4 · debug at the laptop — camera pushes in, code types, dashboard comes up
-  tl.set(cam, { transformOrigin: "47% 64%" }, 4.9).set(amb, { transformOrigin: "47% 64%" }, 4.9);
-  tl.to(cam, { scale: 1.16, duration: 0.9, ease: "power2.inOut" }, 4.95).to(amb, { scale: 1.06, duration: 0.9, ease: "power2.inOut" }, 4.95);
+  tl.set(cam, { transformOrigin: "46% 64%" }, 4.9).set(amb, { transformOrigin: "46% 64%" }, 4.9);
+  tl.set([cam, amb], { willChange: "transform" }, 4.9).to(cam, { scale: 1.16, duration: 0.9, ease: "power2.inOut" }, 4.95).to(amb, { scale: 1.06, duration: 0.9, ease: "power2.inOut" }, 4.95);
   face("focus", 5.0);
   tl.to(armL, { rotation: -68, duration: 0.2 }, 5.0)
     .to(armR, { rotation: -42, duration: 0.2 }, 5.0)
@@ -465,7 +475,7 @@ function buildDesktop(root: HTMLElement) {
   hop(6.6, 18, true);
   tl.to(armL, { rotation: 8, duration: 0.3, ease: "back.out(2)" }, 7.15).to(armR, { rotation: -8, duration: 0.3, ease: "back.out(2)" }, 7.17);
   tl.to(cam, { scale: 1, duration: 0.9, ease: "power2.inOut" }, 7.0).to(amb, { scale: 1, duration: 0.9, ease: "power2.inOut" }, 7.0);
-  tl.to(q(".st-glow"), { opacity: 0, duration: 0.5 }, 7.1).to(vals[3], { opacity: 1, duration: 0.3 }, 7.1);
+  tl.set([cam, amb], { willChange: "auto" }, 7.95).to(q(".st-glow"), { opacity: 0, duration: 0.5 }, 7.1).to([vals[3], vals[4]], { opacity: 1, duration: 0.3 }, 7.1);
 
   // 5 · on to the top step
   tl.to(eyes, { x: 0, y: 0, duration: 0.2 }, 7.3).to(pos, { x: D_AV.c[0], duration: 1.15, ease: "power1.inOut" }, 7.35).to(pos, { y: D_AV.c[1], duration: 0.2 }, 7.95);
@@ -501,6 +511,7 @@ function buildDesktop(root: HTMLElement) {
     .to(doc, { xPercent: 0, yPercent: 0, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 10.65)
     .to([eyes, look], { x: 0, y: 0, rotation: 0, duration: 0.25 }, 10.75)
     .to(head, { rotation: 7, duration: 0.14, yoyo: true, repeat: 1 }, 11.0);
+  tl.to(q(".st-doctag"), { opacity: 1, duration: 0.35 }, 11.0);
   face("proud", 10.8);
   return tl;
 }
@@ -510,9 +521,9 @@ function buildDesktop(root: HTMLElement) {
 /* fix → leads → robot waves → résumé + wave. Static staircase underneath.  */
 /* ======================================================================== */
 const MW = 360;
-const MH = 496;
+const MH = 470;
 const mBox = (x: number, y: number, w: number, h: number) => box(MW, MH, x, y, w, h);
-const M_AV = [285, 232] as const;
+const M_AV = [285, 206] as const;
 const mHalf = (y: number) => 96 - 0.388 * (y - 6);
 const M_BANDS = [
   [6, 62],
@@ -521,16 +532,18 @@ const M_BANDS = [
 ] as const;
 const mBand = (t: number, b: number) => `M${100 - mHalf(t)} ${t} H${100 + mHalf(t)} L${100 + mHalf(b)} ${b} H${100 - mHalf(b)} Z`;
 const M_STEPS = [
-  { x0: 0, x1: 120, top: 450 },
-  { x0: 120, x1: 240, top: 432 },
-  { x0: 240, x1: 360, top: 414 },
+  { x0: 0, x1: 120, top: 424 },
+  { x0: 120, x1: 240, top: 406 },
+  { x0: 240, x1: 360, top: 388 },
 ];
-const M_PATHS = { lead: "M100 202 V208 H10 V262 H26", ai: "M73 278 V328", cv: "M287 278 V328" };
+// Lead line leaves from the Leads band's right edge (below the "qualified" stat)
+// and drops onto the Pixel node from above — clear of every label.
+const M_PATHS = { lead: "M135 164 H206 V212 H73 V220", ai: "M73 252 V302", cv: "M287 252 V302" };
 
 function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeringLeaning, animated, react }: CompositionProps) {
   const pill = "text-[3.2cqw]";
   return (
-    <div className="paper-grain relative w-full" style={{ aspectRatio: `${MW} / ${MH}` }}>
+    <div className="st-grain relative w-full" style={{ aspectRatio: `${MW} / ${MH}` }}>
       <Ambient motes={8} W={MW} H={MH} />
       <div className="st-cam absolute inset-0">
         <svg viewBox={`0 0 ${MW} ${MH}`} className="st-svg absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
@@ -553,7 +566,7 @@ function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeri
           )}
         </svg>
 
-        <Link href="/marketing" aria-label={c.linkLabels[0]} className={`${OBJ} z-10`} style={mBox(0, 26, 200, 200)} {...reactProps(react, "mkt")}>
+        <Link href="/marketing" aria-label={c.linkLabels[0]} className={`${OBJ} z-10`} style={mBox(0, 0, 200, 200)} {...reactProps(react, "mkt")}>
           <Glow tone="terracotta" />
           <svg viewBox="0 0 200 200" className="relative h-full w-full overflow-visible" aria-hidden="true">
             {M_BANDS.map(([t, b]) => (
@@ -567,7 +580,7 @@ function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeri
           <Pill tone="terracotta" vivid className={`bottom-0 left-1/2 -translate-x-1/2 ${pill}`}>{c.linkLabels[0]}</Pill>
         </Link>
 
-        <Link href="/engineering" aria-label={c.linkLabels[1]} className={`${OBJ} z-10`} style={mBox(0, 240, 360, 76)} {...reactProps(react, "eng")}>
+        <Link href="/engineering" aria-label={c.linkLabels[1]} className={`${OBJ} z-10`} style={mBox(0, 214, 360, 76)} {...reactProps(react, "eng")}>
           <Glow tone="sage" />
           <svg viewBox="0 0 360 76" className="relative h-full w-full overflow-visible" aria-hidden="true">
             <text x="0" y="40" className="fill-sage font-heading" fontSize="50" fillOpacity="0.3">{"{"}</text>
@@ -585,7 +598,7 @@ function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeri
           <Pill tone="sage" vivid={engineeringLeaning} className={`bottom-0 left-1/2 -translate-x-1/2 ${pill}`}>{c.linkLabels[1]}</Pill>
         </Link>
 
-        <Link href="/engineering#ai" aria-label={`${c.linkLabels[2]} — ${c.aiStatus}`} className={`${OBJ} glass-card z-10 flex items-center gap-[2.5cqw] px-[2.5cqw]`} style={mBox(0, 328, 172, 70)} {...reactProps(react, "ai")}>
+        <Link href="/engineering#ai" aria-label={`${c.linkLabels[2]} — ${c.aiStatus}`} className={`${OBJ} ${CARD} z-10 flex items-center gap-[2.5cqw] px-[2.5cqw]`} style={mBox(0, 302, 172, 70)} {...reactProps(react, "ai")}>
           <Glow tone="sage" />
           <svg viewBox="0 0 120 170" className="relative h-[16cqw] w-[11.5cqw] shrink-0 overflow-visible" aria-hidden="true">
             <Robot />
@@ -598,7 +611,7 @@ function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeri
           </span>
         </Link>
 
-        <a href={resumeUrl} download={resumeFileName} aria-label={`${c.linkLabels[3]} (${c.resumeMeta} download)`} className={`st-doc ${OBJ} glass-card z-10 flex items-center gap-[2.5cqw] px-[2.5cqw]`} style={mBox(188, 328, 172, 70)} {...reactProps(react, "cv")}>
+        <a href={resumeUrl} download={resumeFileName} aria-label={`${c.linkLabels[3]} (${c.resumeMeta} download)`} className={`st-doc ${OBJ} ${CARD} z-10 flex items-center gap-[2.5cqw] px-[2.5cqw]`} style={mBox(188, 302, 172, 70)} {...reactProps(react, "cv")}>
           <Glow tone="terracotta" />
           <svg viewBox="0 0 140 160" className="st-docsvg relative h-[13cqw] w-[11.5cqw] shrink-0 overflow-visible" aria-hidden="true">
             <ResumeDoc />
@@ -617,10 +630,10 @@ function MobileComposition({ c, milestones, resumeUrl, resumeFileName, engineeri
           {Array.from({ length: 4 }, (_, i) => <Coin key={i} />)}
         </svg>
 
-        <div className="st-spend glass-card absolute z-20 flex items-center justify-center rounded-full" style={mBox(214, 30, 144, 28)}>
+        <div className={`st-spend ${CARD} absolute z-20 flex items-center justify-center rounded-full`} style={mBox(214, 4, 144, 28)}>
           <span className="font-body text-[3cqw] font-semibold whitespace-nowrap text-terracotta">{c.spendLabel}</span>
         </div>
-        <span className="absolute font-body text-[2.2cqw] font-semibold tracking-[0.16em] text-warm-grey/80 uppercase" style={mBox(4, 434, 112, 14)}>
+        <span className="absolute font-body text-[2.2cqw] font-semibold tracking-[0.16em] text-warm-grey/80 uppercase" style={mBox(4, 408, 112, 14)}>
           {c.careerLabel}
         </span>
         {milestones.slice(0, 3).map((m, i) => (
@@ -662,7 +675,7 @@ function buildMobile(root: HTMLElement) {
       .to(armL, { rotation: 20, duration: 0.24 }, t + 0.3);
     for (let j = 0; j < 2; j++) {
       const k = i * 2 + j;
-      coin(coins[k], t + 0.16 + j * 0.06, [228, 100], [170 - j * 12, 6], [k % 2 ? 186 : 16, 33], [92 + k * 6, 52]);
+      coin(coins[k], t + 0.16 + j * 0.06, [228, 74], [170 - j * 12, -20], [k % 2 ? 186 : 16, 7], [92 + k * 6, 26]);
     }
   }
   tl.to(liquids[0], { y: 0, duration: 0.7 }, 1.7).to(vals[0], { opacity: 1, duration: 0.3 }, 1.8);
@@ -679,7 +692,7 @@ function buildMobile(root: HTMLElement) {
   face("focus", 3.15);
   tl.to(armL, { rotation: 58, duration: 0.14, ease: "power1.in" }, 3.15)
     .to(armL, { rotation: 38, duration: 0.2, ease: "back.out(3)" }, 3.29)
-    .to(q(".st-zap"), { keyframes: [{ x: 235, y: 163, opacity: 1, duration: 0.01 }, { x: 175, y: 175, duration: 0.18, ease: "none" }, { x: 120, y: 246, duration: 0.2, ease: "power1.in" }, { opacity: 0, scale: 2.4, duration: 0.15 }] }, 3.4)
+    .to(q(".st-zap"), { keyframes: [{ x: 235, y: 137, opacity: 1, duration: 0.01 }, { x: 175, y: 149, duration: 0.18, ease: "none" }, { x: 120, y: 220, duration: 0.2, ease: "power1.in" }, { opacity: 0, scale: 2.4, duration: 0.15 }] }, 3.4)
     .to(q(".st-err"), { opacity: 0, scale: 0.4, duration: 0.2 }, 3.78)
     .to(q(".st-errline"), { opacity: 0, duration: 0.2 }, 3.78)
     .to(q(".st-ok"), { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(3)" }, 3.82)
@@ -789,7 +802,8 @@ export function HeroStory({ variant, ...props }: Props & { variant: "desktop" | 
       raf2 = requestAnimationFrame(() => tlRef.current?.play());
     };
     const raf1 = requestAnimationFrame(() => {
-      if (document.querySelector("[data-preloader]")) window.addEventListener("preloader:done", play, { once: true });
+      const pl = document.querySelector("[data-preloader]");
+      if (pl && getComputedStyle(pl).display !== "none") window.addEventListener("preloader:done", play, { once: true });
       else play();
     });
     return () => {
@@ -891,21 +905,24 @@ export function HeroStory({ variant, ...props }: Props & { variant: "desktop" | 
 
   const Composition = variant === "desktop" ? DesktopComposition : MobileComposition;
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className={variant === "desktop" ? "relative" : undefined}>
       {phase !== "static" && (
         <button
           type="button"
           onClick={phase === "playing" ? skip : replay}
-          className={`absolute top-0 z-40 inline-flex min-h-9 items-center gap-1.5 rounded-full border border-beige-border bg-ivory/80 px-3 py-1.5 font-body text-xs font-medium text-warm-grey backdrop-blur-sm transition-colors hover:border-sage hover:text-sage-dark focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none ${variant === "desktop" ? "right-0" : "left-0"}`}
+          aria-label={phase === "playing" ? controlLabels[0] : controlLabels[1]}
+          title={phase === "playing" ? controlLabels[0] : controlLabels[1]}
+          className={`absolute top-0 right-0 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border border-beige-border bg-ivory/90 font-body text-xs font-medium text-warm-grey transition-colors hover:border-sage hover:text-sage-dark focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none ${variant === "desktop" ? "px-4" : ""}`}
         >
-          <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true">
+          <svg viewBox="0 0 12 12" className={variant === "desktop" ? "h-3 w-3" : "h-4 w-4"} aria-hidden="true">
             {phase === "playing" ? (
               <path d="M2 2.5 6.5 6 2 9.5Z M6.5 2.5 11 6 6.5 9.5Z" className="fill-current" />
             ) : (
               <path d="M2.5 6a3.5 3.5 0 1 0 1.2-2.6M2.5 1.5v2.2h2.2" className="fill-none stroke-current" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
             )}
           </svg>
-          {phase === "playing" ? controlLabels[0] : controlLabels[1]}
+          {/* Phones: icon-only 44px target beside the name (label is its accessible name). */}
+          {variant === "desktop" && (phase === "playing" ? controlLabels[0] : controlLabels[1])}
         </button>
       )}
       <Composition {...props} animated={animated} react={react} />

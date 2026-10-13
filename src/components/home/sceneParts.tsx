@@ -41,8 +41,8 @@ export function Pill({ children, tone, vivid, down, className = "" }: { children
       ? "bg-ivory text-terracotta-dark group-hover:bg-terracotta group-hover:text-ivory group-focus-visible:bg-terracotta group-focus-visible:text-ivory"
       : "bg-ivory text-sage-dark group-hover:bg-sage-dark group-hover:text-ivory group-focus-visible:bg-sage-dark group-focus-visible:text-ivory";
   return (
-    <span aria-hidden="true" className={`scene-pill absolute z-10 drop-shadow-[0_5px_8px_rgb(43_38_34/0.22)] ${className}`}>
-      <span className={`scene-tag relative inline-flex items-center gap-[0.45em] py-[0.42em] pr-[0.85em] pl-[1.25em] font-body font-semibold whitespace-nowrap transition-colors duration-300 ${face}`}>
+    <span aria-hidden="true" className={`scene-pill absolute z-10 ${className}`}>
+      <span className={`scene-tag relative inline-flex items-center gap-[0.45em] py-[0.42em] pr-[0.85em] pl-[1.25em] font-body font-semibold whitespace-nowrap shadow-[0_4px_10px_-4px_rgb(43_38_34/0.35)] transition-colors duration-300 ${face}`}>
         {children}
         <Arrow down={down} />
       </span>

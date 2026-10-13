@@ -1,207 +1,119 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { Avatar } from "@/components/home/sceneParts";
+
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+const SEEN_KEY = "pl-seen";
 
 /**
- * Branded preloader — the first thing every visitor sees, so it earns a
- * genuinely designed reveal rather than a generic spinner (CLAUDE.md →
- * Animations & Interactions). Built on Framer Motion + CSS/SVG only, per
- * explicit instruction — no video/Lottie, so it costs the page nothing
- * beyond markup and a couple of small keyframe rules.
+ * Opening shot of the homepage film — the same flat character on the same
+ * cream ground, with the name (site settings) as the title card. Wordless
+ * otherwise. Once per browser session; skipped entirely for reduced motion.
  *
- * Deliberately two different compositions below `sm:` vs above it, not
- * one layout scaled down:
- *  - Desktop has the room to be spacious: the name as two stacked full
- *    lines, an eyebrow tagline underneath, a drawn gradient rule, and a
- *    pair of slow-drifting ambient glows (the same motif Hero/About/
- *    Engineering/the nav drawer already use) filling the wider canvas.
- *  - Mobile is deliberately simpler and more compact: a small stroke-
- *    drawn monogram "seal" (echoing the avatar-circle used in the
- *    header/footer/drawer) stamps in first, then the name reveals below
- *    it as a single line — a narrow, thumb-width vertical composition
- *    with two elements instead of desktop's five, not a shrunk copy.
- *
- * Both compositions share one technique for the name itself: an outline
- * layer (hollow, light stroke) sits static from the start, while a
- * terracotta→sage gradient-fill layer is revealed on top of it via an
- * animated clip-path — the color genuinely "fills in" the letterforms,
- * rather than the gradient being decoration bolted onto a plain fade.
- *
- * Timing is a fixed, scripted sequence rather than tied to real network/
- * hydration readiness (matching the previous implementation) — a
- * branded preloader is a deliberate brand beat, not a progress
- * indicator, and Next.js's pre-rendered pages load fast enough that a
- * short fixed reveal reads as intentional rather than as stalling.
- * Total runtime (reveal + hold + exit) is ~1.7s on both breakpoints,
- * comfortably inside the 1–2s ceiling.
+ * - First frame is pure SSR + CSS (character pops, name rises), so the
+ *   page paints immediately and nothing waits on JS.
+ * - After hydration GSAP adds a wave, then the exit: the character runs to
+ *   exactly where the hero's character starts (its off-screen entry point,
+ *   measured live) while a circular wipe opens on that point, revealing the
+ *   hero's opening frame. "preloader:done" fires as it leaves frame, and the
+ *   hero character walks in from the same spot — one continuous shot.
+ * - Exit begins ~1s after navigation start (or right after hydration if
+ *   that is later), so the whole thing stays around 2s and never holds a
+ *   ready page.
+ * - Desktop: character beside a one-word-per-line title, exits left.
+ *   Mobile: character above a stacked title, exits right (where the mobile
+ *   hero character enters).
+ * - Repeat views: an inline <head> script adds `pl-seen` to <html> before
+ *   first paint and CSS hides this overlay — no flash, no wait. A CSS
+ *   failsafe hides it after 3.5s even if JS never runs.
  */
+export function Preloader({ personName }: { personName: string }) {
+  const [show, setShow] = useState(true);
+  const ref = useRef<HTMLDivElement>(null);
 
-const EASE_PREMIUM = [0.16, 1, 0.3, 1] as const;
-const HOLD_UNTIL_MS = 1300;
-const EXIT_TRANSITION = { duration: 0.4, ease: EASE_PREMIUM };
+  useIsoLayoutEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    if (document.documentElement.classList.contains("pl-seen") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShow(false);
+      return;
+    }
+    try {
+      sessionStorage.setItem(SEEN_KEY, "1");
+    } catch {}
 
-export function Preloader({
-  personName,
-  personTagline,
-}: {
-  personName: string;
-  personTagline: string;
-}) {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const [done, setDone] = useState(false);
+    const q = gsap.utils.selector(root);
+    const char = q(".pl-char")[0] as Element;
+    const bg = q(".pl-bg")[0] as HTMLElement;
+    const armR = q(".av-armR");
+    const desktop = window.matchMedia("(min-width: 1024px)").matches;
+    const exitAt = Math.max(0.35, 1.0 - performance.now() / 1000);
 
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    const id = setTimeout(() => setDone(true), HOLD_UNTIL_MS);
-    return () => clearTimeout(id);
-  }, [prefersReducedMotion]);
+    const ctx = gsap.context(() => {
+      gsap.set(q(".av-armL,.av-armR,.av-legL,.av-legR"), { transformOrigin: "50% 0%" });
+      const tl = gsap.timeline({ onComplete: () => setShow(false) });
 
-  if (prefersReducedMotion) return null;
+      // hello — wave while the title settles
+      tl.set(q(".av-m-grin"), { opacity: 0 }, 0)
+        .set(q(".av-m-open"), { opacity: 1 }, 0)
+        .to(armR, { rotation: -150, duration: 0.2, ease: "back.out(2)" }, 0)
+        .to(armR, { rotation: -120, duration: 0.13, yoyo: true, repeat: 3, ease: "sine.inOut" }, 0.2)
+        .to(armR, { rotation: -8, duration: 0.2 }, Math.max(0.75, exitAt - 0.15));
+
+      // exit: run to the hero character's entry point while the wipe opens on it
+      tl.add(() => {
+        const target = [...document.querySelectorAll<SVGGElement>("main .av-pos")].map((el) => el.getBoundingClientRect()).find((r) => r.width > 0);
+        const from = char.getBoundingClientRect();
+        const fx = from.left + from.width / 2;
+        const tx = target ? target.left + target.width / 2 : desktop ? -from.width : innerWidth + from.width;
+        const ty = target ? target.bottom : from.bottom;
+        const s = target ? Math.min(1, target.height / (from.height * 0.94)) : 0.8;
+        const cx = Math.min(Math.max(tx, 0), innerWidth);
+        const cy = Math.min(Math.max(ty - (target?.height ?? 0) / 2, 0), innerHeight);
+        const r = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) + 40;
+        bg.style.setProperty("--px", `${cx}px`);
+        bg.style.setProperty("--py", `${cy}px`);
+        gsap
+          .timeline()
+          .to(char, { scaleY: 0.9, scaleX: 1.06, transformOrigin: "50% 100%", duration: 0.1, ease: "power1.in" })
+          .to(char, { x: tx - fx, y: ty - from.bottom, scale: s, duration: 0.55, ease: "power2.in" })
+          .to(q(".av-legL"), { rotation: 24, duration: 0.09, yoyo: true, repeat: 5 }, 0.1)
+          .to(q(".av-legR"), { rotation: -24, duration: 0.09, yoyo: true, repeat: 5 }, 0.1)
+          .to(q(".pl-word"), { yPercent: -115, duration: 0.32, stagger: 0.05, ease: "power3.in" }, 0)
+          .to(q(".pl-rule"), { scaleX: 0, duration: 0.25, ease: "power2.in" }, 0)
+          .fromTo(bg, { "--pr": "0px" }, { "--pr": `${r}px`, duration: 0.6, ease: "power2.in" }, 0.15)
+          .add(() => window.dispatchEvent(new Event("preloader:done")), 0.55);
+      }, exitAt);
+      tl.to({}, { duration: 0.8 });
+    }, root);
+    return () => ctx.revert();
+  }, []);
+
+  if (!show) return null;
 
   const words = personName.trim().split(/\s+/);
-  const initial = personName.charAt(0);
-  // "Performance Marketing Manager. Full-stack builder." reads better as
-  // a tracked-caps eyebrow line with a middot than with its sentence
-  // punctuation carried straight through.
-  const eyebrow = personTagline.replace(/\.\s+/g, " · ").replace(/\.\s*$/, "");
-
   return (
-    // Signals the end of the exit animation so above-the-fold motion (the
-    // homepage hero story) can start once it's actually visible.
-    <AnimatePresence onExitComplete={() => window.dispatchEvent(new Event("preloader:done"))}>
-      {!done && (
-        <motion.div
-          data-preloader
-          aria-hidden="true"
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-charcoal"
-          exit={{ opacity: 0, y: -24, scale: 0.98 }}
-          transition={EXIT_TRANSITION}
-        >
-          {/* Ambient glows — desktop only. Same drift keyframes the
-              Hero/About/Engineering/nav-drawer glows already use, so a
-              visitor's very first frame already feels like this site's
-              visual system, not a one-off intro screen. */}
-          <div aria-hidden="true" className="hidden sm:block">
-            <div className="quick-take-glow-a pointer-events-none absolute top-1/2 left-1/2 h-80 w-80 -translate-x-[150%] -translate-y-1/2 rounded-full bg-terracotta/20 blur-3xl" />
-            <div className="quick-take-glow-b pointer-events-none absolute top-1/2 left-1/2 h-80 w-80 translate-x-[50%] -translate-y-1/3 rounded-full bg-sage/20 blur-3xl" />
-          </div>
-
-          {/* ---------------------------------------------------------- */}
-          {/* Desktop — spacious: two stacked lines, a drawn rule, an     */}
-          {/* eyebrow tagline.                                            */}
-          {/* ---------------------------------------------------------- */}
-          <div className="relative z-10 hidden flex-col items-center gap-6 sm:flex">
-            <div className="flex flex-col items-center">
-              {words.map((word, i) => (
-                <div key={word} className="overflow-hidden">
-                  <motion.div
-                    initial={{ y: "110%", opacity: 0 }}
-                    animate={{ y: "0%", opacity: 1 }}
-                    transition={{ delay: 0.05 + i * 0.11, duration: 0.5, ease: EASE_PREMIUM }}
-                    className="relative"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="preloader-wordmark-outline block font-heading text-6xl leading-[1.05] font-bold lg:text-7xl"
-                    >
-                      {word}
-                    </span>
-                    <motion.span
-                      initial={{ clipPath: "inset(0 100% 0 0)" }}
-                      animate={{ clipPath: "inset(0 0% 0 0)" }}
-                      transition={{ delay: 0.35, duration: 0.6, ease: EASE_PREMIUM }}
-                      className="preloader-wordmark-fill absolute inset-0 block font-heading text-6xl leading-[1.05] font-bold lg:text-7xl"
-                    >
-                      {word}
-                    </motion.span>
-                  </motion.div>
-                </div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.55, duration: 0.4, ease: EASE_PREMIUM }}
-              className="h-[2px] w-24 origin-center bg-gradient-to-r from-terracotta to-sage"
-            />
-
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75, duration: 0.4, ease: EASE_PREMIUM }}
-              className="font-body text-xs font-medium tracking-[0.3em] text-warm-grey uppercase"
-            >
-              {eyebrow}
-            </motion.p>
-          </div>
-
-          {/* ---------------------------------------------------------- */}
-          {/* Mobile — compact: a stroke-drawn monogram seal stamps in,   */}
-          {/* then the name reveals as a single line beneath it. No      */}
-          {/* ambient glows, no tagline — two elements, not five, in a    */}
-          {/* narrow thumb-width column.                                 */}
-          {/* ---------------------------------------------------------- */}
-          <div className="relative z-10 flex flex-col items-center gap-5 sm:hidden">
-            <div className="relative flex h-16 w-16 items-center justify-center">
-              <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full -rotate-90">
-                <defs>
-                  <linearGradient id="preloader-seal-gradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="var(--color-terracotta)" />
-                    <stop offset="100%" stopColor="var(--color-sage)" />
-                  </linearGradient>
-                </defs>
-                <motion.circle
-                  cx="50"
-                  cy="50"
-                  r="46"
-                  fill="none"
-                  stroke="url(#preloader-seal-gradient)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 1 }}
-                  transition={{ delay: 0, duration: 0.45, ease: EASE_PREMIUM }}
-                />
-              </svg>
-              <motion.span
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: [0.7, 1, 1.08, 1] }}
-                transition={{ delay: 0.3, duration: 0.5, times: [0, 0.5, 0.8, 1], ease: EASE_PREMIUM }}
-                className="font-heading text-2xl font-bold text-cream"
-              >
-                {initial}
-              </motion.span>
-            </div>
-
-            <div className="overflow-hidden">
-              <motion.div
-                initial={{ y: "110%", opacity: 0 }}
-                animate={{ y: "0%", opacity: 1 }}
-                transition={{ delay: 0.55, duration: 0.4, ease: EASE_PREMIUM }}
-                className="relative"
-              >
-                <span
-                  aria-hidden="true"
-                  className="preloader-wordmark-outline block font-heading text-2xl font-bold whitespace-nowrap"
-                >
-                  {personName}
+    <div ref={ref} data-preloader aria-hidden="true" className="fixed inset-0 z-[100] overflow-hidden">
+      <div className="pl-bg absolute inset-0 bg-cream" />
+      <div className="relative flex h-full flex-col items-center justify-center gap-[4vh] px-6 lg:flex-row lg:gap-14">
+        <svg viewBox="-60 -200 120 206" className="pl-char h-[30vh] max-h-60 w-auto overflow-visible lg:h-72 lg:max-h-none">
+          <Avatar x={0} y={0} pose="rest" />
+        </svg>
+        <div className="text-center lg:text-left">
+          <p className="font-heading text-[14vw] leading-[0.98] font-bold tracking-tight text-charcoal lg:text-[5.6rem]">
+            {words.map((w, i) => (
+              <span key={i} className="block overflow-hidden pb-[0.06em]">
+                <span className="pl-word inline-block" style={{ animationDelay: `${0.12 + i * 0.1}s` }}>
+                  {w}
                 </span>
-                <motion.span
-                  initial={{ clipPath: "inset(0 100% 0 0)" }}
-                  animate={{ clipPath: "inset(0 0% 0 0)" }}
-                  transition={{ delay: 0.7, duration: 0.45, ease: EASE_PREMIUM }}
-                  className="preloader-wordmark-fill absolute inset-0 block font-heading text-2xl font-bold whitespace-nowrap"
-                >
-                  {personName}
-                </motion.span>
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+              </span>
+            ))}
+          </p>
+          <span className="pl-rule mx-auto mt-[2vh] block h-[3px] w-20 origin-center bg-gradient-to-r from-terracotta to-sage lg:mx-0 lg:origin-left" />
+        </div>
+      </div>
+    </div>
   );
 }
