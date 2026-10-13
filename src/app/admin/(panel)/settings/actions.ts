@@ -39,14 +39,25 @@ export async function updateSiteSettings(formData: FormData): Promise<void> {
 // even before migration 0007 (which adds hero_visual) has been applied.
 export async function updateHeroVisual(formData: FormData): Promise<void> {
   const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const list = (k: string, n: number) => Array.from({ length: n }, (_, i) => get(`${k}_${i}`));
   const heroVisual = parseHeroVisual({
+    campaignLabel: get("campaign_label"),
     spendLabel: get("spend_label"),
-    stages: [get("stage_0"), get("stage_1"), get("stage_2")],
+    stages: list("stage", 3),
+    stageValues: list("stage_value", 2),
     leadsValue: get("leads_value"),
-    leadsLabel: get("leads_label"),
-    metricChips: [get("chip_0"), get("chip_1")],
-    systemNodes: [get("node_0"), get("node_1"), get("node_2")],
+    metricChips: list("chip", 2),
+    systemNodes: list("node", 3),
     feedbackLabel: get("feedback_label"),
+    aiLabel: get("ai_label"),
+    aiItems: list("ai_item", 2),
+    aiStatus: get("ai_status"),
+    resumeLabel: get("resume_label"),
+    resumeMeta: get("resume_meta"),
+    careerLabel: get("career_label"),
+    linkLabels: list("link_label", 4),
+    aiSectionHeading: get("ai_section_heading"),
+    aiSectionBody: get("ai_section_body"),
   });
   const supabase = await createClient();
   const { error } = await supabase.from("site_settings").update({ hero_visual: heroVisual }).eq("id", 1);

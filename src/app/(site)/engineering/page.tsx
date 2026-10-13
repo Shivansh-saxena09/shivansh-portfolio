@@ -5,7 +5,8 @@ import { CodeCard } from "@/components/engineering/CodeCard";
 import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
 import { getProjects, getFeaturedProject } from "@/lib/data/projects";
-import { getPageMeta } from "@/lib/data/site";
+import { getPageMeta, getSiteSettings } from "@/lib/data/site";
+import { AiWorkSection } from "@/components/engineering/AiWorkSection";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EngineeringPage() {
-  const [projects, featuredProject] = await Promise.all([getProjects(), getFeaturedProject()]);
+  const [projects, featuredProject, settings] = await Promise.all([
+    getProjects(),
+    getFeaturedProject(),
+    getSiteSettings(),
+  ]);
   const snippets = featuredProject?.challenges.map((c) => c.snippet) ?? [];
 
   return (
@@ -88,6 +93,8 @@ export default async function EngineeringPage() {
           </div>
         </Container>
       </section>
+
+      <AiWorkSection content={settings.heroVisual} />
 
       <SkillsGrid />
     </>

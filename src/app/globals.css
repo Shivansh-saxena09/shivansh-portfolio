@@ -295,3 +295,68 @@ h4 {
 .hv-paused .hv-pulse {
   animation-play-state: paused;
 }
+.hv-orbit {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hv-spin 28s linear infinite;
+}
+@keyframes hv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.hv-wave {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hv-wave 1.3s ease-in-out infinite alternate;
+}
+@keyframes hv-wave {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.scene-ping {
+  animation: scene-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes scene-ping {
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.scene-obj .scene-band,
+.scene-obj .scene-node {
+  transition: fill-opacity 0.4s, stroke-width 0.4s;
+}
+.scene-obj:hover .scene-node,
+.scene-obj:focus-visible .scene-node {
+  stroke-width: 2;
+}
+.scene-obj .scene-arrow {
+  transition: transform 0.3s var(--ease-premium);
+}
+.scene-obj:hover .scene-arrow,
+.scene-obj:focus-visible .scene-arrow {
+  transform: translate(2px, -2px);
+}
+.hv-paused .hv-orbit,
+.hv-paused .hv-wave,
+.hv-paused .scene-ping {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hv-wave,
+  .hv-orbit,
+  .scene-ping,
+  .hv-flow,
+  .hv-pulse {
+    animation: none;
+  }
+  .scene-obj {
+    transition: none;
+  }
+}

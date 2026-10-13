@@ -21,6 +21,47 @@ export default async function AdminSettingsPage() {
     supabase.from("page_meta").select("*"),
   ]);
   const hv = settings.heroVisual;
+  const HERO_FIELD_GROUPS: { title: string; fields: [string, string, string][] }[] = [
+    {
+      title: "Marketing — funnel",
+      fields: [
+        ["campaign_label", "Campaign label", hv.campaignLabel],
+        ["spend_label", "Ad spend label", hv.spendLabel],
+        ...hv.stages.map((v, i): [string, string, string] => [`stage_${i}`, `Funnel stage ${i + 1}`, v]),
+        ...hv.stageValues.map((v, i): [string, string, string] => [`stage_value_${i}`, `Stage ${i + 1} value`, v]),
+        ["leads_value", "Leads (animated counter)", String(hv.leadsValue)],
+        ...hv.metricChips.map((v, i): [string, string, string] => [`chip_${i}`, `Metric chip ${i + 1}`, v]),
+      ],
+    },
+    {
+      title: "Engineering — system layer",
+      fields: [
+        ...hv.systemNodes.map((v, i): [string, string, string] => [`node_${i}`, `System node ${i + 1}`, v]),
+        ["feedback_label", "Conversion-signal loop label", hv.feedbackLabel],
+      ],
+    },
+    {
+      title: "AI — agent node + /engineering#ai section",
+      fields: [
+        ["ai_label", "AI node label", hv.aiLabel],
+        ...hv.aiItems.map((v, i): [string, string, string] => [`ai_item_${i}`, `AI item ${i + 1}`, v]),
+        ["ai_status", "AI status badge", hv.aiStatus],
+        ["ai_section_heading", "AI section heading", hv.aiSectionHeading],
+        ["ai_section_body", "AI section text", hv.aiSectionBody],
+      ],
+    },
+    {
+      title: "Resume, career & link labels",
+      fields: [
+        ["resume_label", "Resume document label", hv.resumeLabel],
+        ["resume_meta", "Resume file note", hv.resumeMeta],
+        ["career_label", "Career line label", hv.careerLabel],
+        ...(["Marketing", "Engineering", "AI", "Resume"] as const).map(
+          (k, i): [string, string, string] => [`link_label_${i}`, `${k} link label`, hv.linkLabels[i]],
+        ),
+      ],
+    },
+  ];
   const metaByKey = new Map((pageMetaRows ?? []).map((r) => [r.page_key, r]));
 
   return (
@@ -99,52 +140,43 @@ export default async function AdminSettingsPage() {
       </div>
 
       <div>
-        <h2 className="font-heading text-xl font-bold text-charcoal">Hero Motion Graphic</h2>
+        <h2 className="font-heading text-xl font-bold text-charcoal">Hero Scene</h2>
         <p className="mt-1 font-body text-sm text-warm-grey">
-          Every label and number shown inside the animated homepage graphic.
+          Every label, number and link label inside the homepage hero scene. Name, role (hero
+          eyebrow) and the tagline line (hero heading) come from the fields above; career
+          milestones come from the Experience timeline; the resume document uses the uploaded PDF.
         </p>
 
         <form
           action={updateHeroVisual}
-          className="mt-6 flex flex-col gap-4 rounded-2xl border border-beige-border bg-ivory p-6"
+          className="mt-6 flex flex-col gap-6 rounded-2xl border border-beige-border bg-ivory p-6"
         >
-          <FieldGrid>
-            <Field label="Ad spend label" htmlFor="spend_label">
-              <TextInput id="spend_label" name="spend_label" required defaultValue={hv.spendLabel} />
-            </Field>
-            <Field label="Conversion-signal loop label" htmlFor="feedback_label">
-              <TextInput id="feedback_label" name="feedback_label" required defaultValue={hv.feedbackLabel} />
-            </Field>
-          </FieldGrid>
-          <FieldGrid>
-            {hv.stages.map((v, i) => (
-              <Field key={i} label={`Funnel stage ${i + 1}`} htmlFor={`stage_${i}`}>
-                <TextInput id={`stage_${i}`} name={`stage_${i}`} required defaultValue={v} />
-              </Field>
-            ))}
-          </FieldGrid>
-          <FieldGrid>
-            <Field label="Lead counter (number)" htmlFor="leads_value">
-              <TextInput id="leads_value" name="leads_value" type="number" min={0} required defaultValue={hv.leadsValue} />
-            </Field>
-            <Field label="Lead counter label" htmlFor="leads_label">
-              <TextInput id="leads_label" name="leads_label" required defaultValue={hv.leadsLabel} />
-            </Field>
-            {hv.metricChips.map((v, i) => (
-              <Field key={i} label={`Metric chip ${i + 1}`} htmlFor={`chip_${i}`}>
-                <TextInput id={`chip_${i}`} name={`chip_${i}`} required defaultValue={v} />
-              </Field>
-            ))}
-          </FieldGrid>
-          <FieldGrid>
-            {hv.systemNodes.map((v, i) => (
-              <Field key={i} label={`System node ${i + 1}`} htmlFor={`node_${i}`}>
-                <TextInput id={`node_${i}`} name={`node_${i}`} required defaultValue={v} />
-              </Field>
-            ))}
-          </FieldGrid>
+          {HERO_FIELD_GROUPS.map((group) => (
+            <fieldset key={group.title} className="flex flex-col gap-3">
+              <legend className="mb-1 font-body text-xs font-semibold tracking-[0.1em] text-terracotta uppercase">
+                {group.title}
+              </legend>
+              <FieldGrid>
+                {group.fields.map(([name, label, value]) => (
+                  <Field key={name} label={label} htmlFor={name}>
+                    {name === "ai_section_body" ? (
+                      <TextArea id={name} name={name} rows={3} required defaultValue={value} />
+                    ) : (
+                      <TextInput
+                        id={name}
+                        name={name}
+                        required
+                        defaultValue={value}
+                        {...(name === "leads_value" ? { type: "number", min: 0 } : {})}
+                      />
+                    )}
+                  </Field>
+                ))}
+              </FieldGrid>
+            </fieldset>
+          ))}
           <div>
-            <SubmitButton>Save Hero Graphic</SubmitButton>
+            <SubmitButton>Save Hero Scene</SubmitButton>
           </div>
         </form>
       </div>
