@@ -58,6 +58,10 @@ export async function updateHeroVisual(formData: FormData): Promise<void> {
     linkLabels: list("link_label", 4),
     aiSectionHeading: get("ai_section_heading"),
     aiSectionBody: get("ai_section_body"),
+    channelLabels: list("channel_label", 2),
+    toolLabels: list("tool_label", 4),
+    studyProgress: get("study_progress"),
+    storyText: get("story_text"),
   });
   const supabase = await createClient();
   const { error } = await supabase.from("site_settings").update({ hero_visual: heroVisual }).eq("id", 1);

@@ -62,6 +62,15 @@ export default async function AdminSettingsPage() {
         ["control_label_1", "Replay button label", hv.controlLabels[1]],
       ],
     },
+    {
+      title: "Phone story (screens under 640px)",
+      fields: [
+        ...hv.channelLabels.map((v, i): [string, string, string] => [`channel_label_${i}`, `${["Meta", "Google"][i]} channel tag`, v]),
+        ...hv.toolLabels.map((v, i): [string, string, string] => [`tool_label_${i}`, `Toolkit pictogram ${i + 1} label`, v]),
+        ["study_progress", "MBA progress ring (0–100)", String(hv.studyProgress)],
+        ["story_text", "Story as plain text (screen readers + search engines)", hv.storyText],
+      ],
+    },
   ];
   const metaByKey = new Map((pageMetaRows ?? []).map((r) => [r.page_key, r]));
 
@@ -160,7 +169,7 @@ export default async function AdminSettingsPage() {
               <FieldGrid>
                 {group.fields.map(([name, label, value]) => (
                   <Field key={name} label={label} htmlFor={name}>
-                    {name === "ai_section_body" ? (
+                    {name === "ai_section_body" || name === "story_text" ? (
                       <TextArea id={name} name={name} rows={3} required defaultValue={value} />
                     ) : (
                       <TextInput
@@ -168,7 +177,7 @@ export default async function AdminSettingsPage() {
                         name={name}
                         required
                         defaultValue={value}
-                        {...(name === "leads_value" ? { type: "number", min: 0 } : {})}
+                        {...(name === "leads_value" || name === "study_progress" ? { type: "number", min: 0 } : {})}
                       />
                     )}
                   </Field>

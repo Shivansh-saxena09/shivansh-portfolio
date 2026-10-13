@@ -25,6 +25,14 @@ export type HeroVisualContent = {
   linkLabels: [string, string, string, string];
   aiSectionHeading: string;
   aiSectionBody: string;
+  /** Phone story: channel tags [Meta, Google] (Meta carries the Jewar numbers). */
+  channelLabels: [string, string];
+  /** Phone story pictogram labels: tracking, code, database, AI. */
+  toolLabels: [string, string, string, string];
+  /** MBA progress ring, 0–100. */
+  studyProgress: number;
+  /** Plain-text version of the phone story for screen readers and crawlers. */
+  storyText: string;
 };
 
 export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
@@ -44,6 +52,11 @@ export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
   careerLabel: "Career",
   linkLabels: ["Marketing work", "Engineering work", "AI work", "Resume"],
   aiSectionHeading: "AI work",
+  channelLabels: ["Meta Ads", "Google Ads"],
+  toolLabels: ["Conversion tracking", "Code", "Database", "AI"],
+  studyProgress: 50,
+  storyText:
+    "Performance marketer first: ad spend from Meta Ads and Google Ads flows into one funnel. On the Jewar plots Meta lead-gen campaign: 7.76L impressions, 6,445 clicks and 292 leads at ₹254 CPL, 112 of them qualified. Also builds the systems behind the campaigns — Pixel + Conversions API tracking, a Supabase CRM and a live dashboard — and is now building AI agents. Toolkit: conversion tracking, code, databases and AI. Studied B.Tech Computer Science (2023); MBA in progress (expected 2027). Career: I View Academy (Jun 2023), Dfractal Advisory (Nov 2023), Divya Padma Infosystem LLP (Mar 2025). Based in Greater Noida, India — open to full-time remote work.",
   aiSectionBody:
     "Campaign Doctor — the internal tool I use to analyse campaign metrics — and an AI calling agent I'm building now. Full write-ups are coming soon.",
 };
@@ -77,5 +90,11 @@ export function parseHeroVisual(raw: unknown): HeroVisualContent {
     linkLabels: tuple(r.linkLabels, d.linkLabels),
     aiSectionHeading: str("aiSectionHeading"),
     aiSectionBody: str("aiSectionBody"),
+    channelLabels: tuple(r.channelLabels, d.channelLabels),
+    toolLabels: tuple(r.toolLabels, d.toolLabels),
+    studyProgress: Number.isFinite(Number(r.studyProgress)) && r.studyProgress !== "" && r.studyProgress != null
+      ? Math.min(100, Math.max(0, Number(r.studyProgress)))
+      : d.studyProgress,
+    storyText: str("storyText"),
   };
 }
