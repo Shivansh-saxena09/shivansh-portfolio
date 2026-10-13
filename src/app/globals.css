@@ -5,7 +5,7 @@
 /* See CLAUDE.md → Design Direction for the source spec.                   */
 /* ---------------------------------------------------------------------- */
 :root {
-  --hdr-h: 65px; /* phone header height (py-4 + h-8 + border); phone hero fits 100svh under it */
+  --hdr-h: 77px; /* phone header height (py-4 + 44px menu button + border); phone hero fits 100svh under it */
   --color-cream: #f7f3ec; /* base background */
   --color-ivory: #fdfbf7; /* secondary bg / cards, layered above base */
   --color-terracotta: #b5623a; /* primary accent — muted baked-clay */

@@ -59,7 +59,9 @@ export const PACING = {
   backGrace: 1.2,
 } as const;
 // Raw authoring windows (seconds on the raw timeline), one per beat + end.
-const RAW = [0, 2.8, 4.8, 6.8, 9.2, 10.6, 12.4, 14.0, 15.2];
+// Each window closes just before the next beat's first event, so a beat's
+// hold never shows the next beat's set-up.
+const RAW = [0, 2.78, 4.78, 6.78, 9.18, 10.58, 12.38, 13.98, 15.2];
 // Beat start times on the played (master) timeline, + end.
 const BEATS = PACING.beats.reduce<number[]>((a, b) => [...a, a[a.length - 1] + b.dwell], [0]);
 const pct = (x: number, y: number, w: number, h?: number): React.CSSProperties => ({
@@ -128,7 +130,9 @@ function build(q: Q, low: boolean) {
   gsap.set(q(".av-head,.av-look,.av-body,.p-step,.p-bar"), { transformOrigin: "50% 100%" });
   gsap.set(q(".av-brL,.av-brR,.p-pop,.st-ok,.st-err,.p-rip"), { transformOrigin: "50% 50%" });
   gsap.set(q(".p-q"), { transformOrigin: "0% 50%", scaleX: 0 });
-  gsap.set(pos, { x: -50, y: 404, scale: 1 });
+  // Scale around the feet (the group's local origin), not the bbox corner.
+  const bb = (pos[0] as SVGGraphicsElement).getBBox();
+  gsap.set(pos, { transformOrigin: `${-bb.x}px ${-bb.y}px`, smoothOrigin: false, x: -50, y: 404, scale: 1 });
   gsap.set(armL, { rotation: 8 });
   gsap.set(armR, { rotation: -8 });
   gsap.set(q(MOUTHS), { opacity: 0 });
@@ -656,7 +660,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
         {/* Career steps + role props */}
         <g className="g-car" opacity="0">
           {STEPS.map(([x, y, w]) => (
-            <rect key={x} className="p-step fill-ivory stroke-beige-border" x={x} y={y} width={w} height={H - y} strokeWidth="1.5" />
+            <rect key={x} className="p-step fill-ivory stroke-beige-border" x={x} y={y} width={w} height={404 - y} strokeWidth="1.5" />
           ))}
           <g transform={`translate(4 ${STEPS[0][1] - 372})`}>
           <g className="p-prop p-pop" role="img" aria-label={milestones[0]?.org}>

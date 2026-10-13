@@ -60,7 +60,7 @@ export function Hero({
   return (
     <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 max-sm:flex max-sm:max-h-[calc(100svh-var(--hdr-h))] max-sm:flex-col max-sm:pt-3 max-sm:pb-4 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
       {/* Phones: the hero fits the viewport under the header; only the film shrinks. */}
-      <Container className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
+      <Container className="max-sm:flex max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:flex-col">
         <div className="relative mx-auto max-w-[520px] [container-type:inline-size] max-sm:flex max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:flex-col lg:max-w-none">
           <div className="relative z-30 lg:absolute lg:top-0 lg:left-0 lg:w-[46%]">
             <h1 className="font-heading text-charcoal">
