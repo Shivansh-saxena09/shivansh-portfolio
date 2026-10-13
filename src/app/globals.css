@@ -267,3 +267,31 @@ h4 {
   -webkit-background-clip: text;
   color: transparent;
 }
+
+/* Hero motion graphic loops (components/home/HeroVisual.tsx). Compositor-
+   friendly properties only; paused while the graphic is off-screen. */
+.hv-flow {
+  animation: hv-flow 1.6s linear infinite;
+}
+@keyframes hv-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.hv-pulse {
+  opacity: 0;
+  animation: hv-pulse 2.4s ease-out infinite;
+}
+@keyframes hv-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.45;
+  }
+}
+.hv-paused .hv-flow,
+.hv-paused .hv-pulse {
+  animation-play-state: paused;
+}

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Field, TextInput, TextArea, FieldGrid } from "@/components/admin/fields";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ServicesManager } from "@/components/admin/ServicesManager";
-import { updateSiteSettings, updatePageMeta } from "./actions";
+import { updateSiteSettings, updatePageMeta, updateHeroVisual } from "./actions";
 
 const PAGES = [
   { key: "home", label: "Home (/)" },
@@ -20,6 +20,7 @@ export default async function AdminSettingsPage() {
     getServices(),
     supabase.from("page_meta").select("*"),
   ]);
+  const hv = settings.heroVisual;
   const metaByKey = new Map((pageMetaRows ?? []).map((r) => [r.page_key, r]));
 
   return (
@@ -93,6 +94,57 @@ export default async function AdminSettingsPage() {
 
           <div>
             <SubmitButton>Save Site Settings</SubmitButton>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h2 className="font-heading text-xl font-bold text-charcoal">Hero Motion Graphic</h2>
+        <p className="mt-1 font-body text-sm text-warm-grey">
+          Every label and number shown inside the animated homepage graphic.
+        </p>
+
+        <form
+          action={updateHeroVisual}
+          className="mt-6 flex flex-col gap-4 rounded-2xl border border-beige-border bg-ivory p-6"
+        >
+          <FieldGrid>
+            <Field label="Ad spend label" htmlFor="spend_label">
+              <TextInput id="spend_label" name="spend_label" required defaultValue={hv.spendLabel} />
+            </Field>
+            <Field label="Conversion-signal loop label" htmlFor="feedback_label">
+              <TextInput id="feedback_label" name="feedback_label" required defaultValue={hv.feedbackLabel} />
+            </Field>
+          </FieldGrid>
+          <FieldGrid>
+            {hv.stages.map((v, i) => (
+              <Field key={i} label={`Funnel stage ${i + 1}`} htmlFor={`stage_${i}`}>
+                <TextInput id={`stage_${i}`} name={`stage_${i}`} required defaultValue={v} />
+              </Field>
+            ))}
+          </FieldGrid>
+          <FieldGrid>
+            <Field label="Lead counter (number)" htmlFor="leads_value">
+              <TextInput id="leads_value" name="leads_value" type="number" min={0} required defaultValue={hv.leadsValue} />
+            </Field>
+            <Field label="Lead counter label" htmlFor="leads_label">
+              <TextInput id="leads_label" name="leads_label" required defaultValue={hv.leadsLabel} />
+            </Field>
+            {hv.metricChips.map((v, i) => (
+              <Field key={i} label={`Metric chip ${i + 1}`} htmlFor={`chip_${i}`}>
+                <TextInput id={`chip_${i}`} name={`chip_${i}`} required defaultValue={v} />
+              </Field>
+            ))}
+          </FieldGrid>
+          <FieldGrid>
+            {hv.systemNodes.map((v, i) => (
+              <Field key={i} label={`System node ${i + 1}`} htmlFor={`node_${i}`}>
+                <TextInput id={`node_${i}`} name={`node_${i}`} required defaultValue={v} />
+              </Field>
+            ))}
+          </FieldGrid>
+          <div>
+            <SubmitButton>Save Hero Graphic</SubmitButton>
           </div>
         </form>
       </div>

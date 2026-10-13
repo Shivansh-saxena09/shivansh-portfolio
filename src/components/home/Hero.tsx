@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import type { Skill } from "@/lib/data/skills";
+import type { HeroVisualContent } from "@/lib/data/heroVisual";
 import { useReferrerBias } from "@/lib/useReferrerBias";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { Tag } from "@/components/ui/Tag";
+import { HeroVisual } from "@/components/home/HeroVisual";
 import { DestinationCard, ChartIcon, CodeIcon } from "@/components/ui/DestinationCard";
 
 /**
@@ -27,7 +27,7 @@ function splitWords(text: string, accent?: string) {
 
 type HeroCopy = { eyebrow: string; heading: string; subheading: string };
 
-export function Hero({ heroCopy, focusSkills }: { heroCopy: HeroCopy; focusSkills: Skill[] }) {
+export function Hero({ heroCopy, visual }: { heroCopy: HeroCopy; visual: HeroVisualContent }) {
   const bias = useReferrerBias();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -59,10 +59,16 @@ export function Hero({ heroCopy, focusSkills }: { heroCopy: HeroCopy; focusSkill
   const engineeringLeaning = bias === "engineering-leaning";
 
   return (
-    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-16 pb-20 sm:pt-24 sm:pb-28 lg:pb-32">
+    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-8 pb-20 sm:pt-24 sm:pb-28 lg:pb-32">
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:items-center lg:gap-12">
           <div className="lg:col-span-7">
+            {/* Phones get the compact, sideways composition first — above
+                the fold, so the "data + code" read lands before any copy. */}
+            <div className="mb-8 sm:hidden">
+              <HeroVisual content={visual} variant="mobile" />
+            </div>
+
             <p className="hero-fade font-body text-sm font-medium uppercase tracking-[0.2em] text-terracotta">
               {heroCopy.eyebrow}
             </p>
@@ -109,36 +115,16 @@ export function Hero({ heroCopy, focusSkills }: { heroCopy: HeroCopy; focusSkill
             </div>
           </div>
 
-          {/* Floating card composition — fills the wide-screen right rail
-              with real content (no fabricated stats) instead of leaving
-              the hero feeling empty/centered on large viewports. */}
-          <div className="hero-fade relative mt-16 lg:col-span-5 lg:mt-0">
+          <div className="relative mt-20 hidden sm:block lg:col-span-5 lg:mt-0">
             <div
               aria-hidden="true"
-              className="absolute -right-6 -top-10 h-56 w-56 rounded-full bg-sage/25 blur-3xl sm:h-72 sm:w-72"
+              className="absolute -right-6 -top-10 h-72 w-72 rounded-full bg-sage/20 blur-3xl"
             />
             <div
               aria-hidden="true"
-              className="absolute -bottom-8 left-6 h-40 w-40 rounded-full bg-terracotta/20 blur-3xl"
+              className="absolute bottom-24 -left-6 h-48 w-48 rounded-full bg-terracotta/15 blur-3xl"
             />
-
-            {/* Upright on mobile — a full-width tilted card on a narrow
-                screen reads as a mistake, not an editorial flourish; the
-                rotation only earns its keep once there's visible
-                negative space around the card to show it's deliberate. */}
-            <div className="glass-card paper-grain relative mx-auto max-w-sm rounded-2xl px-7 py-8 sm:px-8 lg:-rotate-2">
-              <span className="relative z-10 font-body text-xs font-semibold uppercase tracking-[0.15em] text-warm-grey">
-                Core Focus
-              </span>
-              <div className="relative z-10 mt-4 flex flex-wrap gap-2">
-                {focusSkills.map((skill) => (
-                  <Tag key={skill.slug}>{skill.label}</Tag>
-                ))}
-              </div>
-              <p className="relative z-10 mt-5 font-body text-sm leading-relaxed text-warm-grey">
-                Also builds the tracking and reporting systems behind the campaigns.
-              </p>
-            </div>
+            <HeroVisual content={visual} variant="desktop" />
           </div>
         </div>
       </Container>

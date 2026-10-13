@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { parseHeroVisual } from "@/lib/data/heroVisual";
 
 // Every mutation below touches content rendered inside (site)/layout.tsx
 // (Header/Footer show personName/contact sitewide) or a specific public
@@ -30,6 +31,25 @@ export async function updateSiteSettings(formData: FormData): Promise<void> {
       footer_cta_label: String(formData.get("footer_cta_label")),
     })
     .eq("id", 1);
+  if (error) throw error;
+  revalidateSite();
+}
+
+// Separate from updateSiteSettings so the main settings form keeps working
+// even before migration 0007 (which adds hero_visual) has been applied.
+export async function updateHeroVisual(formData: FormData): Promise<void> {
+  const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const heroVisual = parseHeroVisual({
+    spendLabel: get("spend_label"),
+    stages: [get("stage_0"), get("stage_1"), get("stage_2")],
+    leadsValue: get("leads_value"),
+    leadsLabel: get("leads_label"),
+    metricChips: [get("chip_0"), get("chip_1")],
+    systemNodes: [get("node_0"), get("node_1"), get("node_2")],
+    feedbackLabel: get("feedback_label"),
+  });
+  const supabase = await createClient();
+  const { error } = await supabase.from("site_settings").update({ hero_visual: heroVisual }).eq("id", 1);
   if (error) throw error;
   revalidateSite();
 }
