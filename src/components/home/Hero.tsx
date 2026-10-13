@@ -58,28 +58,28 @@ export function Hero({
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 max-sm:flex max-sm:max-h-[calc(100svh-var(--hdr-h))] max-sm:flex-col max-sm:pt-3 max-sm:pb-4 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
+    <section className="relative overflow-hidden border-b border-beige-border/70 bg-cream pt-4 pb-6 max-sm:flex max-sm:max-h-[calc(100svh-var(--hdr-h))] max-sm:flex-col max-sm:pt-3 max-sm:pb-4 [@media(max-width:639.98px)_and_(max-height:700px)]:pt-2 [@media(max-width:639.98px)_and_(max-height:700px)]:pb-3 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-16">
       {/* Phones: the hero fits the viewport under the header; only the film shrinks. */}
       <Container className="max-sm:flex max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:flex-col">
         <div className="relative mx-auto max-w-[520px] [container-type:inline-size] max-sm:flex max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:flex-col lg:max-w-none">
           <div className="relative z-30 lg:absolute lg:top-0 lg:left-0 lg:w-[46%]">
             <h1 className="font-heading text-charcoal">
-              <span className="block text-[8.6cqw] leading-[1.05] font-bold tracking-tight lg:text-[5.2cqw]">
+              <span className="block text-[8.6cqw] leading-[1.05] font-bold tracking-tight [@media(max-width:639.98px)_and_(max-height:700px)]:text-[7.4cqw] lg:text-[5.2cqw]">
                 {identity.name}
               </span>
               <span className="sr-only"> — </span>
-              <span className="mt-[1.6cqw] block font-body text-[3cqw] font-semibold tracking-[0.2em] text-terracotta uppercase lg:mt-[1cqw] lg:text-[1.05cqw]">
+              <span className="mt-[1.6cqw] block font-body text-[3cqw] font-semibold tracking-[0.2em] text-terracotta uppercase [@media(max-width:639.98px)_and_(max-height:700px)]:mt-[0.8cqw] lg:mt-[1cqw] lg:text-[1.05cqw]">
                 {identity.role}
               </span>
             </h1>
-            <p className="mt-[1.6cqw] font-heading text-[4.4cqw] text-warm-grey italic lg:mt-[1.1cqw] lg:text-[1.9cqw]">
+            <p className="mt-[1.6cqw] font-heading text-[4.4cqw] text-warm-grey italic [@media(max-width:639.98px)_and_(max-height:700px)]:mt-[0.6cqw] [@media(max-width:639.98px)_and_(max-height:700px)]:text-[4cqw] lg:mt-[1.1cqw] lg:text-[1.9cqw]">
               {identity.tagline}
             </p>
           </div>
 
           {/* Phones (<640): wordless Stories film + a server-rendered link dock.
               The dock sits outside the tap stage, so links always win. */}
-          <div className="mt-[3cqw] flex min-h-0 flex-1 flex-col sm:hidden">
+          <div className="mt-[3cqw] flex min-h-0 flex-1 flex-col [@media(max-width:639.98px)_and_(max-height:700px)]:mt-0 sm:hidden">
             <p className="sr-only">{visual.storyText}</p>
             <div id="p-hud" className="relative min-h-0 pt-11 [container-type:size]" style={{ flex: "0 1 calc(116.7cqw + 2.75rem)" }}>
               {phone && (
@@ -93,7 +93,7 @@ export function Hero({
                 />
               )}
             </div>
-            <nav className="mt-3 grid shrink-0 grid-cols-2 gap-2">
+            <nav className="mt-3 grid shrink-0 grid-cols-2 gap-2 [@media(max-width:639.98px)_and_(max-height:700px)]:mt-2">
               {(
                 [
                   ["/marketing", visual.linkLabels[0], true],

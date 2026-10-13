@@ -513,7 +513,8 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
   };
 
   const lbl = phase === "playing" ? c.controlLabels[0] : c.controlLabels[1];
-  const tag = "invisible absolute font-body text-[3cqw] leading-tight opacity-0";
+  // Floors keep labels readable when a short phone shrinks the scene.
+  const tag = "invisible absolute font-body text-[max(3cqw,9.5px)] leading-tight opacity-0";
   const hudEl =
     hud &&
     createPortal(
@@ -617,8 +618,8 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
           ))}
         </g>
         <g className="g-res" opacity="0">
-          <text x="280" y="258" className="p-num fill-warm-grey font-body" fontSize="9.5" data-v={c.metricChips[0]}>{c.metricChips[0]}</text>
-          <text x="280" y="272" className="p-num fill-warm-grey font-body" fontSize="9.5" data-v={c.metricChips[1]}>{c.metricChips[1]}</text>
+          <text x="280" y="257" className="p-num fill-warm-grey font-body" fontSize="11" data-v={c.metricChips[0]}>{c.metricChips[0]}</text>
+          <text x="280" y="273" className="p-num fill-warm-grey font-body" fontSize="11" data-v={c.metricChips[1]}>{c.metricChips[1]}</text>
         </g>
 
         {/* Systems: Pixel + CAPI → CRM → dashboard */}
@@ -748,8 +749,8 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
       <span className={`o-b o-camp ${tag} text-warm-grey`} style={pct(4, 140, 90)}>{c.campaignLabel}</span>
       {milestones.slice(0, 3).map((m, i) => (
         <span key={m.org} className={`o-b o-step ${tag}`} style={pct(STEPS[i][0] + 4, STEPS[i][1] + 5, STEPS[i][2] - 8)}>
-          <b className={`block text-[2.6cqw] tracking-[0.08em] uppercase ${m.current ? "text-terracotta" : "text-warm-grey"}`}>{m.date}</b>
-          <span className="font-heading text-[3.2cqw] font-semibold text-charcoal">{m.org}</span>
+          <b className={`block text-[max(2.6cqw,8.5px)] tracking-[0.08em] uppercase ${m.current ? "text-terracotta" : "text-warm-grey"}`}>{m.date}</b>
+          <span className="font-heading text-[max(3.2cqw,10px)] font-semibold text-charcoal">{m.org}</span>
         </span>
       ))}
       {education.slice(0, 2).map((e, i) => (
@@ -758,7 +759,7 @@ export function PhoneStory({ c, milestones, education, place, resumeUrl, resumeF
         </span>
       ))}
       <span className={`o-b o-place ${tag} text-right`} style={pct(110, 288, 240)}>
-        <b className="block font-heading text-[3.6cqw] text-charcoal">{place.location}</b>
+        <b className="block font-heading text-[max(3.6cqw,11px)] text-charcoal">{place.location}</b>
         <span className="text-warm-grey">{place.availability}</span>
       </span>
 
