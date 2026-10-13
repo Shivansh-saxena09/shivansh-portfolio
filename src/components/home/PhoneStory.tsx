@@ -77,6 +77,8 @@ const pct = (x: number, y: number, w: number, h?: number): React.CSSProperties =
 const UP = -60;
 // Text grid: left edge shared by the Meta card, its tags and the result block.
 const GX = 20;
+// Funnel + pipeline sit FX right of their drawn coordinates, leaving the left column for text.
+const FX = 8;
 const TOOL_S = 1.65;
 const FIN_S = 1.95;
 // Career steps [x, top, width] and the résumé box [x, y, w, h] (viewBox units).
@@ -200,9 +202,9 @@ function build(q: Q, low: boolean) {
           keyframes: [
             { x: 111, y: 256, autoAlpha: 1, scaleX: 1, scaleY: 1, duration: 0.04 },
             { x: 160, y: 96 + UP, scaleX: 0.82, scaleY: 1.22, duration: 0.26, ease: "power1.out" },
-            { x: i % 2 ? 214 : 122, y: 131 + UP, scaleX: 0.85, scaleY: 1.2, duration: 0.18, ease: "power1.in" },
+            { x: (i % 2 ? 214 : 122) + FX, y: 131 + UP, scaleX: 0.85, scaleY: 1.2, duration: 0.18, ease: "power1.in" },
             { scaleX: 1.4, scaleY: 0.6, duration: 0.05 },
-            { x: 190 + i * 8, y: 118 + UP, scaleX: 1, scaleY: 1, duration: 0.12 },
+            { x: 190 + FX + i * 8, y: 118 + UP, scaleX: 1, scaleY: 1, duration: 0.12 },
             { y: 150 + UP, autoAlpha: 0, duration: 0.14, ease: "power1.in" },
           ],
         },
@@ -212,7 +214,7 @@ function build(q: Q, low: boolean) {
   tl.to(liq[0], { y: 0, duration: 0.6 }, 1.25).to(liq[1], { y: 0, duration: 0.6 }, 1.6).to(liq[2], { y: 0, duration: 0.5 }, 1.9);
   tl.to(lines[0], { strokeDashoffset: 0, duration: 0.35 }, 2.1);
   dots.slice(0, 2).forEach((d, i) =>
-    tl.to(d, { keyframes: [{ x: 210, y: 290 + UP, autoAlpha: 1, duration: 0.02 }, { y: 302 + UP, duration: 0.1 }, { x: 140, duration: 0.18 }, { y: 318 + UP, autoAlpha: 0, duration: 0.1 }] }, 2.15 + i * 0.18),
+    tl.to(d, { keyframes: [{ x: 210 + FX, y: 290 + UP, autoAlpha: 1, duration: 0.02 }, { y: 302 + UP, duration: 0.1 }, { x: 140 + FX, duration: 0.18 }, { y: 318 + UP, autoAlpha: 0, duration: 0.1 }] }, 2.15 + i * 0.18),
   );
   tl.to(nodes, { opacity: 1, duration: 0.2, stagger: 0.12 }, 2.3).to(lines.slice(1, 3), { strokeDashoffset: 0, duration: 0.2, stagger: 0.12 }, 2.35);
   tl.to(eyes, { x: 3, y: 2, duration: 0.2 }, 2.3);
@@ -226,7 +228,7 @@ function build(q: Q, low: boolean) {
   show(".o-meta", 3.0);
   tl.fromTo(q(".p-form"), { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "back.out(1.6)" }, 3.45);
   dots.forEach((d, i) =>
-    tl.to(d, { keyframes: [{ x: 95, y: 106, autoAlpha: 1, duration: 0.02 }, { x: 150, y: 96, duration: 0.18 }, { x: 196 + i * 6, y: 132, duration: 0.18, ease: "power1.in" }, { y: 150, autoAlpha: 0, duration: 0.1 }] }, 3.95 + i * 0.12),
+    tl.to(d, { keyframes: [{ x: 95, y: 106, autoAlpha: 1, duration: 0.02 }, { x: 150, y: 96, duration: 0.18 }, { x: 196 + FX + i * 6, y: 132, duration: 0.18, ease: "power1.in" }, { y: 150, autoAlpha: 0, duration: 0.1 }] }, 3.95 + i * 0.12),
   );
   tl.to(liq[0], { y: 25, duration: 0.5 }, 4.1);
   face("delight", 4.2);
@@ -239,7 +241,7 @@ function build(q: Q, low: boolean) {
   tl.fromTo(q(".p-row"), { autoAlpha: 0, x: 8 }, { autoAlpha: 1, x: 0, duration: 0.2, stagger: 0.1 }, 5.55);
   tl.to(armR, { rotation: -120, duration: 0.22, ease: "back.out(2)" }, 5.85);
   tl.fromTo(q(".p-rip"), { autoAlpha: 1, scale: 0.3 }, { autoAlpha: 0, scale: 1.6, duration: 0.45 }, 6.0);
-  tl.to(dots[0], { keyframes: [{ x: 255, y: 52, autoAlpha: 1, duration: 0.02 }, { x: 236, y: 100, duration: 0.2 }, { x: 222, y: 132, duration: 0.14, ease: "power1.in" }, { y: 150, autoAlpha: 0, duration: 0.1 }] }, 6.05);
+  tl.to(dots[0], { keyframes: [{ x: 255, y: 52, autoAlpha: 1, duration: 0.02 }, { x: 236, y: 100, duration: 0.2 }, { x: 222 + FX, y: 132, duration: 0.14, ease: "power1.in" }, { y: 150, autoAlpha: 0, duration: 0.1 }] }, 6.05);
   tl.to(liq[1], { y: 20, duration: 0.4 }, 6.35).to(armR, { rotation: -8, duration: 0.3 }, 6.3);
   show(".g-capi", 6.4, 0.4);
   face("proud", 6.45);
@@ -622,11 +624,12 @@ export function PhoneStory({ c, name, milestones, education, place, resumeUrl, r
 
         {/* Conversions API: dashed signal loops back to both channels */}
         <g className="g-capi" opacity="0" role="img" aria-label="Conversions API">
-          <path d="M110 332 H104 V118 M99 124 L104 116 L109 124" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
-          <path d="M310 332 H352 V38 M347 44 L352 36 L357 44" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
+          <path d="M118 332 H112 V118 M107 124 L112 116 L117 124" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
+          <path d="M318 332 H352 V38 M347 44 L352 36 L357 44" className="p-flow fill-none stroke-sage-dark" strokeWidth="1.3" strokeDasharray="4 4" />
         </g>
 
         {/* Funnel — fills like liquid; the Jewar numbers count up */}
+        <g transform={`translate(${FX} 0)`}>
         <g className="g-fun" opacity="0" role="img" aria-label={c.stages.join(", ")}>
           {FB.map(([t, b]) => (
             <path key={t} d={fBand(t, b)} className="fill-ivory stroke-terracotta" strokeOpacity="0.5" />
@@ -659,6 +662,7 @@ export function PhoneStory({ c, name, milestones, education, place, resumeUrl, r
           ))}
           <rect x="110" y="318" width="60" height="28" rx="8" className="st-errline fill-none stroke-terracotta-dark" strokeWidth="2" opacity="0" />
           <StatusBadge x={170} y={318} s={0.7} />
+        </g>
         </g>
 
         {/* Toolkit pictograms */}
@@ -769,10 +773,10 @@ export function PhoneStory({ c, name, milestones, education, place, resumeUrl, r
       <span className={`o-b o-meta ${tag} font-semibold text-terracotta-dark`} style={pct(20, 114, 150)}>{c.channelLabels[0]}</span>
       <span className={`o-b o-goo ${tag} font-semibold text-sage-dark`} style={pct(190, 114, 160)}>{c.channelLabels[1]}</span>
       {/* Campaign + its results as one left-aligned block: chips flow under the label however it wraps */}
-      <div className={`o-b o-camp ${tag} text-warm-grey`} style={pct(GX, 140, 78)}>
+      <div className={`o-b o-camp ${tag} text-warm-grey`} style={pct(GX, 136, 86)}>
         {c.campaignLabel}
         {c.metricChips.map((m, i) => (
-          <span key={i} className={`p-num block font-semibold text-charcoal ${i ? "" : "mt-[1.4cqw]"} text-[max(3.3cqw,10.5px)]`} data-v={m}>
+          <span key={i} className={`p-num block font-semibold whitespace-nowrap text-charcoal ${i ? "" : "mt-[1.4cqw]"} text-[max(3.3cqw,10px)]`} data-v={m}>
             {m}
           </span>
         ))}
