@@ -429,7 +429,7 @@ export function PhoneStory({ c, name, milestones, education, place, resumeUrl, r
         tlRef.current?.play();
       }));
     const pl = document.querySelector("[data-preloader]");
-    if (pl && getComputedStyle(pl).display !== "none") window.addEventListener("preloader:done", play, { once: true });
+    if (pl && getComputedStyle(pl).display !== "none" && !document.documentElement.dataset.plDone) window.addEventListener("preloader:done", play, { once: true });
     else play();
     return () => {
       window.removeEventListener("preloader:done", play);

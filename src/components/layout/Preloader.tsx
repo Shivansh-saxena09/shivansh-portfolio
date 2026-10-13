@@ -25,6 +25,13 @@ const SEEN_KEY = "pl-seen";
  * - Desktop: character beside a one-word-per-line title, exits left.
  *   Mobile: character above a stacked title, exits right (where the mobile
  *   hero character enters).
+ * - Phones (<640): the rule is the story's 8-segment progress bar filling,
+ *   and before exiting it waits (capped, still < 2s total) for the phone
+ *   story to mount, so the wipe always opens on the story's first frame —
+ *   never on an empty stage — and the character runs to the story
+ *   character's own entry point (left).
+ * - "preloader:done" also sets <html data-pl-done>, so a story that mounts
+ *   after the event still starts.
  * - Repeat views: an inline <head> script adds `pl-seen` to <html> before
  *   first paint and CSS hides this overlay — no flash, no wait. A CSS
  *   failsafe hides it after 3.5s even if JS never runs.
@@ -49,7 +56,18 @@ export function Preloader({ personName }: { personName: string }) {
     const bg = q(".pl-bg")[0] as HTMLElement;
     const armR = q(".av-armR");
     const desktop = window.matchMedia("(min-width: 1024px)").matches;
+    const phone = window.matchMedia("(max-width: 639.98px)").matches;
     const exitAt = Math.max(0.35, 1.0 - performance.now() / 1000);
+    // Phone story is lazy-loaded: hold the exit until its character exists (cap ~1.3s after navigation).
+    const storyReady = () =>
+      new Promise<void>((done) => {
+        const check = () => {
+          const el = document.querySelector(".p-stage .av-pos");
+          if ((el && el.getBoundingClientRect().height > 0) || performance.now() > 1300) done();
+          else requestAnimationFrame(check);
+        };
+        check();
+      });
 
     const ctx = gsap.context(() => {
       gsap.set(q(".av-armL,.av-armR,.av-legL,.av-legR"), { transformOrigin: "50% 0%" });
@@ -61,6 +79,8 @@ export function Preloader({ personName }: { personName: string }) {
         .to(armR, { rotation: -150, duration: 0.2, ease: "back.out(2)" }, 0)
         .to(armR, { rotation: -120, duration: 0.13, yoyo: true, repeat: 3, ease: "sine.inOut" }, 0.2)
         .to(armR, { rotation: -8, duration: 0.2 }, Math.max(0.75, exitAt - 0.15));
+
+      if (phone) tl.addPause(exitAt - 0.01, () => void storyReady().then(() => tl.resume()));
 
       // exit: run to the hero character's entry point while the wipe opens on it
       tl.add(() => {
@@ -84,9 +104,12 @@ export function Preloader({ personName }: { personName: string }) {
           .to(q(".pl-word"), { yPercent: -115, duration: 0.32, stagger: 0.05, ease: "power3.in" }, 0)
           .to(q(".pl-rule"), { scaleX: 0, duration: 0.25, ease: "power2.in" }, 0)
           .fromTo(bg, { "--pr": "0px" }, { "--pr": `${r}px`, duration: 0.6, ease: "power2.in" }, 0.15)
-          .add(() => window.dispatchEvent(new Event("preloader:done")), 0.55);
+          .add(() => {
+            document.documentElement.dataset.plDone = "1";
+            window.dispatchEvent(new Event("preloader:done"));
+          }, 0.55);
       }, exitAt);
-      tl.to({}, { duration: 0.8 });
+      tl.to({}, { duration: phone ? 0.5 : 0.8 });
     }, root);
     return () => ctx.revert();
   }, []);
@@ -111,7 +134,15 @@ export function Preloader({ personName }: { personName: string }) {
               </span>
             ))}
           </p>
-          <span className="pl-rule mx-auto mt-[2vh] block h-[3px] w-20 origin-center bg-gradient-to-r from-terracotta to-sage lg:mx-0 lg:origin-left" />
+          <span className="pl-rule mx-auto mt-[2vh] hidden h-[3px] w-20 origin-center bg-gradient-to-r from-terracotta to-sage sm:block lg:mx-0 lg:origin-left" />
+          {/* Phones: the story's progress bar, filling — the film is about to start */}
+          <span className="pl-rule mx-auto mt-[2.4vh] flex w-44 gap-1 sm:hidden">
+            {Array.from({ length: 8 }, (_, i) => (
+              <span key={i} className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-beige-border">
+                <i className="pl-seg absolute inset-0 origin-left bg-terracotta" style={{ animationDelay: `${0.3 + i * 0.08}s` }} />
+              </span>
+            ))}
+          </span>
         </div>
       </div>
     </div>
