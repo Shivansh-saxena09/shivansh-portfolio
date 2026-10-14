@@ -511,41 +511,55 @@ h4 {
     clip-path: inset(0 0 0 0);
   }
 }
+/* Desktop cursor ring (MotionRuntime): every state change is transform/opacity on its own
+   layer, so hovering or clicking never waits on a main-thread repaint. */
 .cur {
   position: fixed;
   left: 0;
   top: 0;
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
-  border: 1.5px solid var(--color-terracotta);
-  border-radius: 999px;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
   pointer-events: none;
   z-index: 95;
   opacity: 0;
+  transition: opacity 0.2s;
+  will-change: transform, opacity;
+}
+.cur::before,
+.cur::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  transform: scale(0.47);
   transition:
-    width 0.25s,
-    height 0.25s,
-    margin 0.25s,
-    background-color 0.25s,
-    border-color 0.25s,
-    opacity 0.2s;
+    transform 0.25s,
+    opacity 0.25s;
+}
+.cur::before {
+  border: 3px solid var(--color-terracotta);
+}
+.cur::after {
+  background: var(--color-sage);
+  opacity: 0;
 }
 .cur[data-on] {
   opacity: 0.75;
 }
-.cur[data-c="link"] {
-  width: 48px;
-  height: 48px;
-  margin: -24px 0 0 -24px;
-  border-color: var(--color-sage);
-  background: color-mix(in srgb, var(--color-sage) 12%, transparent);
+.cur[data-c="link"]::before,
+.cur[data-c="link"]::after {
+  transform: scale(0.75);
 }
-.cur[data-c="view"] {
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
-  background: color-mix(in srgb, var(--color-terracotta) 14%, transparent);
+.cur[data-c="link"]::after {
+  opacity: 0.14;
+}
+.cur[data-c="view"]::before,
+.cur[data-c="view"]::after {
+  transform: scale(1);
+}
+.cur[data-c="view"]::after {
+  opacity: 0.12;
 }
 .cur[data-c="hide"] {
   opacity: 0;
