@@ -80,6 +80,9 @@ const MAX_GRID_TILES = 4;
  * sentence, so "nothing uploaded yet" still reads as a considered
  * design state rather than an empty gap.
  */
+// Skeleton shimmer (globals.css .skel) stops once the image has painted.
+const markLoaded = (e: React.SyntheticEvent<HTMLImageElement>) => e.currentTarget.parentElement?.setAttribute("data-loaded", "");
+
 export function VerifiedResults({ images }: { images: ProofImage[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const mounted = useSyncExternalStore(subscribe, getMountedSnapshot, getMountedServerSnapshot);
@@ -155,12 +158,13 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
                           ? `View all ${images.length} screenshots`
                           : `View full-size: ${img.altText || "Meta Ads Manager screenshot"}`
                       }
-                      className="group relative aspect-[16/10] overflow-hidden rounded-xl border border-beige-border shadow-[0_1px_2px_rgba(43,38,34,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/50 hover:shadow-[0_16px_28px_-14px_rgba(43,38,34,0.25)]"
+                      className="skel group relative aspect-[16/10] overflow-hidden rounded-xl border bg-ivory border-beige-border shadow-[0_1px_2px_rgba(43,38,34,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/50 hover:shadow-[0_16px_28px_-14px_rgba(43,38,34,0.25)]"
                     >
                       <Image
                         src={img.url}
                         alt={img.altText || "Meta Ads Manager results screenshot"}
                         fill
+                        onLoad={markLoaded}
                         sizes="(min-width: 1024px) 30vw, 40vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                       />
@@ -192,12 +196,13 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
                         type="button"
                         onClick={() => setOpenIndex(i)}
                         aria-label={`View full-size: ${img.altText || "Meta Ads Manager screenshot"}`}
-                        className="relative aspect-[16/10] w-[78vw] shrink-0 snap-start overflow-hidden rounded-xl border border-beige-border"
+                        className="skel relative aspect-[16/10] w-[78vw] shrink-0 snap-start overflow-hidden rounded-xl border border-beige-border bg-ivory"
                       >
                         <Image
                           src={img.url}
                           alt={img.altText || "Meta Ads Manager results screenshot"}
                           fill
+                          onLoad={markLoaded}
                           sizes="78vw"
                           className="object-cover"
                         />
@@ -250,11 +255,12 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
                   className="relative max-h-full max-w-4xl"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="relative aspect-[16/10] w-[min(90vw,900px)] overflow-hidden rounded-xl bg-charcoal shadow-2xl">
+                  <div className="skel relative aspect-[16/10] w-[min(90vw,900px)] overflow-hidden rounded-xl bg-charcoal shadow-2xl">
                     <Image
                       src={images[openIndex].url}
                       alt={images[openIndex].altText || "Meta Ads Manager results screenshot"}
                       fill
+                      onLoad={markLoaded}
                       sizes="900px"
                       className="object-contain"
                     />

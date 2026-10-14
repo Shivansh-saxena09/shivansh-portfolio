@@ -19,7 +19,7 @@ export function Gallery({
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {images.map((image) => (
-          <div key={image.id} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-beige-border bg-ivory">
+          <div key={image.id} className="skel relative aspect-[4/5] overflow-hidden rounded-xl border border-beige-border bg-ivory">
             <Image
               src={image.url}
               alt={image.altText ?? ""}

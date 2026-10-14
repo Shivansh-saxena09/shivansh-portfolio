@@ -2,12 +2,16 @@
 
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { DoneState, UploadProgress } from "@/components/loaders/Loaders";
+import { useDelayed, useJustFinished } from "@/components/loaders/useDelayed";
 import { uploadResume, type ResumeUploadState } from "@/app/admin/(panel)/resume/actions";
 
 const initialState: ResumeUploadState = { error: null };
 
 export function ResumeUploadForm() {
-  const [state, formAction] = useActionState(uploadResume, initialState);
+  const [state, formAction, pending] = useActionState(uploadResume, initialState);
+  const late = useDelayed(pending);
+  const finished = useJustFinished(pending);
 
   return (
     <form action={formAction} className="flex flex-col gap-4 rounded-2xl border border-beige-border bg-ivory p-6">
@@ -25,11 +29,9 @@ export function ResumeUploadForm() {
         />
       </div>
 
-      {state.error && (
-        <p role="alert" className="font-body text-sm text-terracotta-dark">
-          {state.error}
-        </p>
-      )}
+      {late && <UploadProgress label="Uploading…" />}
+      {!pending && state.error && <DoneState ok={false} message={state.error} />}
+      {!pending && !state.error && finished && <DoneState ok message="Resume replaced" />}
 
       <div>
         <SubmitButton pendingLabel="Uploading…">Upload &amp; Replace</SubmitButton>
