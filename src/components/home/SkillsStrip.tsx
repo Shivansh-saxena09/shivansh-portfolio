@@ -1,4 +1,3 @@
-import "@/components/home/skills-strip.css";
 import type { Skill, SkillCategory } from "@/lib/data/skills";
 
 const ICON: Record<SkillCategory, React.ReactNode> = {
