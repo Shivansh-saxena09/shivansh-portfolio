@@ -56,7 +56,7 @@ export function CaseFunnel({ stages }: { stages: Stage[] }) {
             <g key={s.label} style={{ "--i": i } as React.CSSProperties}>
               <path d={band(t)} className="fill-ivory stroke-terracotta" strokeOpacity="0.5" />
               <g clipPath={`url(#${id}-${i})`}>
-                <rect className={`cf-liq ${["fill-terracotta/15", "fill-terracotta/30", "fill-terracotta"][Math.min(i, 2)]}`} x="0" y={t} width={W} height={BH} />
+                <rect className={`cf-liq ${last ? "fill-terracotta" : ["fill-terracotta/15", "fill-terracotta/30"][Math.min(i, 1)]}`} x="0" y={t} width={W} height={BH} />
               </g>
               <text x="150" y={t + 20} textAnchor="middle" className={`font-body ${last ? "fill-ivory" : "fill-charcoal"}`} fillOpacity="0.8" fontSize="9" fontWeight="600" letterSpacing="1">
                 {s.label.toUpperCase()}
