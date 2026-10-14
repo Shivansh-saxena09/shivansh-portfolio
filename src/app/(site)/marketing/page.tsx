@@ -6,6 +6,8 @@ import { getContactInfo, getPageMeta, getSiteSettings } from "@/lib/data/site";
 import { formatINR, formatPct } from "@/lib/caseStudyNarrative";
 import { AdSetRace, type RaceSet } from "@/components/marketing/AdSetRace";
 import { ProcessSteps } from "@/components/marketing/ProcessSteps";
+import { CaseFunnel } from "@/components/case-study/CaseFunnel";
+import { aggregate, formatNumber } from "@/lib/caseStudyNarrative";
 import { pageMetadata } from "@/lib/seo";
 import { FilterBadge } from "@/components/marketing/FilterBadge";
 import { CaseStudyResults } from "@/components/marketing/CaseStudyResults";
@@ -49,12 +51,18 @@ export default async function MarketingPage() {
         return { name: a.name, cpl, cplText: formatINR(cpl), ctr, ctrText: formatPct(ctr) };
       });
   const raceCase = caseStudies.find((c) => toRace(c).length >= 2);
+  // Top panel: real totals across every published case study (none → the intro spans the full width).
+  const all = aggregate(caseStudies.flatMap((c) => c.adSets));
+  const panelStages = [all.impressions, all.linkClicks, all.leads].map((value, i) => ({ label: hv.stages[i], value, text: formatNumber(value) })).filter((s) => s.value > 0);
+  const platforms = [...new Set(caseStudies.map((c) => c.platform).filter(Boolean))];
+  const single = caseStudies.length === 1 && !!raceCase;
   const processSteps = hv.processSteps.map((title, i) => ({ title, detail: hv.processDetails[i] })).filter((s) => s.title);
 
   return (
     <>
       <section className="paper-grain relative border-b border-beige-border/70 pt-16 pb-14 sm:pt-24 sm:pb-16">
-        <Container className="relative z-10">
+        <Container className={`relative z-10 ${panelStages.length ? "lg:grid lg:grid-cols-12 lg:items-center lg:gap-12" : ""}`}>
+          <div className={panelStages.length ? "lg:col-span-7" : ""}>
           <p className="font-body text-sm font-medium uppercase tracking-[0.2em] text-terracotta">
             Marketing Work
           </p>
@@ -69,17 +77,46 @@ export default async function MarketingPage() {
           <Suspense fallback={null}>
             <FilterBadge skills={skills} />
           </Suspense>
+          </div>
+          {panelStages.length > 0 && (
+            <aside aria-label={hv.marketingPanelHeading} className="mt-10 rounded-3xl border border-beige-border bg-ivory/80 p-6 shadow-[0_1px_2px_rgba(43,38,34,0.04),0_24px_48px_-24px_rgba(43,38,34,0.18)] lg:col-span-5 lg:mt-0">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">{hv.marketingPanelHeading}</p>
+                <div className="flex gap-1.5">
+                  {platforms.map((p) => (
+                    <span key={p} className="rounded-full bg-terracotta/10 px-2.5 py-0.5 font-body text-[11px] font-semibold text-terracotta-dark">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5">
+                <CaseFunnel stages={panelStages} now />
+              </div>
+              {all.leads > 0 && all.amountSpent > 0 && (
+                <p className="mt-4 flex items-baseline justify-between border-t border-beige-border/70 pt-4 font-body text-sm text-warm-grey">
+                  {hv.proofLabels[2]}
+                  <span className="font-heading text-2xl font-bold text-terracotta">{formatINR(all.amountSpent / all.leads)}</span>
+                </p>
+              )}
+            </aside>
+          )}
         </Container>
       </section>
 
       <section className="py-16 sm:py-20">
         <Container>
-          <CaseStudyResults caseStudies={caseStudies} />
-          {raceCase && (
-            <div className="mt-14">
-              <AdSetRace heading={hv.barRaceHeading} labels={hv.barRaceLabels} campaign={raceCase.campaignName} href={`/case-study/${raceCase.slug}`} sets={toRace(raceCase)} />
+          {/* One case study: its card and its ad-set race share the row instead of a lone card in a 3-column grid */}
+          <div className={single ? "lg:grid lg:grid-cols-12 lg:items-start lg:gap-10" : ""}>
+            <div className={single ? "lg:col-span-5" : ""}>
+              <CaseStudyResults caseStudies={caseStudies} />
             </div>
-          )}
+            {raceCase && (
+              <div className={single ? "mt-14 lg:col-span-7 lg:mt-0" : "mt-14"}>
+                <AdSetRace heading={hv.barRaceHeading} labels={hv.barRaceLabels} campaign={raceCase.campaignName} href={`/case-study/${raceCase.slug}`} sets={toRace(raceCase)} />
+              </div>
+            )}
+          </div>
         </Container>
       </section>
 

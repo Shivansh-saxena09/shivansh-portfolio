@@ -29,7 +29,8 @@ function Grid({ caseStudies }: { caseStudies: CaseStudyDetail[] }) {
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-cream to-transparent sm:hidden"
         />
-        <div className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+        {/* Columns follow the card count, so one or two cards never sit in an emptier 3-column grid */}
+        <div className={`-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 ${caseStudies.length === 1 ? "sm:max-w-xl sm:grid-cols-1" : caseStudies.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
           {caseStudies.map((caseStudy) => (
             <div key={caseStudy.slug} className="w-[82vw] shrink-0 snap-start sm:w-auto sm:shrink">
               <CaseStudyCard caseStudy={caseStudy} />

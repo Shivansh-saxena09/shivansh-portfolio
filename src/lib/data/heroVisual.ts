@@ -42,6 +42,12 @@ export type HeroVisualContent = {
   processHeading: string;
   processSteps: [string, string, string, string, string];
   processDetails: [string, string, string, string, string];
+  /** /marketing top panel heading (numbers are the case studies' real totals). */
+  marketingPanelHeading: string;
+  /** Footer closing strip: one short line, the last-updated label, the back-to-top label. */
+  closingLine: string;
+  lastUpdatedLabel: string;
+  backToTopLabel: string;
 };
 
 export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
@@ -73,6 +79,10 @@ export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
     "Daily reads on CPL, CTR and frequency; shift budget to what works.",
     "Leads qualified and passed to sales the same day.",
   ],
+  marketingPanelHeading: "All campaigns, combined",
+  closingLine: "Based in India · Open to remote work",
+  lastUpdatedLabel: "Last updated",
+  backToTopLabel: "Back to top",
   channelLabels: ["Meta Ads", "Google Ads"],
   toolLabels: ["Conversion tracking", "Code", "Database", "AI"],
   studyProgress: 50,
@@ -123,5 +133,9 @@ export function parseHeroVisual(raw: unknown): HeroVisualContent {
     processHeading: str("processHeading"),
     processSteps: tuple(r.processSteps, d.processSteps),
     processDetails: tuple(r.processDetails, d.processDetails),
+    marketingPanelHeading: str("marketingPanelHeading"),
+    closingLine: str("closingLine"),
+    lastUpdatedLabel: str("lastUpdatedLabel"),
+    backToTopLabel: str("backToTopLabel"),
   };
 }

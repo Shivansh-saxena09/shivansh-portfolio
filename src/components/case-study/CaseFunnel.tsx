@@ -17,12 +17,12 @@ const band = (t: number) => {
  * no JS of its own). Labels are the admin-editable hero stage labels; stages
  * with no data are dropped by the page, and none at all renders nothing.
  */
-export function CaseFunnel({ stages }: { stages: Stage[] }) {
+export function CaseFunnel({ stages, now }: { stages: Stage[]; now?: boolean }) {
   if (stages.length === 0) return null;
   const id = `cf${stages.map((s) => s.value).join("-")}`;
   const H = stages.length * (BH + GAP) - GAP;
   return (
-    <div className="cf mo-reveal mx-auto max-w-md">
+    <div className="cf mo-reveal mx-auto max-w-md" data-mo-now={now ? "" : undefined}>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={stages.map((s) => `${s.label}: ${s.text}`).join(", ")}>
         <defs>
           {stages.map((_, i) => (

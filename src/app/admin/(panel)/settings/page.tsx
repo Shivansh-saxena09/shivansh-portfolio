@@ -82,6 +82,10 @@ export default async function AdminSettingsPage() {
           [`process_step_${i}`, `Process step ${i + 1} title`, v],
           [`process_detail_${i}`, `Process step ${i + 1} one-liner`, hv.processDetails[i]],
         ]),
+        ["marketing_panel_heading", "/marketing top panel heading", hv.marketingPanelHeading],
+        ["closing_line", "Footer closing line (bottom bar)", hv.closingLine],
+        ["last_updated_label", "Footer “last updated” label", hv.lastUpdatedLabel],
+        ["back_to_top_label", "Footer back-to-top button label", hv.backToTopLabel],
       ],
     },
   ];
