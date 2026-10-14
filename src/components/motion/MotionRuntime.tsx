@@ -87,12 +87,14 @@ export function MotionRuntime() {
     const move = (e: PointerEvent) => {
       tx = e.clientX;
       ty = e.clientY;
-      ring.dataset.on = "1";
+      if (!ring.dataset.on) ring.dataset.on = "1";
       if (!raf) raf = requestAnimationFrame(tick);
     };
     const over = (e: Event) => {
       const t = e.target as Element;
-      ring.dataset.c = t.closest("input, textarea, select, [contenteditable]") ? "hide" : t.closest("a, button, [role='button'], summary, label") ? "link" : t.closest(".mo-mask, .skel") ? "view" : "";
+      const c = t.closest("input, textarea, select, [contenteditable]") ? "hide" : t.closest("a, button, [role='button'], summary, label") ? "link" : t.closest(".mo-mask, .skel") ? "view" : "";
+      // Only touch the DOM when the context actually changes (keeps clicks free of style work).
+      if ((ring.dataset.c ?? "") !== c) ring.dataset.c = c;
     };
     const leave = () => delete ring.dataset.on;
     addEventListener("pointermove", move, { passive: true });
