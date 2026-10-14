@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getCaseStudies } from "@/lib/data/caseStudies";
 import { MotionRuntimeLoader } from "@/components/motion/MotionRuntimeLoader";
 import { Playfair_Display, Inter } from "next/font/google";
 import "../globals.css";
@@ -44,7 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [settings, contact] = await Promise.all([getSiteSettings(), getContactInfo()]);
+  const [settings, contact, caseStudies] = await Promise.all([getSiteSettings(), getContactInfo(), getCaseStudies()]);
+  // Footer "last updated": the newest admin edit across existing timestamps (status line, résumé, case-study verification).
+  const stamps = [settings.currentlyWorkingOnUpdatedAt, settings.resumeUpdatedAt, ...caseStudies.map((c) => c.lastVerified)].filter(Boolean).map((d) => new Date(d).getTime()).filter((t) => !Number.isNaN(t));
+  const lastUpdated = stamps.length ? new Date(Math.max(...stamps)).toISOString() : null;
 
   return (
     <html
@@ -71,6 +75,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             availability={settings.availability}
             footerCta={settings.footerCta}
             contact={contact}
+            resumeUrl={settings.resumeUrl}
+            resumeLabel={settings.heroVisual.linkLabels[3]}
+            closing={{ line: settings.heroVisual.closingLine, lastUpdatedLabel: settings.heroVisual.lastUpdatedLabel, backToTopLabel: settings.heroVisual.backToTopLabel, lastUpdated }}
           />
         </SmoothScrollProvider>
         <MobileStickyCta whatsapp={contact.whatsapp} />

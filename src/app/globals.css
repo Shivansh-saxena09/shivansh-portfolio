@@ -619,3 +619,35 @@ h4 {
 .sk-marketing svg {
   stroke: var(--color-terracotta);
 }
+
+/* Header (components/layout/Header.tsx): compact on scroll without changing height */
+.hdr {
+  transition:
+    box-shadow 0.25s,
+    background-color 0.25s;
+}
+.hdr[data-compact] {
+  background-color: color-mix(in srgb, var(--color-cream) 96%, transparent);
+  box-shadow: 0 8px 24px -16px rgba(43, 38, 34, 0.28);
+}
+.hdr-mark {
+  transition: transform 0.25s;
+}
+.hdr[data-compact] .hdr-mark {
+  transform: scale(0.86);
+}
+.hdr-ping {
+  animation: hdr-ping 2.4s ease-out 3;
+}
+@keyframes hdr-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hdr-ping {
+    animation: none;
+  }
+}
