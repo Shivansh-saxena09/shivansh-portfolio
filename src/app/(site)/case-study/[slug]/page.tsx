@@ -151,7 +151,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               flex/grid container to work, not specifically a grid one);
               desktop's side-by-side column position is unaffected since
               grid also respects order. */}
-          <aside className="order-2 mt-14 flex flex-col gap-6 lg:col-span-4 lg:mt-0">
+          <aside className="order-2 mt-14 flex flex-col gap-6 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:mt-0">
             <div className="hidden rounded-2xl border border-beige-border bg-ivory px-6 py-5 lg:block">
               <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">
                 On This Page
@@ -238,7 +238,11 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             </div>
           </aside>
 
-          <div className="order-1 max-w-[42rem] lg:col-span-8 lg:max-w-none">
+          {/* lg:contents — on desktop the intro + Story share row 1 with the sidebar (they now end at about
+              the same height, measured), and Results spans the full width in row 2 instead of sitting
+              beside an empty column. Phones keep the original order: intro, Story, Results, then sidebar. */}
+          <div className="order-1 max-w-[42rem] lg:contents">
+            <div className="lg:col-span-8 lg:row-start-1">
             <p className="font-body text-base leading-relaxed text-charcoal">
               {highlightStats(composeCampaignIntro(caseStudy), "intro")}
             </p>
@@ -257,20 +261,22 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 <StoryChapters narrative={caseStudy.narrative} />
               </div>
             </section>
+            </div>
 
             {/* Results — the always-visible comparison table (when
                 there's more than one ad set) answers "which one won"
                 immediately; the full per-ad-set breakdown underneath is
                 progressive disclosure for whoever wants the deep
                 numbers, collapsed by default except the first (see
-                AdSetSection). Still inside the 8/12 column (not full
-                width, see the note above the grid) — this is what grows
-                the column comfortably past the sidebar's height. */}
-            <section id="results" className="mt-14 scroll-mt-24">
+                AdSetSection). Full width on desktop (row 2 of the grid,
+                below the sidebar row). */}
+            <section id="results" className="mt-14 scroll-mt-24 lg:col-span-12 lg:row-start-2 lg:mt-0">
               <h2 className="mo-split font-heading text-2xl text-charcoal"><SplitText text={"Results"} /></h2>
 
               {/* Real totals across ad sets, in the hero's funnel language (stage labels: Hero Scene settings). */}
-              <div className="mt-6">
+              {/* Desktop: funnel beside the comparison table */}
+              <div className={multiAdSet ? "lg:grid lg:grid-cols-12 lg:items-center lg:gap-10" : ""}>
+              <div className={`mt-6 ${multiAdSet ? "lg:col-span-5" : ""}`}>
                 <CaseFunnel
                   stages={[totals.impressions, totals.linkClicks, totals.leads]
                     .map((value, i) => ({ label: settings.heroVisual.stages[i], value, text: formatNumber(value) }))
@@ -279,10 +285,11 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
               </div>
 
               {multiAdSet && (
-                <div className="mt-6">
+                <div className="mt-6 lg:col-span-7">
                   <AdSetComparisonTable adSets={caseStudy.adSets} />
                 </div>
               )}
+              </div>
 
               <div className={multiAdSet ? "mt-6 grid items-start gap-4 lg:grid-cols-2" : "mt-6 flex flex-col gap-4"}>
                 {caseStudy.adSets.map((adSet, i) => (

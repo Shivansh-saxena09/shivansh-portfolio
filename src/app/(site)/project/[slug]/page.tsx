@@ -75,7 +75,10 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           </a>
         </div>
 
-        <h1 className="mt-4 font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl lg:text-6xl">
+        {/* Desktop: intro and stack on the left, demo (or its coming-soon card) on the right */}
+        <div className="lg:mt-2 lg:grid lg:grid-cols-12 lg:items-center lg:gap-12">
+        <div className="lg:col-span-6">
+        <h1 className="mt-4 font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl xl:text-6xl">
           {project.name}
         </h1>
         <p className="mt-4 max-w-2xl font-body text-lg text-warm-grey">{project.tagline}</p>
@@ -89,12 +92,14 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           ))}
         </div>
 
-        <div className="mt-10 max-w-3xl">
+        </div>
+        <div className="mt-10 max-w-3xl lg:col-span-6 lg:mt-0">
           {project.demoVideoUrl ? (
             <YouTubeEmbed url={project.demoVideoUrl} title={project.name} />
           ) : (
             <DemoVideoComingSoon />
           )}
+        </div>
         </div>
 
         {/* How it works — plain HTML/CSS boxes+arrows, no diagramming

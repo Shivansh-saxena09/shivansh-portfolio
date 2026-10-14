@@ -31,9 +31,10 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // The spine draws itself as the timeline scrolls past (reduced motion: already drawn).
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
-        gsap.fromTo(".tl-spine", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: rootRef.current, start: "top 80%", end: "bottom 60%", scrub: 0.5 } });
+      // Reduced motion: everything static and visible (no from-opacity:0 waiting on a scroll).
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // The spine draws itself as the timeline scrolls past.
+      gsap.fromTo(".tl-spine", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: rootRef.current, start: "top 80%", end: "bottom 60%", scrub: 0.5 } });
 
       gsap.utils.toArray<HTMLElement>(".timeline-item").forEach((item) => {
         gsap.from(item, {

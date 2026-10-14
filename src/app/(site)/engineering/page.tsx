@@ -88,7 +88,7 @@ export default async function EngineeringPage() {
             <SplitText text={"The system behind the campaigns."} />
           </h2>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={`mt-8 grid gap-6 sm:grid-cols-2 ${projects.length > 2 ? "lg:grid-cols-3" : ""}`}>
             {projects.map((project) => (
               <ProjectPreviewCard key={project.slug} project={project} />
             ))}

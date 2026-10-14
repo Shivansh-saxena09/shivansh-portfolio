@@ -124,3 +124,21 @@
     animation: none;
   }
 }
+
+@supports (animation-timeline: view()) {
+  .ps-line-h {
+    animation: ps-draw-h linear both;
+    animation-timeline: view();
+    animation-range: entry 25% cover 50%;
+  }
+}
+@keyframes ps-draw-h {
+  from {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-line-h {
+    animation: none;
+  }
+}

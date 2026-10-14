@@ -12,7 +12,9 @@ import { Container } from "@/components/ui/Container";
 export function AiWorkSection({ content }: { content: HeroVisualContent }) {
   return (
     <section id="ai" className="scroll-mt-24 border-t border-beige-border/70 py-20 sm:py-24">
-      <Container>
+      {/* Desktop: the agents sit beside the copy instead of under it, leaving no empty right half */}
+      <Container className={content.aiItems.length ? "lg:grid lg:grid-cols-12 lg:items-center lg:gap-12" : ""}>
+        <div className={content.aiItems.length ? "lg:col-span-7" : ""}>
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
             {content.aiLabel}
@@ -34,11 +36,12 @@ export function AiWorkSection({ content }: { content: HeroVisualContent }) {
         <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-warm-grey">
           {content.aiSectionBody}
         </p>
-        <ul className="mt-8 flex flex-wrap gap-3">
+        </div>
+        <ul className="mt-8 flex flex-wrap gap-3 lg:col-span-5 lg:mt-0 lg:flex-col">
           {content.aiItems.map((item) => (
             <li
               key={item}
-              className="rounded-xl border border-dashed border-sage/60 bg-ivory px-5 py-4 font-mono text-sm text-sage-dark"
+              className="rounded-xl border border-dashed border-sage/60 bg-ivory px-5 py-4 font-mono text-sm text-sage-dark lg:py-6"
             >
               {item}
             </li>
