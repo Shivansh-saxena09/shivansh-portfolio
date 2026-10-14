@@ -569,6 +569,7 @@ h4 {
   justify-content: flex-start;
   width: max-content;
   animation: skills 70s linear infinite;
+  padding: 0;
 }
 .skills-strip:hover .skills-track,
 .skills-strip[data-run="0"] .skills-track {
