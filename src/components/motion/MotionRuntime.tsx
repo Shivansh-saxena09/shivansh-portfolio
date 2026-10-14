@@ -49,6 +49,15 @@ export function MotionRuntime() {
       el.dataset.mo = "wait";
       io.observe(el);
     });
+    // Skills strip: clone the server-rendered row once so the loop is seamless, then let it move.
+    document.querySelectorAll<HTMLElement>(".skills-track:not([data-cloned])").forEach((ul) => {
+      [...ul.children].forEach((li) => {
+        const c = li.cloneNode(true) as HTMLElement;
+        c.setAttribute("aria-hidden", "true");
+        ul.append(c);
+      });
+      ul.dataset.cloned = "";
+    });
     const loops = new IntersectionObserver((entries) => entries.forEach((e) => ((e.target as HTMLElement).dataset.run = e.isIntersecting ? "1" : "0")));
     document.querySelectorAll(".mo-loop").forEach((el) => loops.observe(el));
     return () => {
