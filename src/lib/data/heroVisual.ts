@@ -33,6 +33,15 @@ export type HeroVisualContent = {
   studyProgress: number;
   /** Plain-text version of the phone story for screen readers and crawlers. */
   storyText: string;
+  /** Home proof strip labels: [leads, impressions, cost per lead] (numbers come from the case studies). */
+  proofLabels: [string, string, string];
+  /** /marketing ad-set comparison: heading + [cost per lead, link CTR] labels (numbers from ad_sets). */
+  barRaceHeading: string;
+  barRaceLabels: [string, string];
+  /** /marketing "how I run a campaign" scroll-draw: heading, 5 step titles, 5 one-line details. */
+  processHeading: string;
+  processSteps: [string, string, string, string, string];
+  processDetails: [string, string, string, string, string];
 };
 
 export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
@@ -52,6 +61,18 @@ export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
   careerLabel: "Career",
   linkLabels: ["Marketing work", "Engineering work", "AI work", "Resume"],
   aiSectionHeading: "AI work",
+  proofLabels: ["Leads generated", "Impressions", "Avg. cost per lead"],
+  barRaceHeading: "Ad sets, head to head",
+  barRaceLabels: ["Cost per lead", "Link CTR"],
+  processHeading: "How I run a campaign",
+  processSteps: ["Brief", "Creative + form", "Tracking", "Launch + optimise", "Qualify + hand-off"],
+  processDetails: [
+    "Goal, budget and the audience worth paying for.",
+    "Ad creatives and a lead form that filters intent.",
+    "Pixel + Conversions API, so every lead is counted.",
+    "Daily reads on CPL, CTR and frequency; shift budget to what works.",
+    "Leads qualified and passed to sales the same day.",
+  ],
   channelLabels: ["Meta Ads", "Google Ads"],
   toolLabels: ["Conversion tracking", "Code", "Database", "AI"],
   studyProgress: 50,
@@ -96,5 +117,11 @@ export function parseHeroVisual(raw: unknown): HeroVisualContent {
       ? Math.min(100, Math.max(0, Number(r.studyProgress)))
       : d.studyProgress,
     storyText: str("storyText"),
+    proofLabels: tuple(r.proofLabels, d.proofLabels),
+    barRaceHeading: str("barRaceHeading"),
+    barRaceLabels: tuple(r.barRaceLabels, d.barRaceLabels),
+    processHeading: str("processHeading"),
+    processSteps: tuple(r.processSteps, d.processSteps),
+    processDetails: tuple(r.processDetails, d.processDetails),
   };
 }

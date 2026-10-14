@@ -162,14 +162,14 @@ export function Footer({
     <footer className="paper-grain relative overflow-hidden border-t border-beige-border/70 bg-cream">
       <div aria-hidden="true" className="h-[2px] w-full bg-gradient-to-r from-terracotta to-sage" />
 
-      <Container className="relative z-10 py-16 sm:py-20 lg:py-24">
+      <Container className="relative z-10 pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24">
         {/* Closing CTA — a real, floating panel (glass-card + its own
             paper-grain), giving the paper texture and layered-depth
             language actual structural work to do here, not just a
             barely-visible global wash. */}
         <div className="relative">
         {/* Character cameo standing on the panel's top edge, waving once in view */}
-        <Cameo className="absolute right-8 bottom-full h-16 sm:right-14 sm:h-20" />
+        <Cameo className="absolute right-8 bottom-full h-20 sm:right-14 sm:h-24" />
         <div className="glass-card paper-grain relative overflow-hidden rounded-3xl px-8 py-10 shadow-xl sm:px-12 sm:py-12">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <h2 className="max-w-md font-heading text-3xl leading-tight font-bold text-charcoal sm:text-4xl">

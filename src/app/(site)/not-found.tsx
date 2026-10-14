@@ -8,8 +8,12 @@ export default function NotFound() {
   return (
     <section className="py-16 sm:py-24">
       <Container className="flex flex-col items-center text-center">
-        <svg viewBox="-60 -200 120 206" aria-hidden="true" className="nf-look h-44 w-auto overflow-visible sm:h-56">
+        <svg viewBox="-60 -236 120 242" aria-hidden="true" className="nf-look h-52 w-auto overflow-visible sm:h-64">
           <Avatar x={0} y={0} pose="rest" />
+          <g className="nf-q">
+            <circle cx="30" cy="-214" r="16" className="fill-ivory stroke-terracotta" strokeWidth="2" />
+            <text x="30" y="-207" textAnchor="middle" className="fill-terracotta font-heading" fontSize="20" fontWeight="700">?</text>
+          </g>
         </svg>
         <h1 className="mt-6 font-heading text-7xl font-bold tracking-tight text-charcoal sm:text-8xl">404</h1>
         <span aria-hidden="true" className="mt-4 block h-[3px] w-20 bg-gradient-to-r from-terracotta to-sage" />

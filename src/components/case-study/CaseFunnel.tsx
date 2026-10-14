@@ -27,9 +27,9 @@ export function CaseFunnel({ stages }: { stages: Stage[] }) {
   useRevealOnce(ref, (el) => {
     el.querySelectorAll<SVGTextElement>(".cf-num").forEach((n, i) => {
       const { value, text } = stages[i];
-      const t0 = performance.now() + 250 + i * 350;
+      const t0 = performance.now() + 300 + i * 480;
       const step = (now: number) => {
-        const p = Math.min(1, Math.max(0, (now - t0) / 900));
+        const p = Math.min(1, Math.max(0, (now - t0) / 1300));
         n.textContent = p < 1 ? Math.round(value * (1 - (1 - p) ** 3)).toLocaleString("en-IN") : text;
         if (p < 1) requestAnimationFrame(step);
       };

@@ -71,6 +71,19 @@ export default async function AdminSettingsPage() {
         ["story_text", "Story as plain text (screen readers + search engines)", hv.storyText],
       ],
     },
+    {
+      title: "Site motion labels (numbers always come from case-study data)",
+      fields: [
+        ...hv.proofLabels.map((v, i): [string, string, string] => [`proof_label_${i}`, `Home proof strip: ${["leads", "impressions", "cost per lead"][i]} label`, v]),
+        ["bar_race_heading", "/marketing ad-set comparison heading", hv.barRaceHeading],
+        ...hv.barRaceLabels.map((v, i): [string, string, string] => [`bar_race_label_${i}`, `Ad-set comparison: ${["cost per lead", "link CTR"][i]} label`, v]),
+        ["process_heading", "/marketing campaign-process heading", hv.processHeading],
+        ...hv.processSteps.flatMap((v, i): [string, string, string][] => [
+          [`process_step_${i}`, `Process step ${i + 1} title`, v],
+          [`process_detail_${i}`, `Process step ${i + 1} one-liner`, hv.processDetails[i]],
+        ]),
+      ],
+    },
   ];
   const metaByKey = new Map((pageMetaRows ?? []).map((r) => [r.page_key, r]));
 
