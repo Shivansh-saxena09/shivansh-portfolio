@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MotionRuntimeLoader } from "@/components/motion/MotionRuntimeLoader";
 import { Playfair_Display, Inter } from "next/font/google";
 import "../globals.css";
 import { getSiteSettings, getContactInfo, getPageMeta } from "@/lib/data/site";
@@ -73,6 +74,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           />
         </SmoothScrollProvider>
         <MobileStickyCta whatsapp={contact.whatsapp} />
+        <MotionRuntimeLoader />
       </body>
     </html>
   );

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
+import { FlowPackets } from "@/components/engineering/FlowPackets";
 import { ProjectPreviewCard } from "@/components/engineering/ProjectPreviewCard";
 import { SkillsGrid } from "@/components/engineering/SkillsGrid";
 import { CodeCard } from "@/components/engineering/CodeCard";
@@ -82,8 +84,8 @@ export default async function EngineeringPage() {
           <span className="font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
             Featured Project
           </span>
-          <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
-            The system behind the campaigns.
+          <h2 className="mo-split mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
+            <SplitText text={"The system behind the campaigns."} />
           </h2>
 
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,6 +93,9 @@ export default async function EngineeringPage() {
               <ProjectPreviewCard key={project.slug} project={project} />
             ))}
           </div>
+
+          {/* Featured project's real data flow with moving packets (hidden if it has < 2 steps) */}
+          {featuredProject && <FlowPackets steps={featuredProject.flow} href={`/project/${featuredProject.slug}`} name={featuredProject.name} />}
         </Container>
       </section>
 

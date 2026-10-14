@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { SplitText } from "@/components/motion/SplitText";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRevealOnce } from "@/components/motion/useRevealOnce";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
@@ -85,6 +87,9 @@ const markLoaded = (e: React.SyntheticEvent<HTMLImageElement>) => e.currentTarge
 
 export function VerifiedResults({ images }: { images: ProofImage[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  // Shield stamps down once the card scrolls in.
+  const stampRef = useRef<HTMLDivElement>(null);
+  useRevealOnce(stampRef);
   const mounted = useSyncExternalStore(subscribe, getMountedSnapshot, getMountedServerSnapshot);
 
   const close = () => setOpenIndex(null);
@@ -111,7 +116,7 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
   const overflowCount = images.length - MAX_GRID_TILES;
 
   return (
-    <div className="paper-grain relative overflow-hidden rounded-3xl border border-beige-border bg-ivory p-7 sm:p-9">
+    <div ref={stampRef} className="paper-grain relative overflow-hidden rounded-3xl border border-beige-border bg-ivory p-7 sm:p-9">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-16 -right-14 h-64 w-64 rounded-full bg-sage/10 blur-3xl"
@@ -124,8 +129,8 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
       <div className="relative z-10 sm:grid sm:grid-cols-12 sm:gap-8 lg:gap-14">
         <div className="sm:col-span-4">
           <div className="flex items-center gap-2.5">
-            <ShieldCheckIcon className="h-5 w-5 shrink-0 text-sage-dark" />
-            <h2 className="font-heading text-2xl font-bold text-charcoal">Verified Results</h2>
+            <ShieldCheckIcon className="vr-stamp h-5 w-5 shrink-0 text-sage-dark" />
+            <h2 className="mo-split font-heading text-2xl font-bold text-charcoal"><SplitText text={"Verified Results"} /></h2>
           </div>
           <p className="mt-3 max-w-xs font-body text-sm leading-relaxed text-warm-grey">
             {images.length > 0
@@ -158,7 +163,7 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
                           ? `View all ${images.length} screenshots`
                           : `View full-size: ${img.altText || "Meta Ads Manager screenshot"}`
                       }
-                      className="skel group relative aspect-[16/10] overflow-hidden rounded-xl border bg-ivory border-beige-border shadow-[0_1px_2px_rgba(43,38,34,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/50 hover:shadow-[0_16px_28px_-14px_rgba(43,38,34,0.25)]"
+                      className="skel mo-mask group relative aspect-[16/10] overflow-hidden rounded-xl border bg-ivory border-beige-border shadow-[0_1px_2px_rgba(43,38,34,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/50 hover:shadow-[0_16px_28px_-14px_rgba(43,38,34,0.25)]"
                     >
                       <Image
                         src={img.url}

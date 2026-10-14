@@ -1,5 +1,6 @@
 "use client";
 
+import { SplitText } from "@/components/motion/SplitText";
 import { useState } from "react";
 import type { ContactInfo } from "@/lib/data/site";
 import { Button } from "@/components/ui/Button";
@@ -42,8 +43,8 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
-            <h2 className="font-heading text-3xl text-charcoal sm:text-4xl">
-              Let&apos;s talk about your next campaign
+            <h2 className="mo-split font-heading text-3xl text-charcoal sm:text-4xl">
+              <SplitText text={"Let's talk about your next campaign"} />
             </h2>
             <p className="mt-4 max-w-md font-body text-base leading-relaxed text-warm-grey">
               Fastest way to reach me is WhatsApp or email — or use the form.

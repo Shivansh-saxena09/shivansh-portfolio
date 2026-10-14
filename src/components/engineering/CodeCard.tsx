@@ -7,6 +7,13 @@ import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 type Snippet = { filename: string; code: string };
 
+/** Per-line char counts and start delays: each line types after the previous one finishes. */
+function typingLines(code: string) {
+  const lines = code.split("\n");
+  const starts = lines.reduce<number[]>((acc, l, i) => [...acc, i ? acc[i - 1] + Math.max(1, lines[i - 1].length) * 22 + 120 : 150], []);
+  return lines.map((line, i) => ({ line, n: Math.max(1, line.length), t: starts[i] }));
+}
+
 /**
  * Floating "code editor" card in the /engineering hero — the page's own
  * echo of the homepage's floating glass card and /about's marketing-
@@ -51,7 +58,12 @@ export function CodeCard({ snippets }: { snippets: Snippet[] }) {
             transition={{ duration: 0.3 }}
             className="font-mono text-[13px] leading-relaxed text-charcoal"
           >
-            {highlightCode(active.code)}
+            {/* Typing: each line reveals char-by-char after the previous one (CSS only) */}
+            {typingLines(active.code).map(({ line, n, t }, i) => (
+              <span key={i} className="type-line" style={{ "--n": n, "--t": `${t}ms` } as React.CSSProperties}>
+                {highlightCode(line)}
+              </span>
+            ))}
           </motion.div>
         </AnimatePresence>
       </div>

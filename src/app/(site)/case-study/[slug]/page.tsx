@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllCaseStudySlugs, getCaseStudy, getCaseStudies } from "@/lib/data/caseStudies";
@@ -251,7 +252,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 — a reader scanning "The Challenge" should catch the ₹540
                 CPL failure number as fast as the sentence around it. */}
             <section id="story" className="mt-14 scroll-mt-24">
-              <h2 className="font-heading text-2xl text-charcoal">The Story</h2>
+              <h2 className="mo-split font-heading text-2xl text-charcoal"><SplitText text={"The Story"} /></h2>
               <div className="mt-8">
                 <StoryChapters narrative={caseStudy.narrative} />
               </div>
@@ -266,7 +267,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
                 width, see the note above the grid) — this is what grows
                 the column comfortably past the sidebar's height. */}
             <section id="results" className="mt-14 scroll-mt-24">
-              <h2 className="font-heading text-2xl text-charcoal">Results</h2>
+              <h2 className="mo-split font-heading text-2xl text-charcoal"><SplitText text={"Results"} /></h2>
 
               {/* Real totals across ad sets, in the hero's funnel language (stage labels: Hero Scene settings). */}
               <div className="mt-6">
@@ -325,7 +326,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
         )}
 
         <section id="creatives" className="mt-16 scroll-mt-24">
-          <h2 className="font-heading text-xl text-charcoal">Creatives</h2>
+          <h2 className="mo-split font-heading text-xl text-charcoal"><SplitText text={"Creatives"} /></h2>
           <div className="mt-5">
             <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
           </div>

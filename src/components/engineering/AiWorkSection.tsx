@@ -1,4 +1,5 @@
 import type { HeroVisualContent } from "@/lib/data/heroVisual";
+import { SplitText } from "@/components/motion/SplitText";
 import { Container } from "@/components/ui/Container";
 
 /**
@@ -18,9 +19,16 @@ export function AiWorkSection({ content }: { content: HeroVisualContent }) {
           <span className="rounded-full bg-sage/20 px-3 py-1 font-body text-[11px] font-bold tracking-[0.12em] text-sage-dark uppercase">
             {content.aiStatus}
           </span>
+          {/* Listening waveform: the agent is being built (status stays "coming soon"); paused off-screen */}
+          <svg viewBox="0 0 96 24" aria-hidden="true" className="mo-loop ai-wave h-6 w-24">
+            {Array.from({ length: 16 }, (_, i) => {
+              const h = 6 + Math.round(14 * Math.abs(Math.sin(i * 0.9)));
+              return <rect key={i} x={i * 6} y={12 - h / 2} width="3" height={h} rx="1.5" className={i % 4 === 0 ? "fill-terracotta" : "fill-sage"} style={{ "--i": i } as React.CSSProperties} />;
+            })}
+          </svg>
         </div>
-        <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
-          {content.aiSectionHeading}
+        <h2 className="mo-split mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
+          <SplitText text={content.aiSectionHeading} />
         </h2>
         <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-warm-grey">
           {content.aiSectionBody}

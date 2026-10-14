@@ -1,4 +1,5 @@
 import { getSkills, type SkillCategory } from "@/lib/data/skills";
+import { SplitText } from "@/components/motion/SplitText";
 import { Tag } from "@/components/ui/Tag";
 import { Container } from "@/components/ui/Container";
 
@@ -24,7 +25,7 @@ export async function SkillsGrid() {
   return (
     <section className="border-t border-beige-border/70 bg-cream py-20 sm:py-24">
       <Container>
-        <h2 className="font-heading text-3xl font-bold text-charcoal sm:text-4xl">Skills</h2>
+        <h2 className="mo-split font-heading text-3xl font-bold text-charcoal sm:text-4xl"><SplitText text={"Skills"} /></h2>
         <p className="mt-3 max-w-2xl font-body text-sm text-warm-grey">
           Click a skill to see the case studies where I used it.
         </p>

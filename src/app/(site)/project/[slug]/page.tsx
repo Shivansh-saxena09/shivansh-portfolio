@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
 import { Reveal } from "@/components/motion/Reveal";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -99,7 +100,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         {/* How it works — plain HTML/CSS boxes+arrows, no diagramming
             library needed for a 4-step pipeline. */}
         <div className="mt-14">
-          <h2 className="font-heading text-2xl font-bold text-charcoal">How It Works</h2>
+          <h2 className="mo-split font-heading text-2xl font-bold text-charcoal"><SplitText text={"How It Works"} /></h2>
           <Reveal className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
             {project.flow.flatMap((step, i) => {
               const box = (
@@ -126,8 +127,8 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         {/* Challenges — problem/fix split plus the real code that
             illustrates each fix. */}
         <div className="mt-14">
-          <h2 className="font-heading text-2xl font-bold text-charcoal">
-            Technical Challenges
+          <h2 className="mo-split font-heading text-2xl font-bold text-charcoal">
+            <SplitText text={"Technical Challenges"} />
           </h2>
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             {project.challenges.map((challenge) => (
