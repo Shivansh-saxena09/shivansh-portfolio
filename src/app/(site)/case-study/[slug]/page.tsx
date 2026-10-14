@@ -333,7 +333,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
         )}
 
         <section id="creatives" className="mt-16 scroll-mt-24">
-          <h2 className="mo-split font-heading text-xl text-charcoal"><SplitText text={"Creatives"} /></h2>
+          <h2 className={`mo-split font-heading text-xl text-charcoal ${caseStudy.galleryImages.length > 0 && caseStudy.galleryImages.length <= 2 ? "text-center" : ""}`}><SplitText text={"Creatives"} /></h2>
           <div className="mt-5">
             <Gallery images={caseStudy.galleryImages} placeholderCount={caseStudy.galleryPlaceholderCount} />
           </div>

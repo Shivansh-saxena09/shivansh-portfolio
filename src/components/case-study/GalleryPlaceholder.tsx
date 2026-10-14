@@ -17,7 +17,7 @@ export function Gallery({
 }) {
   if (images.length > 0) {
     // Columns follow the image count, so one or two creatives aren't stranded in a 4-column row.
-    const cols = images.length === 1 ? "max-w-sm grid-cols-1" : images.length === 2 ? "max-w-2xl grid-cols-2" : images.length === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+    const cols = images.length === 1 ? "mx-auto max-w-sm grid-cols-1" : images.length === 2 ? "mx-auto max-w-2xl grid-cols-2" : images.length === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
     return (
       <div className={`grid gap-4 ${cols}`}>
         {images.map((image) => (

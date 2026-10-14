@@ -79,7 +79,7 @@ export default async function MarketingPage() {
           </Suspense>
           </div>
           {panelStages.length > 0 && (
-            <aside aria-label={hv.marketingPanelHeading} className="mt-10 rounded-3xl border border-beige-border bg-ivory/80 p-6 shadow-[0_1px_2px_rgba(43,38,34,0.04),0_24px_48px_-24px_rgba(43,38,34,0.18)] lg:col-span-5 lg:mt-0">
+            <aside aria-label={hv.marketingPanelHeading} className="mt-10 hidden rounded-3xl sm:block border border-beige-border bg-ivory/80 p-6 shadow-[0_1px_2px_rgba(43,38,34,0.04),0_24px_48px_-24px_rgba(43,38,34,0.18)] lg:col-span-5 lg:mt-0">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="font-body text-xs font-semibold tracking-[0.15em] text-warm-grey uppercase">{hv.marketingPanelHeading}</p>
                 <div className="flex gap-1.5">
