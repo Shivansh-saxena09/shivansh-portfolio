@@ -1,9 +1,8 @@
 "use client";
 
-import "@/components/loaders/loaders.css";
 /**
  * Loader family: one per real wait, same palette and parts, different motion
- * per context. Keyframes live in loaders.css (ld-*); reduced motion keeps a
+ * per context. Keyframes live in loaders.css (ld-*), imported by the admin modules that use them; the contact button's two rules are also in marketing-motion.css; reduced motion keeps a
  * static minimal indicator.
  */
 

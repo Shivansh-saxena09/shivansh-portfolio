@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/marketing/marketing-motion.css";
 import { SplitText } from "@/components/motion/SplitText";
 import { useState } from "react";
 import type { ContactInfo } from "@/lib/data/site";

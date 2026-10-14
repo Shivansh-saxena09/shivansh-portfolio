@@ -1,3 +1,4 @@
+import "@/components/loaders/loaders.css";
 import { FunnelLoader } from "@/components/loaders/Loaders";
 
 /** Admin pages wait on live Supabase reads; this shows while one loads (the public site is static and has none). */

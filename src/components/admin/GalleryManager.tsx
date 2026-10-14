@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { useActionState, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { TextInput } from "@/components/admin/fields";

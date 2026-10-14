@@ -1,4 +1,3 @@
-import "@/components/case-study/case-motion.css";
 
 /**
  * Odometer roll for a headline number ("292", "₹254"): each digit is a column

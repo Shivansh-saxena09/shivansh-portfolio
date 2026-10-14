@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { DoneState, UploadProgress } from "@/components/loaders/Loaders";

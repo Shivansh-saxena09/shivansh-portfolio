@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { useFormStatus } from "react-dom";
 import { ButtonLoader } from "@/components/loaders/Loaders";
 import { useDelayed } from "@/components/loaders/useDelayed";

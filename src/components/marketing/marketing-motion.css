@@ -89,3 +89,38 @@
     animation: none;
   }
 }
+
+/* Contact button loader (copied from loaders.css so /marketing needs no extra sheet) */
+.ld-bars i {
+  animation: ld-bar 0.9s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.ld-bars i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.ld-bars i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes ld-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.ld-check {
+  stroke-dasharray: 1;
+  animation: ld-draw 0.35s ease-out both;
+}
+@keyframes ld-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-bars i {
+    animation: none;
+  }
+}
