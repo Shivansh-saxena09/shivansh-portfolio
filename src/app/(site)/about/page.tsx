@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { SplitText } from "@/components/motion/SplitText";
-import { CountUpText } from "@/components/motion/CountUpText";
 import { getAboutContent, getQuickFacts, getExperienceTimeline } from "@/lib/data/about";
 import { getPageMeta } from "@/lib/data/site";
 import { pageMetadata } from "@/lib/seo";
@@ -107,14 +106,16 @@ export default async function AboutPage() {
                   spec-sheet rather than a squeezed grid. sm–lg: enough
                   width reopens for the 3-up grid. lg+: back to a single
                   stacked column matching the sidebar card treatment. */}
-              <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+              <div data-mo-now="" className="mo-reveal mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
                 {quickFacts.map((fact, i) => (
                   <div
                     key={fact.id}
                     className="flex items-center gap-4 rounded-xl border border-beige-border bg-ivory p-5 sm:block sm:gap-0 lg:flex lg:items-center lg:gap-4"
                   >
                     <p className="shrink-0 font-heading text-3xl font-bold text-terracotta">
-                      <CountUpText text={fact.value} delay={i * 180} />
+                      <span className="mo-count tabular-nums" data-d={i * 180}>
+                        {fact.value}
+                      </span>
                     </p>
                     <p className="font-body text-xs text-warm-grey sm:mt-1 lg:mt-0">{fact.label}</p>
                   </div>

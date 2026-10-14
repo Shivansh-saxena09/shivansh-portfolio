@@ -1,8 +1,8 @@
 "use client";
 
+import "@/components/case-study/case-motion.css";
 import { SplitText } from "@/components/motion/SplitText";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { useRevealOnce } from "@/components/motion/useRevealOnce";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
@@ -87,9 +87,6 @@ const markLoaded = (e: React.SyntheticEvent<HTMLImageElement>) => e.currentTarge
 
 export function VerifiedResults({ images }: { images: ProofImage[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  // Shield stamps down once the card scrolls in.
-  const stampRef = useRef<HTMLDivElement>(null);
-  useRevealOnce(stampRef);
   const mounted = useSyncExternalStore(subscribe, getMountedSnapshot, getMountedServerSnapshot);
 
   const close = () => setOpenIndex(null);
@@ -116,7 +113,7 @@ export function VerifiedResults({ images }: { images: ProofImage[] }) {
   const overflowCount = images.length - MAX_GRID_TILES;
 
   return (
-    <div ref={stampRef} className="paper-grain relative overflow-hidden rounded-3xl border border-beige-border bg-ivory p-7 sm:p-9">
+    <div className="mo-reveal paper-grain relative overflow-hidden rounded-3xl border border-beige-border bg-ivory p-7 sm:p-9">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-16 -right-14 h-64 w-64 rounded-full bg-sage/10 blur-3xl"

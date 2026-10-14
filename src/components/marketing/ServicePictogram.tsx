@@ -1,3 +1,4 @@
+import "@/components/marketing/marketing-motion.css";
 /**
  * Animated pictogram for a service card, picked from the (admin-editable)
  * service title so new services get a matching one automatically; anything

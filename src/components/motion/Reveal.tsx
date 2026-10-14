@@ -1,14 +1,15 @@
-"use client";
+import type { ReactNode } from "react";
 
-import { useRef, type ReactNode } from "react";
-import { useRevealOnce } from "@/components/motion/useRevealOnce";
-
-/** Wraps server-rendered content so its `.mo-pop` children stagger in once (see globals.css). */
-export function Reveal({ className, children }: { className?: string; children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useRevealOnce(ref);
+/**
+ * Marks server-rendered content for a play-once reveal. No JS of its own:
+ * MotionRuntime (loaded lazily after hydration) sets data-mo on `.mo-reveal`
+ * when it scrolls in, which starts the CSS of its children (`.mo-pop` etc.)
+ * and counts up any `.mo-count` inside. `now`: if it is already on screen at
+ * load, play right away instead of staying static.
+ */
+export function Reveal({ className, now, children }: { className?: string; now?: boolean; children: ReactNode }) {
   return (
-    <div ref={ref} className={className}>
+    <div className={`mo-reveal ${className ?? ""}`} data-mo-now={now ? "" : undefined}>
       {children}
     </div>
   );

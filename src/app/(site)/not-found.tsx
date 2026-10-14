@@ -1,3 +1,4 @@
+import "./not-found.css";
 import Link from "next/link";
 import { nav } from "@/lib/data/nav";
 import { Container } from "@/components/ui/Container";

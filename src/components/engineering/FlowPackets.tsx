@@ -1,3 +1,4 @@
+import "@/components/engineering/engineering-motion.css";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 

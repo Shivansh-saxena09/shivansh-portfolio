@@ -1,0 +1,26 @@
+/* Home skills strip. Imported by the components that use it, so only their pages load it. */
+.skills-track {
+  animation: skills 70s linear infinite;
+}
+.skills-strip:hover .skills-track,
+.skills-strip[data-run="0"] .skills-track {
+  animation-play-state: paused;
+}
+@keyframes skills {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skills-track {
+    animation: none;
+  }
+  .skills-track {
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+  }
+  .skills-track [aria-hidden] {
+    display: none;
+  }
+}

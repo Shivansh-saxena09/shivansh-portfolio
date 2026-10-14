@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/engineering/engineering-motion.css";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { highlightCode } from "@/lib/highlightCode";

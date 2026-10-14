@@ -2,28 +2,59 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { observeOnce } from "@/components/motion/useRevealOnce";
+import { countUp } from "@/components/motion/countUp";
+
+const REVEAL = "main .mo-reveal, main .mo-split, main .mo-mask, main .roll";
 
 /**
- * One site-wide runtime, loaded after hydration in its own chunk:
- * - plays `.mo-split` headings and `.mo-mask` images once as they scroll in;
- * - pauses `.mo-loop` ambient loops (skills strip, AI waveform, flow packets) while off-screen;
- * - desktop only (fine pointer + hover, no reduced motion): a context-aware cursor ring
- *   that grows over links/buttons, shows "view" over images and hides over form fields.
- *   The native cursor stays visible; the ring is decoration only.
+ * The one runtime behind the site's motion, loaded after hydration in its own
+ * chunk, so no animated section needs client JS of its own:
+ * - `.mo-reveal` / `.mo-split` / `.mo-mask` play once (data-mo="play") when ~20% into view;
+ *   `.mo-count` inside a played block counts up from 0 to its real text (data-d = delay ms).
+ *   Elements already on screen at load stay static, except `[data-mo-now]` and `.roll`
+ *   (above-the-fold numbers), which play right away.
+ * - `.mo-loop` ambient loops get data-run="0" while off-screen, which pauses them.
+ * - Desktop only (fine pointer + hover): a context-aware cursor ring that grows over
+ *   links/buttons, shows "view" over images and hides over form fields. The native
+ *   cursor stays; the ring is decoration only.
+ * Reduced motion: nothing is marked, so every element keeps its finished frame.
  */
 export function MotionRuntime() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const els = [...document.querySelectorAll("main .mo-split, main .mo-mask")];
-    const stopReveal = observeOnce(els);
-    const loops = [...document.querySelectorAll<HTMLElement>(".mo-loop")];
-    const io = new IntersectionObserver((entries) => entries.forEach((e) => ((e.target as HTMLElement).dataset.run = e.isIntersecting ? "1" : "0")));
-    loops.forEach((el) => io.observe(el));
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const play = (el: HTMLElement) => {
+      el.dataset.mo = "play";
+      el.querySelectorAll<HTMLElement>(".mo-count").forEach((n, i) => countUp(n, Number(n.dataset.d ?? i * 220)));
+    };
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          play(e.target as HTMLElement);
+        }),
+      { threshold: 0.2, rootMargin: "0px 0px -18% 0px" },
+    );
+    const raf: number[] = [];
+    document.querySelectorAll<HTMLElement>(REVEAL).forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) {
+        if (!el.hasAttribute("data-mo-now") && !el.classList.contains("roll")) return;
+        el.dataset.mo = "wait";
+        raf.push(requestAnimationFrame(() => raf.push(requestAnimationFrame(() => play(el)))));
+        return;
+      }
+      el.dataset.mo = "wait";
+      io.observe(el);
+    });
+    const loops = new IntersectionObserver((entries) => entries.forEach((e) => ((e.target as HTMLElement).dataset.run = e.isIntersecting ? "1" : "0")));
+    document.querySelectorAll(".mo-loop").forEach((el) => loops.observe(el));
     return () => {
-      stopReveal();
       io.disconnect();
+      loops.disconnect();
+      raf.forEach(cancelAnimationFrame);
     };
   }, [pathname]);
 

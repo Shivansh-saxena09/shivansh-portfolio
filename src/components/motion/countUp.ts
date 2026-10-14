@@ -14,6 +14,8 @@ export function countUp(node: Element, delay = 0, duration = 1300) {
   const text = node.textContent ?? "";
   const p = numberParts(text);
   if (!p || !p.v) return;
+  // Hold the final width so counting never shifts the layout (HTML only; SVG text is anchored).
+  if (node instanceof HTMLElement) node.style.minWidth = node.getBoundingClientRect().width + "px";
   node.textContent = p.fmt(0);
   const t0 = performance.now() + delay;
   const step = (now: number) => {

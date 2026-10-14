@@ -1,9 +1,5 @@
-"use client";
-
+import "@/components/marketing/marketing-motion.css";
 import Link from "next/link";
-import { useRef } from "react";
-import { useRevealOnce } from "@/components/motion/useRevealOnce";
-import { countUp } from "@/components/motion/countUp";
 
 export type RaceSet = { name: string; cpl: number; cplText: string; ctr: number; ctrText: string };
 
@@ -12,16 +8,15 @@ export type RaceSet = { name: string; cpl: number; cplText: string; ctr: number;
  * spend ÷ leads, link CTR = link clicks ÷ impressions). The page only renders
  * this for a case study with 2+ ad sets that have leads; the winner of each
  * metric (lowest CPL, highest CTR) is sage. Labels: admin "Site motion labels".
+ * No JS of its own: MotionRuntime grows the bars and counts the numbers on scroll.
  */
 export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: string; labels: [string, string]; campaign: string; href: string; sets: RaceSet[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useRevealOnce(ref, (el) => el.querySelectorAll(".ar-num").forEach((n, i) => countUp(n, 350 + (i % sets.length) * 250, 1200)));
   const groups = [
     { label: labels[0], max: Math.max(...sets.map((s) => s.cpl)), best: Math.min(...sets.map((s) => s.cpl)), get: (s: RaceSet) => [s.cpl, s.cplText] as const },
     { label: labels[1], max: Math.max(...sets.map((s) => s.ctr)), best: Math.max(...sets.map((s) => s.ctr)), get: (s: RaceSet) => [s.ctr, s.ctrText] as const },
   ];
   return (
-    <div ref={ref} className="rounded-2xl border border-beige-border bg-ivory p-6 sm:p-8">
+    <div className="mo-reveal rounded-2xl border border-beige-border bg-ivory p-6 sm:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-heading text-2xl text-charcoal sm:text-3xl">{heading}</h2>
         <Link href={href} className="nav-underline font-body text-sm text-terracotta">
@@ -40,7 +35,9 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
                   <li key={s.name} style={{ "--i": i } as React.CSSProperties}>
                     <div className="flex items-baseline justify-between gap-3 font-body text-sm">
                       <span className="truncate text-charcoal">{s.name}</span>
-                      <span className={`ar-num shrink-0 font-semibold tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`}>{text}</span>
+                      <span className={`ar-num mo-count shrink-0 text-right font-semibold tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`} data-d={350 + i * 250}>
+                        {text}
+                      </span>
                     </div>
                     <span className="mt-1.5 block h-2.5 overflow-hidden rounded-full bg-cream">
                       <i className={`ar-bar block h-full rounded-full ${win ? "bg-sage" : "bg-terracotta/70"}`} style={{ width: `${Math.max(6, (v / g.max) * 100)}%` }} />

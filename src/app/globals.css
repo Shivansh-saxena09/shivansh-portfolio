@@ -17,7 +17,8 @@
   --color-beige-border: #e4dcc9; /* borders / dividers */
 
   --font-heading: var(--font-playfair), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:
+    var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @theme inline {
@@ -82,7 +83,8 @@ h4 {
   background: color-mix(in srgb, var(--color-ivory) 72%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid color-mix(in srgb, var(--color-beige-border) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-beige-border) 80%, transparent);
   box-shadow: 0 8px 30px -12px rgb(43 38 34 / 0.18);
 }
 
@@ -123,7 +125,11 @@ h4 {
 .scroll-progress-bar {
   height: 100%;
   width: var(--scroll-progress, 0%);
-  background: linear-gradient(90deg, var(--color-terracotta), var(--color-sage));
+  background: linear-gradient(
+    90deg,
+    var(--color-terracotta),
+    var(--color-sage)
+  );
   transform-origin: left;
 }
 
@@ -243,7 +249,11 @@ h4 {
 }
 
 .footer-wordmark-fill {
-  background: linear-gradient(100deg, var(--color-terracotta), var(--color-sage));
+  background: linear-gradient(
+    100deg,
+    var(--color-terracotta),
+    var(--color-sage)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -258,8 +268,16 @@ h4 {
   animation: pl-failsafe 0.3s 3.5s forwards;
 }
 .pl-bg {
-  -webkit-mask-image: radial-gradient(circle at var(--px, 50%) var(--py, 50%), transparent var(--pr, 0px), #000 calc(var(--pr, 0px) + 1px));
-  mask-image: radial-gradient(circle at var(--px, 50%) var(--py, 50%), transparent var(--pr, 0px), #000 calc(var(--pr, 0px) + 1px));
+  -webkit-mask-image: radial-gradient(
+    circle at var(--px, 50%) var(--py, 50%),
+    transparent var(--pr, 0px),
+    #000 calc(var(--pr, 0px) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at var(--px, 50%) var(--py, 50%),
+    transparent var(--pr, 0px),
+    #000 calc(var(--pr, 0px) + 1px)
+  );
 }
 .pl-char {
   transform-origin: 50% 100%;
@@ -335,7 +353,9 @@ h4 {
 }
 .scene-obj .scene-band,
 .scene-obj .scene-node {
-  transition: fill-opacity 0.4s, stroke-width 0.4s;
+  transition:
+    fill-opacity 0.4s,
+    stroke-width 0.4s;
 }
 .scene-obj:hover .scene-node,
 .scene-obj:focus-visible .scene-node {
@@ -409,14 +429,14 @@ h4 {
   }
 }
 
-/* Play-once scroll reveals (components/motion/useRevealOnce.ts). Without a
-   data-mo attribute (SSR, no JS, reduced motion, on screen at load) every
-   element below is simply in its finished state. */
+/* Shared motion primitives (play-once reveals, split headings, image masks, desktop cursor, image skeleton).
+   Feature-specific motion CSS lives next to its components. Without data-mo / data-run = finished frame. */
 [data-mo="wait"] .mo-pop {
   opacity: 0;
 }
 [data-mo="play"] .mo-pop {
-  animation: mo-pop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 170ms + 100ms) both;
+  animation: mo-pop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--i, 0) * 170ms + 100ms) both;
 }
 @keyframes mo-pop {
   from {
@@ -424,159 +444,20 @@ h4 {
     transform: translateY(18px) scale(0.94);
   }
 }
-.cf-liq {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-}
-[data-mo="wait"] .cf-liq {
-  transform: scaleY(0);
-}
-[data-mo="play"] .cf-liq {
-  animation: cf-fill 1.1s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i, 0) * 480ms + 200ms) both;
-}
-@keyframes cf-fill {
-  from {
-    transform: scaleY(0);
-  }
-}
 [data-mo="wait"].cameo {
   opacity: 0;
 }
-/* 404: the character looks around, twice */
-.nf-look .av-look {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: nf-look 1.8s 0.5s ease-in-out 3;
-}
-@keyframes nf-look {
-  25% {
-    transform: rotate(-9deg);
-  }
-  75% {
-    transform: rotate(9deg);
-  }
-}
-.nf-q {
-  transform-box: fill-box;
-  transform-origin: 0% 100%;
-  animation: nf-q 0.5s 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-@keyframes nf-q {
-  from {
-    opacity: 0;
-    transform: scale(0.2);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .nf-look .av-look,
-  .nf-q {
-    animation: none;
-  }
-}
-
-/* Loader family (components/loaders) */
-.ld-bars i {
-  animation: ld-bar 0.9s ease-in-out infinite;
-  transform-origin: 50% 100%;
-}
-.ld-bars i:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.ld-bars i:nth-child(3) {
-  animation-delay: 0.3s;
-}
-@keyframes ld-bar {
-  0%,
-  100% {
-    transform: scaleY(0.35);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-.ld-check {
-  stroke-dasharray: 1;
-  animation: ld-draw 0.35s ease-out both;
-}
-@keyframes ld-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-}
-.ld-track {
-  animation: ld-slide 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-@keyframes ld-slide {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(300%);
-  }
-}
-.ld-doc {
-  animation: ld-bob 1.2s ease-in-out infinite;
-}
-@keyframes ld-bob {
-  50% {
-    transform: translateY(-3px);
-  }
-}
-.ld-pop {
-  animation: mo-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-.ld-fill {
-  animation: ld-fill 1.4s ease-in-out infinite;
-}
-@keyframes ld-fill {
-  from {
-    transform: translateY(40px);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-.ld-step {
-  opacity: 0;
-  animation: ld-cycle 3.6s infinite;
-}
-.ld-step-2 {
-  animation-delay: 1.2s;
-}
-.ld-step-3 {
-  animation-delay: 2.4s;
-}
-@keyframes ld-cycle {
-  0% {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  6%,
-  30% {
-    opacity: 1;
-    transform: none;
-  }
-  36%,
-  100% {
-    opacity: 0;
-  }
-}
-.ld-doctor .av-look {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: ld-nod 1.2s ease-in-out infinite;
-}
-@keyframes ld-nod {
-  50% {
-    transform: rotate(6deg);
-  }
-}
-/* Image skeleton: compositor-only shimmer behind the image, only if it is slow (>300ms) */
 .skel::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--color-terracotta) 12%, transparent) 45%, color-mix(in srgb, var(--color-sage) 14%, transparent) 55%, transparent 80%);
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-terracotta) 12%, transparent) 45%,
+    color-mix(in srgb, var(--color-sage) 14%, transparent) 55%,
+    transparent 80%
+  );
   transform: translateX(-100%);
   opacity: 0;
   animation: skel 1.4s 0.3s ease-in-out 8;
@@ -595,39 +476,10 @@ h4 {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ld-bars i,
-  .ld-track,
-  .ld-doc,
-  .ld-fill,
-  .ld-doctor .av-look,
   .skel::before {
     animation: none;
   }
-  .ld-track {
-    width: 100%;
-    opacity: 0.5;
-  }
-  .ld-step {
-    animation: none;
-  }
-  .ld-step-1 {
-    opacity: 1;
-  }
 }
-
-/* Route loader appears only if the wait passes ~300ms */
-.ld-late {
-  opacity: 0;
-  animation: ld-in 0.2s 0.3s forwards;
-}
-@keyframes ld-in {
-  to {
-    opacity: 1;
-  }
-}
-
-/* ---- Site-wide motion, pass 3 (components/motion + page parts). All of it is
-   gated by data-mo / data-run set from JS; without them = finished frame. ---- */
 .mo-w {
   display: inline-block;
 }
@@ -636,7 +488,8 @@ h4 {
   transform: translateY(0.45em);
 }
 [data-mo="play"] .mo-w {
-  animation: mo-word 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 60ms) both;
+  animation: mo-word 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)
+    calc(var(--i, 0) * 60ms) both;
 }
 @keyframes mo-word {
   from {
@@ -658,7 +511,6 @@ h4 {
     clip-path: inset(0 0 0 0);
   }
 }
-/* Desktop cursor ring (MotionRuntime) */
 .cur {
   position: fixed;
   left: 0;
@@ -698,243 +550,8 @@ h4 {
 .cur[data-c="hide"] {
   opacity: 0;
 }
-/* Skills strip */
-.skills-track {
-  animation: skills 70s linear infinite;
-}
-.skills-strip:hover .skills-track,
-.skills-strip[data-run="0"] .skills-track {
-  animation-play-state: paused;
-}
-@keyframes skills {
-  to {
-    transform: translateX(-50%);
-  }
-}
-/* Service pictograms */
-[data-mo="wait"] .sp {
-  opacity: 0;
-}
-[data-mo="play"] .sp {
-  animation: mo-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 160ms + 100ms) both;
-}
-[data-mo="play"] .sp-row,
-[data-mo="play"] .sp-type {
-  stroke-dasharray: 40;
-  animation: sp-draw 0.9s ease-out calc(var(--i, 0) * 160ms + 450ms) both;
-}
-[data-mo="play"] .sp-type {
-  animation-timing-function: steps(6);
-}
-[data-mo="play"] .sp-spin {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: sp-spin 1.4s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--i, 0) * 160ms + 400ms) both;
-}
-[data-mo="play"] .sp-btn {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: sp-press 0.5s ease-in-out calc(var(--i, 0) * 160ms + 1.1s) both;
-}
-@keyframes sp-draw {
-  from {
-    stroke-dashoffset: 40;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes sp-spin {
-  from {
-    transform: rotate(-200deg);
-  }
-}
-@keyframes sp-press {
-  50% {
-    transform: scale(0.82);
-  }
-}
-/* Ad-set bar race */
-.ar-bar {
-  transform-origin: left;
-}
-[data-mo="wait"] .ar-bar {
-  transform: scaleX(0);
-}
-[data-mo="play"] .ar-bar {
-  animation: ar-grow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 250ms + 350ms) both;
-}
-@keyframes ar-grow {
-  from {
-    transform: scaleX(0);
-  }
-}
-/* Headline number roll */
-.roll {
-  font-variant-numeric: lining-nums tabular-nums;
-}
-.roll-col {
+
+
+.mo-count {
   display: inline-block;
-  height: 1.3em;
-  line-height: 1.3;
-  overflow: hidden;
-  vertical-align: -0.3em;
-}
-.roll-strip {
-  display: flex;
-  flex-direction: column;
-  transform: translateY(calc(var(--d) * -1.3em));
-}
-.roll-strip > span {
-  height: 1.3em;
-  line-height: 1.3;
-}
-[data-mo="wait"] .roll-strip {
-  transform: translateY(0);
-}
-[data-mo="play"] .roll-strip {
-  animation: roll 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--c, 0) * 90ms + 150ms) both;
-}
-@keyframes roll {
-  from {
-    transform: translateY(0);
-  }
-}
-/* Flow packets */
-.fp-packet {
-  left: -3px;
-  top: 0;
-  opacity: 0;
-}
-[data-mo="play"] .fp-packet {
-  animation: fp-v 1.1s ease-in-out calc(var(--i, 0) * 0.35s + 0.9s) 3 both;
-}
-.mo-loop[data-run="0"] .fp-packet,
-.mo-loop[data-run="0"] .ai-wave rect {
-  animation-play-state: paused;
-}
-@media (min-width: 640px) {
-  .fp-packet {
-    left: 0;
-    top: -3px;
-  }
-  [data-mo="play"] .fp-packet {
-    animation-name: fp-h;
-  }
-}
-@keyframes fp-v {
-  0% {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  15%,
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-}
-@keyframes fp-h {
-  0% {
-    opacity: 0;
-    transform: translateX(-4px);
-  }
-  15%,
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(36px);
-  }
-}
-/* AI waveform (keeps "Coming soon"): a calm listening loop, paused off-screen */
-.ai-wave rect {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ai-wave 1.6s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * -95ms);
-}
-@keyframes ai-wave {
-  50% {
-    transform: scaleY(0.3);
-  }
-}
-/* Code card typing (CSS only, per line) */
-.type-line {
-  display: block;
-  clip-path: inset(0 100% 0 0);
-  animation: type-in calc(var(--n, 10) * 22ms + 80ms) steps(var(--n, 10)) var(--t, 0ms) forwards;
-}
-@keyframes type-in {
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-/* Verified Results stamp + Campaign Doctor scan */
-[data-mo="wait"] .vr-stamp {
-  opacity: 0;
-  transform: scale(2.4) rotate(-18deg);
-}
-[data-mo="play"] .vr-stamp {
-  animation: vr-stamp 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 0.25s both;
-}
-@keyframes vr-stamp {
-  from {
-    opacity: 0;
-    transform: scale(2.4) rotate(-18deg);
-  }
-}
-.cd-scan {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 2px;
-  opacity: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--color-sage), transparent);
-}
-[data-mo="play"] .cd-scan {
-  animation: cd-scan 1.4s ease-in-out 0.1s both;
-}
-@keyframes cd-scan {
-  0% {
-    opacity: 0;
-    top: 0;
-  }
-  10%,
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    top: 100%;
-  }
-}
-[data-mo="wait"] .cd-row {
-  opacity: 0;
-}
-[data-mo="play"] .cd-row {
-  animation: mo-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 130ms + 900ms) both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .skills-track,
-  .ai-wave rect,
-  .type-line,
-  .fp-packet {
-    animation: none;
-  }
-  .type-line {
-    clip-path: none;
-  }
-  .skills-track {
-    flex-wrap: wrap;
-    width: auto;
-    justify-content: center;
-  }
-  .skills-track [aria-hidden] {
-    display: none;
-  }
 }

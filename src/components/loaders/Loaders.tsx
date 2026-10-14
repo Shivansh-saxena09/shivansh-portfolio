@@ -1,8 +1,9 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 /**
  * Loader family: one per real wait, same palette and parts, different motion
- * per context. Keyframes live in globals.css (ld-*); reduced motion keeps a
+ * per context. Keyframes live in loaders.css (ld-*); reduced motion keeps a
  * static minimal indicator.
  */
 

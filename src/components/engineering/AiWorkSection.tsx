@@ -1,3 +1,4 @@
+import "@/components/engineering/engineering-motion.css";
 import type { HeroVisualContent } from "@/lib/data/heroVisual";
 import { SplitText } from "@/components/motion/SplitText";
 import { Container } from "@/components/ui/Container";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { Avatar } from "@/components/home/sceneParts";
 
 /**

@@ -1,3 +1,4 @@
+import "@/components/case-study/case-motion.css";
 import { Reveal } from "@/components/motion/Reveal";
 import { highlightStats } from "@/lib/highlightStats";
 
