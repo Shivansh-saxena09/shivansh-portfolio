@@ -1,3 +1,4 @@
+import { RollNumber } from "@/components/motion/RollNumber";
 import type { ReactNode } from "react";
 
 /**
@@ -71,9 +72,14 @@ export function statHeadline(
     }
     if (matches[i]) {
       nodes.push(
-        <strong key={`${keyPrefix}-m${i}`} className={numberClass}>
-          {matches[i]}
-        </strong>,
+        // Case-study headline: the numbers roll like an odometer once on load.
+        size === "page" ? (
+          <RollNumber key={`${keyPrefix}-m${i}`} text={matches[i]} className={numberClass} />
+        ) : (
+          <strong key={`${keyPrefix}-m${i}`} className={numberClass}>
+            {matches[i]}
+          </strong>
+        ),
       );
     }
   });

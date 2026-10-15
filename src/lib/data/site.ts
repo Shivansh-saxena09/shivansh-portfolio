@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/public";
+import { parseHeroVisual, type HeroVisualContent } from "@/lib/data/heroVisual";
 
 export type SiteSettings = {
   personName: string;
@@ -9,6 +10,7 @@ export type SiteSettings = {
   heroEyebrow: string;
   heroHeading: string;
   heroSubheading: string;
+  heroVisual: HeroVisualContent;
   currentlyWorkingOnText: string;
   currentlyWorkingOnUpdatedAt: string;
   location: string;
@@ -43,6 +45,7 @@ export const getSiteSettings = cache(async function getSiteSettings(): Promise<S
     heroEyebrow: data.hero_eyebrow,
     heroHeading: data.hero_heading,
     heroSubheading: data.hero_subheading,
+    heroVisual: parseHeroVisual(data.hero_visual),
     currentlyWorkingOnText: data.currently_working_on_text,
     currentlyWorkingOnUpdatedAt: data.currently_working_on_updated_at,
     location: data.location,

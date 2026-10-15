@@ -1,9 +1,13 @@
 "use client";
 
+import "@/components/marketing/marketing-motion.css";
+import { SplitText } from "@/components/motion/SplitText";
 import { useState } from "react";
 import type { ContactInfo } from "@/lib/data/site";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { ButtonLoader, CheckMark } from "@/components/loaders/Loaders";
+import { useDelayed } from "@/components/loaders/useDelayed";
 
 /**
  * Contact CTA (CLAUDE.md → /marketing): WhatsApp / email are the primary,
@@ -17,11 +21,22 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
+  // The button morphs: label → loader (only if the hand-off takes >300ms) → check, or a cross on failure.
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const late = useDelayed(status === "sending");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setStatus("sending");
+    window.setTimeout(() => setStatus("idle"), 3200);
     const subject = encodeURIComponent(`Portfolio inquiry from ${name || "website visitor"}`);
     const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
-    window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
+    try {
+      window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
@@ -29,8 +44,8 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
-            <h2 className="font-heading text-3xl text-charcoal sm:text-4xl">
-              Let&apos;s talk about your next campaign
+            <h2 className="mo-split font-heading text-3xl text-charcoal sm:text-4xl">
+              <SplitText text={"Let's talk about your next campaign"} />
             </h2>
             <p className="mt-4 max-w-md font-body text-base leading-relaxed text-warm-grey">
               Fastest way to reach me is WhatsApp or email — or use the form.
@@ -56,7 +71,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
 
           <form
             onSubmit={handleSubmit}
-            className="glass-card mt-12 grid gap-5 rounded-2xl px-6 py-8 shadow-lg sm:px-8 lg:col-span-7 lg:mt-0"
+            className="glass-card mt-12 grid min-w-0 gap-5 rounded-2xl px-5 py-8 shadow-lg sm:px-8 lg:col-span-7 lg:mt-0"
           >
             <div className="grid gap-2">
               <label htmlFor="name" className="relative z-10 font-body text-sm font-medium text-charcoal">
@@ -67,7 +82,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="relative z-10 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 
@@ -81,7 +96,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative z-10 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 
@@ -95,15 +110,29 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="relative z-10 resize-none rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 resize-none rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 
             <button
               type="submit"
-              className="relative z-10 mt-2 w-full rounded-full bg-terracotta px-8 py-4 font-body text-sm font-medium text-ivory transition-colors hover:bg-terracotta-dark sm:w-fit"
+              disabled={status === "sending"}
+              className={`relative z-10 mt-2 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full px-8 py-4 font-body text-sm font-medium text-ivory transition-colors duration-300 sm:w-fit ${status === "error" ? "bg-terracotta-dark" : status === "sent" ? "bg-sage-dark" : "bg-terracotta hover:bg-terracotta-dark"}`}
             >
-              Send
+              {status === "sending" && late ? (
+                <ButtonLoader />
+              ) : status === "sent" ? (
+                <CheckMark className="h-5 w-5" />
+              ) : status === "error" ? (
+                <svg viewBox="0 0 16 16" aria-hidden="true" className="h-4 w-4">
+                  <path d="M4 4l8 8M12 4l-8 8" className="stroke-current" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              ) : (
+                "Send"
+              )}
+              <span className="sr-only" aria-live="polite">
+                {status === "sent" ? "Sent" : status === "error" ? "Could not send" : ""}
+              </span>
             </button>
           </form>
         </div>

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
+import { FlowPackets } from "@/components/engineering/FlowPackets";
 import { ProjectPreviewCard } from "@/components/engineering/ProjectPreviewCard";
 import { SkillsGrid } from "@/components/engineering/SkillsGrid";
 import { CodeCard } from "@/components/engineering/CodeCard";
 import { ResumeButton } from "@/components/ui/ResumeButton";
 import { Container } from "@/components/ui/Container";
 import { getProjects, getFeaturedProject } from "@/lib/data/projects";
-import { getPageMeta } from "@/lib/data/site";
+import { getPageMeta, getSiteSettings } from "@/lib/data/site";
+import { AiWorkSection } from "@/components/engineering/AiWorkSection";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EngineeringPage() {
-  const [projects, featuredProject] = await Promise.all([getProjects(), getFeaturedProject()]);
+  const [projects, featuredProject, settings] = await Promise.all([
+    getProjects(),
+    getFeaturedProject(),
+    getSiteSettings(),
+  ]);
   const snippets = featuredProject?.challenges.map((c) => c.snippet) ?? [];
 
   return (
@@ -77,17 +84,22 @@ export default async function EngineeringPage() {
           <span className="font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
             Featured Project
           </span>
-          <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
-            The system behind the campaigns.
+          <h2 className="mo-split mt-4 max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
+            <SplitText text={"The system behind the campaigns."} />
           </h2>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={`mt-8 grid gap-6 sm:grid-cols-2 ${projects.length > 2 ? "lg:grid-cols-3" : ""}`}>
             {projects.map((project) => (
               <ProjectPreviewCard key={project.slug} project={project} />
             ))}
           </div>
+
+          {/* Featured project's real data flow with moving packets (hidden if it has < 2 steps) */}
+          {featuredProject && <FlowPackets steps={featuredProject.flow} href={`/project/${featuredProject.slug}`} name={featuredProject.name} />}
         </Container>
       </section>
+
+      <AiWorkSection content={settings.heroVisual} />
 
       <SkillsGrid />
     </>

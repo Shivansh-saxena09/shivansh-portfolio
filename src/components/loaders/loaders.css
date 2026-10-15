@@ -1,0 +1,125 @@
+/* Loader family (components/loaders). Imported by the components that use it, so only their pages load it. */
+.ld-bars i {
+  animation: ld-bar 0.9s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.ld-bars i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.ld-bars i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes ld-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.ld-check {
+  stroke-dasharray: 1;
+  animation: ld-draw 0.35s ease-out both;
+}
+@keyframes ld-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+.ld-track {
+  animation: ld-slide 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes ld-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+.ld-doc {
+  animation: ld-bob 1.2s ease-in-out infinite;
+}
+@keyframes ld-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.ld-pop {
+  animation: mo-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.ld-fill {
+  animation: ld-fill 1.4s ease-in-out infinite;
+}
+@keyframes ld-fill {
+  from {
+    transform: translateY(40px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.ld-step {
+  opacity: 0;
+  animation: ld-cycle 3.6s infinite;
+}
+.ld-step-2 {
+  animation-delay: 1.2s;
+}
+.ld-step-3 {
+  animation-delay: 2.4s;
+}
+@keyframes ld-cycle {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  6%,
+  30% {
+    opacity: 1;
+    transform: none;
+  }
+  36%,
+  100% {
+    opacity: 0;
+  }
+}
+.ld-doctor .av-look {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ld-nod 1.2s ease-in-out infinite;
+}
+@keyframes ld-nod {
+  50% {
+    transform: rotate(6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-bars i,
+  .ld-track,
+  .ld-doc,
+  .ld-fill,
+  .ld-doctor .av-look {
+    animation: none;
+  }
+  .ld-track {
+    width: 100%;
+    opacity: 0.5;
+  }
+  .ld-step {
+    animation: none;
+  }
+  .ld-step-1 {
+    opacity: 1;
+  }
+}
+.ld-late {
+  opacity: 0;
+  animation: ld-in 0.2s 0.3s forwards;
+}
+@keyframes ld-in {
+  to {
+    opacity: 1;
+  }
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
 import { getAboutContent, getQuickFacts, getExperienceTimeline } from "@/lib/data/about";
 import { getPageMeta } from "@/lib/data/site";
 import { pageMetadata } from "@/lib/seo";
@@ -105,14 +106,16 @@ export default async function AboutPage() {
                   spec-sheet rather than a squeezed grid. sm–lg: enough
                   width reopens for the 3-up grid. lg+: back to a single
                   stacked column matching the sidebar card treatment. */}
-              <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
-                {quickFacts.map((fact) => (
+              <div data-mo-now="" className="mo-reveal mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+                {quickFacts.map((fact, i) => (
                   <div
                     key={fact.id}
                     className="flex items-center gap-4 rounded-xl border border-beige-border bg-ivory p-5 sm:block sm:gap-0 lg:flex lg:items-center lg:gap-4"
                   >
                     <p className="shrink-0 font-heading text-3xl font-bold text-terracotta">
-                      {fact.value}
+                      <span className="mo-count tabular-nums" data-d={i * 180}>
+                        {fact.value}
+                      </span>
                     </p>
                     <p className="font-body text-xs text-warm-grey sm:mt-1 lg:mt-0">{fact.label}</p>
                   </div>
@@ -125,7 +128,7 @@ export default async function AboutPage() {
 
       <section className="border-t border-beige-border/70 bg-ivory py-20">
         <Container>
-          <h2 className="font-heading text-3xl font-bold text-charcoal sm:text-4xl">Experience</h2>
+          <h2 className="mo-split font-heading text-3xl font-bold text-charcoal sm:text-4xl"><SplitText text={"Experience"} /></h2>
           <div className="mt-12">
             <Timeline entries={timeline} />
           </div>
@@ -134,7 +137,7 @@ export default async function AboutPage() {
 
       <section className="border-t border-beige-border/70 py-20">
         <Container>
-          <h2 className="font-heading text-3xl font-bold text-charcoal sm:text-4xl">Education</h2>
+          <h2 className="mo-split font-heading text-3xl font-bold text-charcoal sm:text-4xl"><SplitText text={"Education"} /></h2>
           <div className="mt-12">
             <Education />
           </div>
@@ -143,8 +146,8 @@ export default async function AboutPage() {
 
       <section className="paper-grain relative border-t border-beige-border/70 bg-ivory py-20">
         <Container className="relative z-10">
-          <h2 className="max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
-            See the work that comes out of it.
+          <h2 className="mo-split max-w-2xl font-heading text-3xl font-bold text-charcoal sm:text-4xl">
+            <SplitText text={"See the work that comes out of it."} />
           </h2>
           {/* Desktop/tablet: plain pill pair. Mobile: the same rich
               destination-card treatment as the homepage hero — this

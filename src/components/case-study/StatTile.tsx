@@ -21,11 +21,13 @@ export function StatTile({
 
   return (
     <div
-      className={`overflow-hidden rounded-xl border border-beige-border bg-ivory ${
+      className={`@container overflow-hidden rounded-xl border border-beige-border bg-ivory ${
         compact ? "px-4 py-3" : "px-5 py-4"
       }`}
     >
-      <dt className="truncate font-body text-xs uppercase tracking-wide text-warm-grey">{label}</dt>
+      <dt className="font-body text-xs leading-tight uppercase tracking-wide break-words text-warm-grey">
+        {label}
+      </dt>
       {/* Numbers are data, not a headline — font-body (Inter), not the
           Playfair Display heading font, whose stylized serif numerals
           were reading as cursive/script at this size and weight, and
@@ -37,10 +39,19 @@ export function StatTile({
           is the safety net, not a "47,7…"-style truncation. */}
       <dd
         className={`mt-1 flex items-baseline gap-0.5 whitespace-nowrap font-body font-bold text-charcoal tabular-nums ${
-          compact ? "text-lg sm:text-xl" : "text-2xl sm:text-3xl"
+          compact
+            ? "text-[clamp(0.75rem,calc(100cqi/(var(--n)*0.62)),1.25rem)]"
+            : "text-[clamp(0.95rem,calc(100cqi/(var(--n)*0.62)),1.875rem)]"
         }`}
+        style={
+          { "--n": rest.length + (symbol ? 0.6 : 0) } as React.CSSProperties
+        }
       >
-        {symbol && <span className="text-[0.55em] font-semibold text-warm-grey">{symbol}</span>}
+        {symbol && (
+          <span className="text-[0.55em] font-semibold text-warm-grey">
+            {symbol}
+          </span>
+        )}
         {rest}
       </dd>
     </div>

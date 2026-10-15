@@ -31,6 +31,11 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Reduced motion: everything static and visible (no from-opacity:0 waiting on a scroll).
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // The spine draws itself as the timeline scrolls past.
+      gsap.fromTo(".tl-spine", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: rootRef.current, start: "top 80%", end: "bottom 60%", scrub: 0.5 } });
+
       gsap.utils.toArray<HTMLElement>(".timeline-item").forEach((item) => {
         gsap.from(item, {
           opacity: 0,
@@ -77,7 +82,7 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
           direction as the scroll-progress bar and footer accent. */}
       <div
         aria-hidden="true"
-        className="absolute top-2 bottom-2 left-2 w-px bg-beige-border lg:left-1/2 lg:-translate-x-1/2 lg:bg-gradient-to-b lg:from-terracotta lg:via-beige-border lg:to-sage"
+        className="tl-spine absolute top-2 bottom-2 left-2 w-[2px] -translate-x-1/2 origin-top bg-gradient-to-b from-terracotta via-beige-border to-sage lg:left-1/2"
       />
 
       {entries.map((entry, i) => {
@@ -102,11 +107,11 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
             <div className={`pl-9 sm:pl-10 lg:pl-0 ${onLeft ? "lg:pr-10" : "lg:pl-10"}`}>
               <div className="group relative rounded-2xl border border-beige-border bg-ivory p-6 shadow-[0_1px_2px_rgba(43,38,34,0.04),0_16px_32px_-14px_rgba(43,38,34,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-terracotta/30 hover:shadow-[0_1px_2px_rgba(43,38,34,0.04),0_26px_44px_-14px_rgba(43,38,34,0.18)] sm:p-7">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors duration-300 group-hover:bg-terracotta/15">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
                     <span className="font-body text-xs font-semibold tracking-[0.15em] text-terracotta uppercase">
                       {entry.range}
                     </span>

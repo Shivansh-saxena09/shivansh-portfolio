@@ -33,7 +33,7 @@ function AdSetBody({ adSet }: { adSet: AdSet }) {
           sets sit side-by-side, and the larger (non-compact) scale
           genuinely doesn't fit a value like "6,20,000" in that narrower
           space (confirmed via screenshot: it was clipping mid-digit). */}
-      <dl className="mt-5 grid grid-cols-2 gap-3">
+      <dl className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-3">
         <StatTile compact label="Reach" value={formatNumber(metrics.reach)} />
         <StatTile compact label="CPM" value={formatINR(metrics.cpm)} />
         <StatTile compact label="Link CTR" value={formatPct(ctrLink)} />

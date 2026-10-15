@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Field, TextInput, TextArea, FieldGrid } from "@/components/admin/fields";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ServicesManager } from "@/components/admin/ServicesManager";
-import { updateSiteSettings, updatePageMeta } from "./actions";
+import { updateSiteSettings, updatePageMeta, updateHeroVisual } from "./actions";
 
 const PAGES = [
   { key: "home", label: "Home (/)" },
@@ -20,6 +20,75 @@ export default async function AdminSettingsPage() {
     getServices(),
     supabase.from("page_meta").select("*"),
   ]);
+  const hv = settings.heroVisual;
+  const HERO_FIELD_GROUPS: { title: string; fields: [string, string, string][] }[] = [
+    {
+      title: "Marketing — funnel",
+      fields: [
+        ["campaign_label", "Campaign label", hv.campaignLabel],
+        ["spend_label", "Ad spend label", hv.spendLabel],
+        ...hv.stages.map((v, i): [string, string, string] => [`stage_${i}`, `Funnel stage ${i + 1}`, v]),
+        ...hv.stageValues.map((v, i): [string, string, string] => [`stage_value_${i}`, `Stage ${i + 1} value`, v]),
+        ["leads_value", "Leads (animated counter)", String(hv.leadsValue)],
+        ...hv.metricChips.map((v, i): [string, string, string] => [`chip_${i}`, `Metric chip ${i + 1}`, v]),
+      ],
+    },
+    {
+      title: "Engineering — system layer",
+      fields: [
+        ...hv.systemNodes.map((v, i): [string, string, string] => [`node_${i}`, `System node ${i + 1}`, v]),
+      ],
+    },
+    {
+      title: "AI — agent node + /engineering#ai section",
+      fields: [
+        ["ai_label", "AI node label", hv.aiLabel],
+        ...hv.aiItems.map((v, i): [string, string, string] => [`ai_item_${i}`, `AI item ${i + 1}`, v]),
+        ["ai_status", "AI status badge", hv.aiStatus],
+        ["ai_section_heading", "AI section heading", hv.aiSectionHeading],
+        ["ai_section_body", "AI section text", hv.aiSectionBody],
+      ],
+    },
+    {
+      title: "Resume, career & link labels",
+      fields: [
+        ["resume_label", "Resume document label", hv.resumeLabel],
+        ["resume_meta", "Resume file note", hv.resumeMeta],
+        ["career_label", "Career line label", hv.careerLabel],
+        ...(["Marketing", "Engineering", "AI", "Resume"] as const).map(
+          (k, i): [string, string, string] => [`link_label_${i}`, `${k} link label`, hv.linkLabels[i]],
+        ),
+        ["control_label_0", "Skip button label", hv.controlLabels[0]],
+        ["control_label_1", "Replay button label", hv.controlLabels[1]],
+      ],
+    },
+    {
+      title: "Phone story (screens under 640px)",
+      fields: [
+        ...hv.channelLabels.map((v, i): [string, string, string] => [`channel_label_${i}`, `${["Meta", "Google"][i]} channel tag`, v]),
+        ...hv.toolLabels.map((v, i): [string, string, string] => [`tool_label_${i}`, `Toolkit pictogram ${i + 1} label`, v]),
+        ["study_progress", "MBA progress ring (0–100)", String(hv.studyProgress)],
+        ["story_text", "Story as plain text (screen readers + search engines)", hv.storyText],
+      ],
+    },
+    {
+      title: "Site motion labels (numbers always come from case-study data)",
+      fields: [
+        ...hv.proofLabels.map((v, i): [string, string, string] => [`proof_label_${i}`, `Home proof strip: ${["leads", "impressions", "cost per lead"][i]} label`, v]),
+        ["bar_race_heading", "/marketing ad-set comparison heading", hv.barRaceHeading],
+        ...hv.barRaceLabels.map((v, i): [string, string, string] => [`bar_race_label_${i}`, `Ad-set comparison: ${["cost per lead", "link CTR"][i]} label`, v]),
+        ["process_heading", "/marketing campaign-process heading", hv.processHeading],
+        ...hv.processSteps.flatMap((v, i): [string, string, string][] => [
+          [`process_step_${i}`, `Process step ${i + 1} title`, v],
+          [`process_detail_${i}`, `Process step ${i + 1} one-liner`, hv.processDetails[i]],
+        ]),
+        ["marketing_panel_heading", "/marketing top panel heading", hv.marketingPanelHeading],
+        ["closing_line", "Footer closing line (bottom bar)", hv.closingLine],
+        ["last_updated_label", "Footer “last updated” label", hv.lastUpdatedLabel],
+        ["back_to_top_label", "Footer back-to-top button label", hv.backToTopLabel],
+      ],
+    },
+  ];
   const metaByKey = new Map((pageMetaRows ?? []).map((r) => [r.page_key, r]));
 
   return (
@@ -93,6 +162,48 @@ export default async function AdminSettingsPage() {
 
           <div>
             <SubmitButton>Save Site Settings</SubmitButton>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h2 className="font-heading text-xl font-bold text-charcoal">Hero Scene</h2>
+        <p className="mt-1 font-body text-sm text-warm-grey">
+          Every label, number and link label inside the homepage hero story. Name, role (hero
+          eyebrow) and the tagline line (hero heading) come from the fields above; career
+          milestones come from the Experience timeline; the resume document uses the uploaded PDF.
+        </p>
+
+        <form
+          action={updateHeroVisual}
+          className="mt-6 flex flex-col gap-6 rounded-2xl border border-beige-border bg-ivory p-6"
+        >
+          {HERO_FIELD_GROUPS.map((group) => (
+            <fieldset key={group.title} className="flex flex-col gap-3">
+              <legend className="mb-1 font-body text-xs font-semibold tracking-[0.1em] text-terracotta uppercase">
+                {group.title}
+              </legend>
+              <FieldGrid>
+                {group.fields.map(([name, label, value]) => (
+                  <Field key={name} label={label} htmlFor={name}>
+                    {name === "ai_section_body" || name === "story_text" ? (
+                      <TextArea id={name} name={name} rows={3} required defaultValue={value} />
+                    ) : (
+                      <TextInput
+                        id={name}
+                        name={name}
+                        required
+                        defaultValue={value}
+                        {...(name === "leads_value" || name === "study_progress" ? { type: "number", min: 0 } : {})}
+                      />
+                    )}
+                  </Field>
+                ))}
+              </FieldGrid>
+            </fieldset>
+          ))}
+          <div>
+            <SubmitButton>Save Hero Scene</SubmitButton>
           </div>
         </form>
       </div>

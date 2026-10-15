@@ -17,7 +17,7 @@ export function Tag({ children, href, active = false }: TagProps) {
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={`tap ${classes}`}>
         {children}
       </Link>
     );

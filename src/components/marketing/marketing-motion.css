@@ -1,0 +1,144 @@
+/* Marketing motion: service pictograms, ad-set race, process steps. Imported by the components that use it, so only their pages load it. */
+[data-mo="wait"] .sp {
+  opacity: 0;
+}
+[data-mo="play"] .sp {
+  animation: mo-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--i, 0) * 160ms + 100ms) both;
+}
+[data-mo="play"] .sp-row,
+[data-mo="play"] .sp-type {
+  stroke-dasharray: 40;
+  animation: sp-draw 0.9s ease-out calc(var(--i, 0) * 160ms + 450ms) both;
+}
+[data-mo="play"] .sp-type {
+  animation-timing-function: steps(6);
+}
+[data-mo="play"] .sp-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sp-spin 1.4s cubic-bezier(0.45, 0, 0.2, 1)
+    calc(var(--i, 0) * 160ms + 400ms) both;
+}
+[data-mo="play"] .sp-btn {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sp-press 0.5s ease-in-out calc(var(--i, 0) * 160ms + 1.1s) both;
+}
+@keyframes sp-draw {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes sp-spin {
+  from {
+    transform: rotate(-200deg);
+  }
+}
+@keyframes sp-press {
+  50% {
+    transform: scale(0.82);
+  }
+}
+.ar-bar {
+  transform-origin: left;
+}
+[data-mo="wait"] .ar-bar {
+  transform: scaleX(0);
+}
+[data-mo="play"] .ar-bar {
+  animation: ar-grow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)
+    calc(var(--i, 0) * 250ms + 350ms) both;
+}
+@keyframes ar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+[data-mo="wait"].ps-step {
+  opacity: 0.15;
+  transform: translateX(14px);
+}
+[data-mo="play"].ps-step {
+  animation: ps-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes ps-in {
+  from {
+    opacity: 0.15;
+    transform: translateX(14px);
+  }
+}
+@supports (animation-timeline: view()) {
+  .ps-line {
+    animation: ps-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 60%;
+  }
+}
+@keyframes ps-draw {
+  from {
+    transform: scaleY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-line {
+    animation: none;
+  }
+}
+
+/* Contact button loader (copied from loaders.css so /marketing needs no extra sheet) */
+.ld-bars i {
+  animation: ld-bar 0.9s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.ld-bars i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.ld-bars i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes ld-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.ld-check {
+  stroke-dasharray: 1;
+  animation: ld-draw 0.35s ease-out both;
+}
+@keyframes ld-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-bars i {
+    animation: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .ps-line-h {
+    animation: ps-draw-h linear both;
+    animation-timeline: view();
+    animation-range: entry 25% cover 50%;
+  }
+}
+@keyframes ps-draw-h {
+  from {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-line-h {
+    animation: none;
+  }
+}

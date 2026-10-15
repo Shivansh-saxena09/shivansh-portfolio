@@ -3,6 +3,7 @@
 import { useRef, useSyncExternalStore, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { nav } from "@/lib/data/nav";
+import { Cameo } from "@/components/motion/Cameo";
 import type { ContactInfo } from "@/lib/data/site";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
@@ -132,6 +133,9 @@ export function Footer({
   availability,
   footerCta,
   contact,
+  resumeUrl,
+  resumeLabel,
+  closing,
 }: {
   personName: string;
   personTagline: string;
@@ -139,6 +143,10 @@ export function Footer({
   availability: string;
   footerCta: { heading: string; ctaLabel: string };
   contact: ContactInfo;
+  resumeUrl: string;
+  resumeLabel: string;
+  /** Closing strip: admin line + labels, and the newest admin edit date (ISO) from existing data. */
+  closing: { line: string; lastUpdatedLabel: string; backToTopLabel: string; lastUpdated: string | null };
 }) {
   const [firstName, ...restName] = personName.split(" ");
   const lastName = restName.join(" ");
@@ -161,11 +169,14 @@ export function Footer({
     <footer className="paper-grain relative overflow-hidden border-t border-beige-border/70 bg-cream">
       <div aria-hidden="true" className="h-[2px] w-full bg-gradient-to-r from-terracotta to-sage" />
 
-      <Container className="relative z-10 py-16 sm:py-20 lg:py-24">
+      <Container className="relative z-10 pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24">
         {/* Closing CTA — a real, floating panel (glass-card + its own
             paper-grain), giving the paper texture and layered-depth
             language actual structural work to do here, not just a
             barely-visible global wash. */}
+        <div className="relative">
+        {/* Character cameo standing on the panel's top edge, waving once in view */}
+        <Cameo className="absolute right-8 bottom-full h-20 sm:right-14 sm:h-24" />
         <div className="glass-card paper-grain relative overflow-hidden rounded-3xl px-8 py-10 shadow-xl sm:px-12 sm:py-12">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <h2 className="max-w-md font-heading text-3xl leading-tight font-bold text-charcoal sm:text-4xl">
@@ -180,12 +191,15 @@ export function Footer({
             </Button>
           </div>
         </div>
+        </div>
 
         {/* ------------------------------------------------------------ */}
         {/* Desktop / tablet — the four-column utility grid, unchanged.   */}
         {/* ------------------------------------------------------------ */}
-        <div className="mt-16 hidden grid-cols-2 gap-12 sm:grid lg:grid-cols-4 lg:gap-10">
-          <div>
+        {/* Tablet: brand on its own row, then Explore | Get in touch | signature as three even
+            columns (the old 2×2 left the signature floating). Desktop: four columns, unchanged. */}
+        <div className="mt-16 hidden grid-cols-3 gap-12 sm:grid lg:grid-cols-4 lg:gap-10">
+          <div className="col-span-3 lg:col-span-1">
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-base font-semibold text-ivory">
                 S
@@ -217,11 +231,16 @@ export function Footer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="nav-underline font-body text-sm text-charcoal"
+                  className="tap nav-underline font-body text-sm text-charcoal"
                 >
                   {item.label}
                 </Link>
               ))}
+              {resumeUrl && (
+                <a href={resumeUrl} download className="tap nav-underline font-body text-sm text-charcoal">
+                  {resumeLabel}
+                </a>
+              )}
             </nav>
           </div>
 
@@ -232,7 +251,7 @@ export function Footer({
             <div className="mt-5 flex flex-col items-start gap-3">
               <a
                 href={`mailto:${contact.email}`}
-                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
+                className="tap nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
                 <EmailIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 {contact.email}
@@ -241,7 +260,7 @@ export function Footer({
                 href={contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
+                className="tap nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
                 <WhatsAppIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 Message on WhatsApp
@@ -262,8 +281,8 @@ export function Footer({
               className="@container mt-4"
             />
 
-            <div className="glass-card mt-6 inline-flex rounded-full px-2 py-1">
-              <SocialLinks contact={contact} />
+            <div className="glass-card mt-6 inline-flex max-w-full flex-wrap rounded-full px-2 py-1">
+              <SocialLinks contact={contact} className="flex-wrap" />
             </div>
           </div>
         </div>
@@ -309,8 +328,8 @@ export function Footer({
             <p className="font-body text-xs font-medium tracking-[0.15em] text-warm-grey uppercase">
               Elsewhere
             </p>
-            <div className="glass-card mt-3 inline-flex rounded-full px-2 py-1">
-              <SocialLinks contact={contact} iconClassName="h-5 w-5" />
+            <div className="glass-card mt-3 inline-flex max-w-full flex-wrap rounded-full px-2 py-1">
+              <SocialLinks contact={contact} className="flex-wrap" iconClassName="h-5 w-5" />
             </div>
           </div>
 
@@ -370,10 +389,28 @@ export function Footer({
           </div>
         </div>
 
-        <div className="mt-10 border-t border-beige-border/70 pt-6 text-center sm:mt-16">
-          <p className="font-body text-xs text-warm-grey">
-            © {new Date().getFullYear()} {personName}. All rights reserved.
-          </p>
+        {/* Closing strip (replaces the copyright line): admin line, last-updated date from existing
+            admin timestamps, back to top. */}
+        <div className="mt-10 flex flex-col items-center gap-4 border-t border-beige-border/70 pt-6 text-center sm:mt-16 sm:flex-row sm:justify-between sm:text-left">
+          {closing.line && <p className="font-body text-xs text-warm-grey">{closing.line}</p>}
+          {closing.lastUpdated && (
+            <p className="font-body text-xs text-warm-grey">
+              {closing.lastUpdatedLabel}{" "}
+              <time dateTime={closing.lastUpdated} className="font-semibold text-charcoal">
+                {new Date(closing.lastUpdated).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" })}
+              </time>
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}
+            className="group inline-flex min-h-11 items-center gap-2 rounded-full border border-beige-border bg-ivory px-4 font-body text-xs font-semibold text-charcoal transition-colors hover:border-terracotta hover:text-terracotta focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:outline-none"
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true" className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5">
+              <path d="M8 13V3m0 0L4 7m4-4 4 4" className="fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {closing.backToTopLabel}
+          </button>
         </div>
       </Container>
     </footer>

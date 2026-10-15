@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SplitText } from "@/components/motion/SplitText";
+import { Reveal } from "@/components/motion/Reveal";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject, getAllProjectSlugs } from "@/lib/data/projects";
@@ -48,7 +50,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
   return (
     <article className="py-16 sm:py-24">
       <Container>
-        <Link href="/engineering" className="nav-underline font-body text-sm text-sage-dark">
+        <Link href="/engineering" className="tap nav-underline font-body text-sm text-sage-dark">
           ← All engineering work
         </Link>
 
@@ -73,7 +75,10 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           </a>
         </div>
 
-        <h1 className="mt-4 font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl lg:text-6xl">
+        {/* Desktop: intro and stack on the left, demo (or its coming-soon card) on the right */}
+        <div className="lg:mt-2 lg:grid lg:grid-cols-12 lg:items-center lg:gap-12">
+        <div className="lg:col-span-6">
+        <h1 className="mt-4 font-heading text-4xl font-bold leading-tight text-charcoal sm:text-5xl xl:text-6xl">
           {project.name}
         </h1>
         <p className="mt-4 max-w-2xl font-body text-lg text-warm-grey">{project.tagline}</p>
@@ -87,40 +92,48 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           ))}
         </div>
 
-        <div className="mt-10 max-w-3xl">
+        </div>
+        <div className="mt-10 max-w-3xl lg:col-span-6 lg:mt-0">
           {project.demoVideoUrl ? (
             <YouTubeEmbed url={project.demoVideoUrl} title={project.name} />
           ) : (
             <DemoVideoComingSoon />
           )}
         </div>
+        </div>
 
         {/* How it works — plain HTML/CSS boxes+arrows, no diagramming
             library needed for a 4-step pipeline. */}
         <div className="mt-14">
-          <h2 className="font-heading text-2xl font-bold text-charcoal">How It Works</h2>
-          <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+          <h2 className="mo-split font-heading text-2xl font-bold text-charcoal"><SplitText text={"How It Works"} /></h2>
+          <Reveal className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
             {project.flow.flatMap((step, i) => {
               const box = (
                 <div
                   key={step.label}
-                  className="flex-1 rounded-xl border border-beige-border bg-ivory px-5 py-4 text-center sm:text-left"
+                  className="mo-pop flex-1 rounded-xl border border-beige-border bg-ivory px-5 py-4 text-center sm:text-left"
+                  style={{ "--i": i * 2 } as React.CSSProperties}
                 >
                   <p className="font-heading text-base font-bold text-charcoal">{step.label}</p>
                   <p className="mt-1 font-body text-xs text-warm-grey">{step.detail}</p>
                 </div>
               );
               if (i === project.flow.length - 1) return [box];
-              return [box, <span key={`${step.label}-arrow`}>{arrowRight}</span>];
+              return [
+                box,
+                <span key={`${step.label}-arrow`} className="mo-pop" style={{ "--i": i * 2 + 1 } as React.CSSProperties}>
+                  {arrowRight}
+                </span>,
+              ];
             })}
-          </div>
+          </Reveal>
         </div>
 
         {/* Challenges — problem/fix split plus the real code that
             illustrates each fix. */}
         <div className="mt-14">
-          <h2 className="font-heading text-2xl font-bold text-charcoal">
-            Technical Challenges
+          <h2 className="mo-split font-heading text-2xl font-bold text-charcoal">
+            <SplitText text={"Technical Challenges"} />
           </h2>
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             {project.challenges.map((challenge) => (

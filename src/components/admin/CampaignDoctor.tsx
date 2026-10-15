@@ -1,5 +1,7 @@
 "use client";
 
+import { DoctorLoader } from "@/components/loaders/DoctorLoader";
+import { useDelayed } from "@/components/loaders/useDelayed";
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import {
@@ -83,6 +85,7 @@ export function CampaignDoctor({
   publishedInsight: PublishedInsight | null;
 }) {
   const [state, formAction, pending] = useActionState(runCampaignDoctor, initialState);
+  const late = useDelayed(pending);
 
   return (
     <div className="rounded-2xl border border-terracotta/30 bg-terracotta/5 p-6">
@@ -103,10 +106,11 @@ export function CampaignDoctor({
         </form>
       </div>
 
-      {pending && (
-        <p className="mt-4 font-body text-sm text-warm-grey">
-          Sending metrics to Claude — usually takes a few seconds…
-        </p>
+      {late && (
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <DoctorLoader />
+          <p className="font-body text-sm text-warm-grey">Sending metrics to Claude — usually takes a few seconds…</p>
+        </div>
       )}
 
       {state.error && (

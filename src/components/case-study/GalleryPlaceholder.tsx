@@ -16,10 +16,12 @@ export function Gallery({
   placeholderCount: number;
 }) {
   if (images.length > 0) {
+    // Columns follow the image count, so one or two creatives aren't stranded in a 4-column row.
+    const cols = images.length === 1 ? "mx-auto max-w-sm grid-cols-1" : images.length === 2 ? "mx-auto max-w-2xl grid-cols-2" : images.length === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className={`grid gap-4 ${cols}`}>
         {images.map((image) => (
-          <div key={image.id} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-beige-border bg-ivory">
+          <div key={image.id} className="skel mo-mask relative aspect-[4/5] overflow-hidden rounded-xl border border-beige-border bg-ivory">
             <Image
               src={image.url}
               alt={image.altText ?? ""}

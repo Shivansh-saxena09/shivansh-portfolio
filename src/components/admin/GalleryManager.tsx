@@ -1,9 +1,12 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { useActionState, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { TextInput } from "@/components/admin/fields";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { DoneState, UploadProgress } from "@/components/loaders/Loaders";
+import { useDelayed, useJustFinished } from "@/components/loaders/useDelayed";
 import { ReorderableList, DragHandle } from "@/components/admin/ReorderableList";
 import {
   uploadCaseStudyImage,
@@ -30,7 +33,9 @@ export function GalleryManager({
    *  either way, just scoped by this column so the two never mix. */
   imageType?: "creative" | "proof";
 }) {
-  const [state, formAction] = useActionState(uploadCaseStudyImage, initialState);
+  const [state, formAction, pending] = useActionState(uploadCaseStudyImage, initialState);
+  const late = useDelayed(pending);
+  const finished = useJustFinished(pending);
   const noun = imageType === "proof" ? "proof screenshot" : "creative";
   // Unique per instance — this component renders twice on the same admin
   // page (once per imageType), and duplicate id/htmlFor pairs on a page
@@ -124,11 +129,14 @@ export function GalleryManager({
         </div>
         <SubmitButton pendingLabel="Uploading…">Upload</SubmitButton>
       </form>
-      {(clientError ?? state.error) && (
-        <p role="alert" className="mt-2 font-body text-sm text-terracotta-dark">
-          {clientError ?? state.error}
-        </p>
-      )}
+      <div className="mt-2 min-h-6">
+        {late && <UploadProgress label="Uploading…" />}
+        {!pending && (clientError ?? state.error) ? (
+          <DoneState ok={false} message={clientError ?? state.error} />
+        ) : (
+          !pending && finished && <DoneState ok message="Uploaded" />
+        )}
+      </div>
     </div>
   );
 }

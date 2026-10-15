@@ -1,6 +1,9 @@
 "use client";
 
+import "@/components/loaders/loaders.css";
 import { useFormStatus } from "react-dom";
+import { ButtonLoader } from "@/components/loaders/Loaders";
+import { useDelayed } from "@/components/loaders/useDelayed";
 
 export function SubmitButton({
   children = "Save",
@@ -14,6 +17,8 @@ export function SubmitButton({
   className?: string;
 }) {
   const { pending } = useFormStatus();
+  // Loader only once the wait passes ~300ms, so quick saves never flash it.
+  const late = useDelayed(pending);
   const styles =
     variant === "primary"
       ? "bg-terracotta text-ivory hover:bg-terracotta-dark"
@@ -25,8 +30,9 @@ export function SubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className={`rounded-full px-5 py-2.5 font-body text-sm font-medium transition-colors disabled:opacity-60 ${styles} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-body text-sm font-medium transition-colors disabled:opacity-60 ${styles} ${className}`}
     >
+      {late && <ButtonLoader />}
       {pending ? pendingLabel : children}
     </button>
   );

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { parseHeroVisual } from "@/lib/data/heroVisual";
 
 // Every mutation below touches content rendered inside (site)/layout.tsx
 // (Header/Footer show personName/contact sitewide) or a specific public
@@ -30,6 +31,50 @@ export async function updateSiteSettings(formData: FormData): Promise<void> {
       footer_cta_label: String(formData.get("footer_cta_label")),
     })
     .eq("id", 1);
+  if (error) throw error;
+  revalidateSite();
+}
+
+// Separate from updateSiteSettings so the main settings form keeps working
+// even before migration 0007 (which adds hero_visual) has been applied.
+export async function updateHeroVisual(formData: FormData): Promise<void> {
+  const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const list = (k: string, n: number) => Array.from({ length: n }, (_, i) => get(`${k}_${i}`));
+  const heroVisual = parseHeroVisual({
+    campaignLabel: get("campaign_label"),
+    spendLabel: get("spend_label"),
+    stages: list("stage", 3),
+    stageValues: list("stage_value", 2),
+    leadsValue: get("leads_value"),
+    metricChips: list("chip", 2),
+    systemNodes: list("node", 3),
+    controlLabels: list("control_label", 2),
+    aiLabel: get("ai_label"),
+    aiItems: list("ai_item", 2),
+    aiStatus: get("ai_status"),
+    resumeLabel: get("resume_label"),
+    resumeMeta: get("resume_meta"),
+    careerLabel: get("career_label"),
+    linkLabels: list("link_label", 4),
+    aiSectionHeading: get("ai_section_heading"),
+    aiSectionBody: get("ai_section_body"),
+    channelLabels: list("channel_label", 2),
+    toolLabels: list("tool_label", 4),
+    studyProgress: get("study_progress"),
+    storyText: get("story_text"),
+    proofLabels: list("proof_label", 3),
+    barRaceHeading: get("bar_race_heading"),
+    barRaceLabels: list("bar_race_label", 2),
+    processHeading: get("process_heading"),
+    processSteps: list("process_step", 5),
+    processDetails: list("process_detail", 5),
+    marketingPanelHeading: get("marketing_panel_heading"),
+    closingLine: get("closing_line"),
+    lastUpdatedLabel: get("last_updated_label"),
+    backToTopLabel: get("back_to_top_label"),
+  });
+  const supabase = await createClient();
+  const { error } = await supabase.from("site_settings").update({ hero_visual: heroVisual }).eq("id", 1);
   if (error) throw error;
   revalidateSite();
 }

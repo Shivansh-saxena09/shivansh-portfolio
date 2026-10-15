@@ -1,3 +1,5 @@
+import "@/components/case-study/case-motion.css";
+import { Reveal } from "@/components/motion/Reveal";
 import { highlightStats } from "@/lib/highlightStats";
 
 function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -87,7 +89,7 @@ export function CampaignDoctorInsight({
   generatedAt: string;
 }) {
   return (
-    <div className="quick-take-border rounded-3xl">
+    <Reveal className="quick-take-border rounded-3xl">
       <div className="relative overflow-hidden rounded-3xl bg-charcoal p-7 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_1px_2px_rgba(0,0,0,0.3),0_24px_50px_-16px_rgba(181,98,58,0.4)] sm:p-9">
         <div
           aria-hidden="true"
@@ -125,7 +127,9 @@ export function CampaignDoctorInsight({
           Here&apos;s what my AI-powered analysis tool identified for this campaign.
         </p>
 
-        <div className="relative z-10 mt-5 grid gap-5 sm:grid-cols-2">
+        {/* Scan line sweeps the card, then the diagnosis rows land */}
+        <span aria-hidden="true" className="cd-scan z-20" />
+        <div className="cd-row relative z-10 mt-5 grid gap-5 sm:grid-cols-2">
           <div>
             <p className="font-body text-xs font-bold tracking-[0.15em] text-sage uppercase">
               What&apos;s Working
@@ -153,7 +157,7 @@ export function CampaignDoctorInsight({
           </div>
         </div>
 
-        <div className="relative z-10 mt-5 rounded-xl bg-cream/[0.07] p-4">
+        <div className="cd-row relative z-10 mt-5 rounded-xl bg-cream/[0.07] p-4" style={{ "--i": 2 } as React.CSSProperties}>
           <div className="flex flex-wrap items-start justify-between gap-2">
             <p className="font-body text-xs font-bold tracking-[0.15em] text-cream uppercase">
               Recommended Action
@@ -185,6 +189,6 @@ export function CampaignDoctorInsight({
           {new Date(generatedAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}.
         </p>
       </div>
-    </div>
+    </Reveal>
   );
 }

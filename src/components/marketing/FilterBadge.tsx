@@ -30,6 +30,8 @@ export function FilterBadge({ skills }: { skills: Skill[] }) {
     <div className="mt-8 flex flex-wrap items-center gap-3">
       <span className="font-body text-sm text-warm-grey">Filtered by:</span>
       <Tag active>{activeSkill.label}</Tag>
+      {/* Plain <a> (full load) kept on purpose; the (site) catch-all 404 route makes this lint rule flag it. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a href="/marketing" className="nav-underline font-body text-sm text-terracotta">
         Clear filter
       </a>

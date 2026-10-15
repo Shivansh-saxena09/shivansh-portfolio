@@ -5,6 +5,7 @@
 /* See CLAUDE.md → Design Direction for the source spec.                   */
 /* ---------------------------------------------------------------------- */
 :root {
+  --hdr-h: 77px; /* phone header height (py-4 + 44px menu button + border); phone hero fits 100svh under it */
   --color-cream: #f7f3ec; /* base background */
   --color-ivory: #fdfbf7; /* secondary bg / cards, layered above base */
   --color-terracotta: #b5623a; /* primary accent — muted baked-clay */
@@ -16,7 +17,8 @@
   --color-beige-border: #e4dcc9; /* borders / dividers */
 
   --font-heading: var(--font-playfair), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:
+    var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @theme inline {
@@ -81,7 +83,8 @@ h4 {
   background: color-mix(in srgb, var(--color-ivory) 72%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid color-mix(in srgb, var(--color-beige-border) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-beige-border) 80%, transparent);
   box-shadow: 0 8px 30px -12px rgb(43 38 34 / 0.18);
 }
 
@@ -122,7 +125,11 @@ h4 {
 .scroll-progress-bar {
   height: 100%;
   width: var(--scroll-progress, 0%);
-  background: linear-gradient(90deg, var(--color-terracotta), var(--color-sage));
+  background: linear-gradient(
+    90deg,
+    var(--color-terracotta),
+    var(--color-sage)
+  );
   transform-origin: left;
 }
 
@@ -242,28 +249,422 @@ h4 {
 }
 
 .footer-wordmark-fill {
-  background: linear-gradient(100deg, var(--color-terracotta), var(--color-sage));
+  background: linear-gradient(
+    100deg,
+    var(--color-terracotta),
+    var(--color-sage)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Preloader wordmark — the same outline/gradient-fill recipe as the      */
-/* footer's signature above, but scripted (Framer Motion animates a       */
-/* clip-path across the fill layer) rather than cursor-driven, and with a */
-/* light stroke instead of a dark one since the preloader sits on a       */
-/* charcoal ground rather than cream.                                     */
-/* ---------------------------------------------------------------------- */
-.preloader-wordmark-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.25px rgba(253, 251, 247, 0.32);
-  text-stroke: 1.25px rgba(253, 251, 247, 0.32);
+/* Preloader (components/layout/Preloader.tsx). The opening beats are pure
+   CSS so the first painted frame already moves before any JS runs. */
+.pl-seen [data-preloader] {
+  display: none;
+}
+[data-preloader] {
+  animation: pl-failsafe 0.3s 3.5s forwards;
+}
+.pl-bg {
+  -webkit-mask-image: radial-gradient(
+    circle at var(--px, 50%) var(--py, 50%),
+    transparent var(--pr, 0px),
+    #000 calc(var(--pr, 0px) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at var(--px, 50%) var(--py, 50%),
+    transparent var(--pr, 0px),
+    #000 calc(var(--pr, 0px) + 1px)
+  );
+}
+.pl-char {
+  transform-origin: 50% 100%;
+  animation: pl-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.pl-word {
+  animation: pl-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.pl-rule {
+  animation: pl-draw 0.45s 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.pl-seg {
+  transform: scaleX(0);
+  animation: pl-fill 0.14s ease-out forwards;
+}
+@keyframes pl-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pl-pop {
+  from {
+    transform: translateY(24px) scale(0.55);
+    opacity: 0;
+  }
+}
+@keyframes pl-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes pl-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes pl-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-preloader] {
+    display: none;
+  }
 }
 
-.preloader-wordmark-fill {
-  background: linear-gradient(100deg, var(--color-terracotta), var(--color-sage));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+/* Hero story loops (components/home/HeroStory.tsx). Compositor-
+   friendly properties only; paused while the graphic is off-screen. */
+.hv-wave {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hv-wave 1.3s ease-in-out infinite alternate;
+}
+@keyframes hv-wave {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.scene-ping {
+  animation: scene-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes scene-ping {
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.scene-obj .scene-band,
+.scene-obj .scene-node {
+  transition:
+    fill-opacity 0.4s,
+    stroke-width 0.4s;
+}
+.scene-obj:hover .scene-node,
+.scene-obj:focus-visible .scene-node {
+  stroke-width: 2;
+}
+.scene-obj .scene-arrow {
+  transition: transform 0.3s var(--ease-premium);
+}
+.scene-obj:hover .scene-arrow,
+.scene-obj:focus-visible .scene-arrow {
+  transform: translate(2px, -2px);
+}
+/* Hero scene grain: same noise as .paper-grain but without mix-blend-mode,
+   which would force a re-blend of the whole scene on every camera frame. */
+.st-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Liquid surface in the funnel bands; one wavelength = 40 user units. */
+.st-wavex {
+  animation: st-wave 2.4s linear infinite;
+}
+@keyframes st-wave {
+  to {
+    transform: translateX(-40px);
+  }
+}
+/* Ambient motes drifting in the hero background. */
+.st-mote {
+  animation: st-drift 12s ease-in-out infinite alternate;
+}
+@keyframes st-drift {
+  to {
+    transform: translate(14px, -38px);
+  }
+}
+/* In-world hang-tags: rest at a slight angle, swing when their object is hovered. */
+.scene-pill {
+  rotate: -2.5deg;
+  transform-origin: 0.7em 50%;
+  transition: rotate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.scene-obj:hover .scene-pill,
+.scene-obj:focus-visible .scene-pill {
+  rotate: 2deg;
+}
+.scene-tag {
+  border-radius: 0.3em 0.55em 0.55em 0.3em;
+}
+.hv-paused .st-wavex,
+.hv-paused .st-mote,
+.hv-paused .hv-wave,
+.hv-paused .scene-ping {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hv-wave,
+  .st-wavex,
+  .st-mote,
+  .scene-ping {
+    animation: none;
+  }
+  .scene-obj,
+  .scene-pill {
+    transition: none;
+  }
+}
+
+/* Shared motion primitives (play-once reveals, split headings, image masks, desktop cursor, image skeleton).
+   Feature-specific motion CSS lives next to its components. Without data-mo / data-run = finished frame. */
+[data-mo="wait"] .mo-pop {
+  opacity: 0;
+}
+[data-mo="play"] .mo-pop {
+  animation: mo-pop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--i, 0) * 170ms + 100ms) both;
+}
+@keyframes mo-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+}
+[data-mo="wait"].cameo {
+  opacity: 0;
+}
+.skel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-terracotta) 12%, transparent) 45%,
+    color-mix(in srgb, var(--color-sage) 14%, transparent) 55%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  opacity: 0;
+  animation: skel 1.4s 0.3s ease-in-out 8;
+}
+.skel[data-loaded]::before {
+  display: none;
+}
+@keyframes skel {
+  0% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel::before {
+    animation: none;
+  }
+}
+.mo-w {
+  display: inline-block;
+}
+[data-mo="wait"] .mo-w {
+  opacity: 0;
+  transform: translateY(0.45em);
+}
+[data-mo="play"] .mo-w {
+  animation: mo-word 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)
+    calc(var(--i, 0) * 60ms) both;
+}
+@keyframes mo-word {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+}
+[data-mo="wait"].mo-mask {
+  clip-path: inset(0 0 100% 0);
+}
+[data-mo="play"].mo-mask {
+  animation: mo-mask 1s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes mo-mask {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* Desktop cursor ring (MotionRuntime): every state change is transform/opacity on its own
+   layer, so hovering or clicking never waits on a main-thread repaint. */
+.cur {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  pointer-events: none;
+  z-index: 95;
+  opacity: 0;
+  transition: opacity 0.2s;
+  will-change: transform, opacity;
+}
+.cur::before,
+.cur::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  transform: scale(0.47);
+  transition:
+    transform 0.25s,
+    opacity 0.25s;
+}
+.cur::before {
+  border: 3px solid var(--color-terracotta);
+}
+.cur::after {
+  background: var(--color-sage);
+  opacity: 0;
+}
+.cur[data-on] {
+  opacity: 0.75;
+}
+.cur[data-c="link"]::before,
+.cur[data-c="link"]::after {
+  transform: scale(0.75);
+}
+.cur[data-c="link"]::after {
+  opacity: 0.14;
+}
+.cur[data-c="view"]::before,
+.cur[data-c="view"]::after {
+  transform: scale(1);
+}
+.cur[data-c="view"]::after {
+  opacity: 0.12;
+}
+.cur[data-c="hide"] {
+  opacity: 0;
+}
+
+
+.mo-count {
+  display: inline-block;
+}
+
+/* Home skills strip (global sheet: the homepage needs no second stylesheet). Static wrapped
+   list until MotionRuntime clones it (data-cloned), then a slow loop; never with reduced motion. */
+.skills-track {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 0.75rem;
+}
+.skills-track[data-cloned] {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: max-content;
+  animation: skills 70s linear infinite;
+  padding: 0;
+}
+.skills-strip:hover .skills-track,
+.skills-strip[data-run="0"] .skills-track {
+  animation-play-state: paused;
+}
+@keyframes skills {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.sk {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-beige-border);
+  border-radius: 999px;
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-size: 0.875rem;
+}
+.sk svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: var(--color-sage-dark);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sk-marketing svg {
+  stroke: var(--color-terracotta);
+}
+
+/* Header (components/layout/Header.tsx): compact on scroll without changing height */
+.hdr {
+  transition:
+    box-shadow 0.25s,
+    background-color 0.25s;
+}
+.hdr[data-compact] {
+  background-color: color-mix(in srgb, var(--color-cream) 96%, transparent);
+  box-shadow: 0 8px 24px -16px rgba(43, 38, 34, 0.28);
+}
+.hdr-mark {
+  transition: transform 0.25s;
+}
+.hdr[data-compact] .hdr-mark {
+  transform: scale(0.86);
+}
+.hdr-ping {
+  animation: hdr-ping 2.4s ease-out 3;
+}
+@keyframes hdr-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hdr-ping {
+    animation: none;
+  }
+}
+
+/* Touch screens: small text links get a 44px tall hit area (desktop pointer spacing unchanged). */
+@media (pointer: coarse) {
+  .tap {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* Headings: a single word wider than its line (long names at 200% zoom / large text) breaks instead
+   of forcing horizontal scroll. Has no effect whenever words fit, so normal layouts are unchanged. */
+h1,
+h2,
+h3 {
+  overflow-wrap: break-word;
 }
