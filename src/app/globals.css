@@ -660,3 +660,11 @@ h4 {
     align-items: center;
   }
 }
+
+/* Headings: a single word wider than its line (long names at 200% zoom / large text) breaks instead
+   of forcing horizontal scroll. Has no effect whenever words fit, so normal layouts are unchanged. */
+h1,
+h2,
+h3 {
+  overflow-wrap: break-word;
+}
