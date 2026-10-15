@@ -54,7 +54,7 @@ export function Header({ settings, contact }: { settings: SiteSettings; contact:
       <Container className="flex items-center justify-between py-4 sm:py-5">
         <Link href="/" className="flex min-w-0 items-center gap-2">
           <span className="hdr-mark flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracotta font-heading text-sm font-semibold text-ivory">S</span>
-          <span className="truncate font-heading text-lg font-semibold tracking-tight text-charcoal">{settings.personName}</span>
+          <span className="font-heading text-lg font-semibold tracking-tight text-charcoal max-[300px]:truncate">{settings.personName}</span>
         </Link>
 
         <div className="hidden items-center gap-5 sm:flex">
