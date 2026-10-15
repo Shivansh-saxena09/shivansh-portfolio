@@ -25,7 +25,7 @@ export function StatTile({
         compact ? "px-4 py-3" : "px-5 py-4"
       }`}
     >
-      <dt className="truncate font-body text-xs uppercase tracking-wide text-warm-grey">{label}</dt>
+      <dt className="font-body text-xs leading-tight uppercase tracking-wide break-words text-warm-grey">{label}</dt>
       {/* Numbers are data, not a headline — font-body (Inter), not the
           Playfair Display heading font, whose stylized serif numerals
           were reading as cursive/script at this size and weight, and

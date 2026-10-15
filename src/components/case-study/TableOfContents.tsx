@@ -34,7 +34,7 @@ export function TableOfContents({
               key={s.id}
               href={`#${s.id}`}
               data-active={s.id === active}
-              className="shrink-0 rounded-full border border-beige-border px-3.5 py-1.5 font-body text-xs font-medium whitespace-nowrap text-charcoal transition-colors data-[active=true]:border-terracotta data-[active=true]:bg-terracotta data-[active=true]:text-ivory"
+              className="tap shrink-0 rounded-full border border-beige-border px-3.5 py-1.5 font-body text-xs font-medium whitespace-nowrap text-charcoal transition-colors data-[active=true]:border-terracotta data-[active=true]:bg-terracotta data-[active=true]:text-ivory"
             >
               {s.label}
             </a>
@@ -51,7 +51,7 @@ export function TableOfContents({
           key={s.id}
           href={`#${s.id}`}
           data-active={s.id === active}
-          className="rounded-lg px-2.5 py-1.5 font-body text-sm text-warm-grey transition-colors data-[active=true]:bg-terracotta/10 data-[active=true]:font-medium data-[active=true]:text-terracotta-dark"
+          className="tap rounded-lg px-2.5 py-1.5 font-body text-sm text-warm-grey transition-colors data-[active=true]:bg-terracotta/10 data-[active=true]:font-medium data-[active=true]:text-terracotta-dark"
         >
           {s.label}
         </a>

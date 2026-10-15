@@ -71,7 +71,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
 
           <form
             onSubmit={handleSubmit}
-            className="glass-card mt-12 grid gap-5 rounded-2xl px-6 py-8 shadow-lg sm:px-8 lg:col-span-7 lg:mt-0"
+            className="glass-card mt-12 grid min-w-0 gap-5 rounded-2xl px-5 py-8 shadow-lg sm:px-8 lg:col-span-7 lg:mt-0"
           >
             <div className="grid gap-2">
               <label htmlFor="name" className="relative z-10 font-body text-sm font-medium text-charcoal">
@@ -82,7 +82,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="relative z-10 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 
@@ -96,7 +96,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative z-10 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 
@@ -110,7 +110,7 @@ export function ContactCTA({ contact }: { contact: ContactInfo }) {
                 rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="relative z-10 resize-none rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
+                className="relative z-10 w-full min-w-0 resize-none rounded-lg border border-beige-border bg-cream px-4 py-3 font-body text-sm text-charcoal outline-none focus:border-sage"
               />
             </div>
 

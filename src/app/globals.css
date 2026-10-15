@@ -651,3 +651,12 @@ h4 {
     animation: none;
   }
 }
+
+/* Touch screens: small text links get a 44px tall hit area (desktop pointer spacing unchanged). */
+@media (pointer: coarse) {
+  .tap {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}

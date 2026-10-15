@@ -111,7 +111,7 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors duration-300 group-hover:bg-terracotta/15">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
                     <span className="font-body text-xs font-semibold tracking-[0.15em] text-terracotta uppercase">
                       {entry.range}
                     </span>

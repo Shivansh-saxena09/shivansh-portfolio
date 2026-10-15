@@ -50,7 +50,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
   return (
     <article className="py-16 sm:py-24">
       <Container>
-        <Link href="/engineering" className="nav-underline font-body text-sm text-sage-dark">
+        <Link href="/engineering" className="tap nav-underline font-body text-sm text-sage-dark">
           ← All engineering work
         </Link>
 

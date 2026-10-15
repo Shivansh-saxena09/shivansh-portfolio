@@ -27,7 +27,7 @@ export function SocialLinks({
           rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
           aria-label={label}
           title={label}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal transition-colors duration-200 hover:bg-terracotta/10 hover:text-terracotta"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-charcoal transition-colors duration-200 hover:bg-terracotta/10 hover:text-terracotta"
         >
           <Icon className={iconClassName} />
         </a>

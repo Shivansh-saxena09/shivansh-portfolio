@@ -12,7 +12,7 @@ export function ProofStrip({ items }: { items: ProofItem[] }) {
     <section aria-label={items.map((i) => i.label).join(", ")} data-mo-now="" className="mo-reveal border-b border-beige-border/70 bg-ivory py-10 sm:py-12">
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-5 sm:grid-cols-3 sm:px-8">
         {items.map((item, i) => (
-          <div key={item.label} className="flex items-baseline gap-3 sm:block sm:text-center">
+          <div key={item.label} className="flex flex-wrap items-baseline gap-x-3 sm:block sm:text-center">
             <span className="mo-count font-heading text-3xl font-bold text-terracotta tabular-nums sm:text-4xl" data-d={i * 220}>
               {item.text}
             </span>

@@ -13,7 +13,7 @@ export function FlowPackets({ steps, href, name }: { steps: { label: string; det
   return (
     <Reveal className="mo-loop mt-10 rounded-2xl border border-beige-border bg-cream p-6 sm:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <Link href={href} className="nav-underline font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
+        <Link href={href} className="tap nav-underline font-body text-xs font-semibold tracking-[0.15em] text-sage-dark uppercase">
           {name} →
         </Link>
       </div>

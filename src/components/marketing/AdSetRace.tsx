@@ -16,32 +16,35 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
     { label: labels[1], max: Math.max(...sets.map((s) => s.ctr)), best: Math.max(...sets.map((s) => s.ctr)), get: (s: RaceSet) => [s.ctr, s.ctrText] as const },
   ];
   return (
-    <div className="mo-reveal rounded-2xl border border-beige-border bg-ivory p-6 sm:p-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-heading text-2xl text-charcoal sm:text-3xl">{heading}</h2>
-        <Link href={href} className="nav-underline font-body text-sm text-terracotta">
+    // @container: the card lays itself out by its OWN width (it sits in a 5/12 or 7/12 column on
+    // desktop and full width on phones), not the viewport. Each ad set: full name on its own line
+    // (wraps, never clipped), then bar + value on one row (bar flexes, value never shrinks).
+    <div className="@container mo-reveal rounded-2xl border border-beige-border bg-ivory p-5 sm:p-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="min-w-0 font-heading text-2xl break-words text-charcoal @md:text-3xl">{heading}</h2>
+        <Link href={href} className="tap nav-underline min-w-0 font-body text-sm break-words text-terracotta">
           {campaign} →
         </Link>
       </div>
-      <div className="mt-6 grid gap-8 lg:grid-cols-2">
+      <div className="mt-6 grid gap-8 @xl:grid-cols-2">
         {groups.map((g) => (
-          <div key={g.label}>
+          <div key={g.label} className="min-w-0">
             <p className="font-body text-xs font-semibold tracking-[0.14em] text-warm-grey uppercase">{g.label}</p>
-            <ul className="mt-3 flex flex-col gap-3">
+            <ul className="mt-3 flex flex-col gap-4">
               {sets.map((s, i) => {
                 const [v, text] = g.get(s);
                 const win = v === g.best;
                 return (
-                  <li key={s.name} style={{ "--i": i } as React.CSSProperties}>
-                    <div className="flex items-baseline justify-between gap-3 font-body text-sm">
-                      <span className="truncate text-charcoal">{s.name}</span>
-                      <span className={`ar-num mo-count shrink-0 text-right font-semibold tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`} data-d={350 + i * 250}>
+                  <li key={s.name} className="min-w-0" style={{ "--i": i } as React.CSSProperties}>
+                    <p className="font-body text-sm leading-snug [overflow-wrap:anywhere] text-charcoal">{s.name}</p>
+                    <div className="mt-1.5 flex items-center gap-3">
+                      <span className="block h-2.5 min-w-0 flex-1 overflow-hidden rounded-full bg-cream">
+                        <i className={`ar-bar block h-full rounded-full ${win ? "bg-sage" : "bg-terracotta/70"}`} style={{ width: `${Math.max(6, (v / g.max) * 100)}%` }} />
+                      </span>
+                      <span className={`ar-num mo-count shrink-0 text-right font-body text-sm font-semibold whitespace-nowrap tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`} data-d={350 + i * 250}>
                         {text}
                       </span>
                     </div>
-                    <span className="mt-1.5 block h-2.5 overflow-hidden rounded-full bg-cream">
-                      <i className={`ar-bar block h-full rounded-full ${win ? "bg-sage" : "bg-terracotta/70"}`} style={{ width: `${Math.max(6, (v / g.max) * 100)}%` }} />
-                    </span>
                   </li>
                 );
               })}

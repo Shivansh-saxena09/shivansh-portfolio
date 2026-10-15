@@ -231,13 +231,13 @@ export function Footer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="nav-underline font-body text-sm text-charcoal"
+                  className="tap nav-underline font-body text-sm text-charcoal"
                 >
                   {item.label}
                 </Link>
               ))}
               {resumeUrl && (
-                <a href={resumeUrl} download className="nav-underline font-body text-sm text-charcoal">
+                <a href={resumeUrl} download className="tap nav-underline font-body text-sm text-charcoal">
                   {resumeLabel}
                 </a>
               )}
@@ -251,7 +251,7 @@ export function Footer({
             <div className="mt-5 flex flex-col items-start gap-3">
               <a
                 href={`mailto:${contact.email}`}
-                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
+                className="tap nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
                 <EmailIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 {contact.email}
@@ -260,7 +260,7 @@ export function Footer({
                 href={contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
+                className="tap nav-underline flex items-center gap-2 font-body text-sm text-charcoal"
               >
                 <WhatsAppIcon className="h-4 w-4 shrink-0 text-warm-grey" />
                 Message on WhatsApp

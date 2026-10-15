@@ -92,7 +92,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
     <article className="py-16 sm:py-24">
       <CaseStudyJsonLd caseStudy={caseStudy} settings={settings} />
       <Container>
-        <Link href="/marketing" className="nav-underline font-body text-sm text-terracotta">
+        <Link href="/marketing" className="tap nav-underline font-body text-sm text-terracotta">
           ← All marketing work
         </Link>
 
@@ -162,7 +162,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/case-study/[
             </div>
 
             <div className="glass-card paper-grain rounded-2xl px-6 py-7 shadow-lg">
-              <dl className="relative z-10 grid grid-cols-2 gap-3">
+              <dl className="relative z-10 grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-3">
                 <StatTile compact label="Reach" value={formatNumber(totals.reach)} />
                 <StatTile
                   compact
