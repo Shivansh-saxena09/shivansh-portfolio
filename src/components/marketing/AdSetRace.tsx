@@ -27,7 +27,10 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
         </Link>
       </div>
       <div className="mt-6 grid gap-8 @xl:grid-cols-2">
-        {groups.map((g) => (
+        {groups.map((g) => {
+          // Every value in a group reserves the longest value's width, so all bar tracks share one length (one scale).
+          const valueW = `${Math.max(...sets.map((s) => g.get(s)[1].length))}ch`;
+          return (
           <div key={g.label} className="min-w-0">
             <p className="font-body text-xs font-semibold tracking-[0.14em] text-warm-grey uppercase">{g.label}</p>
             <ul className="mt-3 flex flex-col gap-4">
@@ -41,7 +44,7 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
                       <span className="block h-2.5 min-w-0 flex-1 overflow-hidden rounded-full bg-cream">
                         <i className={`ar-bar block h-full rounded-full ${win ? "bg-sage" : "bg-terracotta/70"}`} style={{ width: `${Math.max(6, (v / g.max) * 100)}%` }} />
                       </span>
-                      <span className={`ar-num mo-count shrink-0 text-right font-body text-sm font-semibold whitespace-nowrap tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`} data-d={350 + i * 250}>
+                      <span className={`ar-num mo-count shrink-0 text-right font-body text-sm font-semibold whitespace-nowrap tabular-nums ${win ? "text-sage-dark" : "text-charcoal"}`} style={{ minWidth: valueW }} data-d={350 + i * 250}>
                         {text}
                       </span>
                     </div>
@@ -50,7 +53,8 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
               })}
             </ul>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
