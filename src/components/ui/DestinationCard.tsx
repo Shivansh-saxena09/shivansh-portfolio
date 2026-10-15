@@ -49,7 +49,7 @@ export function DestinationCard({
   return (
     <Link
       href={href}
-      className={`group flex items-center gap-4 rounded-2xl px-5 py-5 transition-transform active:scale-[0.98] ${
+      className={`group flex flex-wrap items-center gap-4 rounded-2xl px-5 py-5 transition-transform active:scale-[0.98] ${
         vivid
           ? "bg-terracotta text-ivory shadow-[0_16px_32px_-12px_rgba(181,98,58,0.45)]"
           : "border border-beige-border bg-ivory text-charcoal"
@@ -62,7 +62,7 @@ export function DestinationCard({
       >
         {icon}
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="min-w-[7rem] flex-1">
         <span className="block font-heading text-lg leading-tight font-bold">{label}</span>
         <span className={`mt-0.5 block font-body text-xs ${vivid ? "text-ivory/75" : "text-warm-grey"}`}>
           {description}
