@@ -39,7 +39,7 @@ export function AdSetRace({ heading, labels, campaign, href, sets }: { heading: 
                 const win = v === g.best;
                 return (
                   <li key={s.name} className="min-w-0" style={{ "--i": i } as React.CSSProperties}>
-                    <p className="font-body text-sm leading-snug [overflow-wrap:anywhere] text-charcoal">{s.name}</p>
+                    <p className="font-body text-sm leading-snug text-pretty [overflow-wrap:anywhere] text-charcoal">{s.name}</p>
                     <div className="mt-1.5 flex items-center gap-3">
                       <span className="block h-2.5 min-w-0 flex-1 overflow-hidden rounded-full bg-cream">
                         <i className={`ar-bar block h-full rounded-full ${win ? "bg-sage" : "bg-terracotta/70"}`} style={{ width: `${Math.max(6, (v / g.max) * 100)}%` }} />
