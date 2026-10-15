@@ -69,7 +69,7 @@ export function Header({ settings, contact }: { settings: SiteSettings; contact:
             })}
           </nav>
           {settings.availability && (
-            <span className="hidden items-center gap-2 font-body text-xs text-warm-grey xl:flex">
+            <span className="hidden items-center gap-2 font-body text-xs text-warm-grey min-[1360px]:flex">
               <span className="relative flex h-2 w-2">
                 <span className="hdr-ping absolute inset-0 rounded-full bg-sage" />
                 <span className="relative h-2 w-2 rounded-full bg-sage" />

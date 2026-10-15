@@ -105,7 +105,7 @@ export function MobileStickyCta({ whatsapp }: { whatsapp: string }) {
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-terracotta text-ivory">
           <WhatsAppIcon className="h-5 w-5" />
         </span>
-        <span className="flex-1 text-left">
+        <span className="min-w-0 flex-1 text-left">
           <span className="block font-body text-[11px] text-warm-grey">Have a campaign in mind?</span>
           <span className="block font-body text-sm font-semibold text-charcoal">Message on WhatsApp</span>
         </span>

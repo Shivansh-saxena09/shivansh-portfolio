@@ -67,7 +67,7 @@ export function TimelineChallenge({
         />
 
         <div className="relative z-10 flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
               <span
                 aria-hidden="true"

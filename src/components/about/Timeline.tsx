@@ -107,7 +107,7 @@ export function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
             <div className={`pl-9 sm:pl-10 lg:pl-0 ${onLeft ? "lg:pr-10" : "lg:pl-10"}`}>
               <div className="group relative rounded-2xl border border-beige-border bg-ivory p-6 shadow-[0_1px_2px_rgba(43,38,34,0.04),0_16px_32px_-14px_rgba(43,38,34,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-terracotta/30 hover:shadow-[0_1px_2px_rgba(43,38,34,0.04),0_26px_44px_-14px_rgba(43,38,34,0.18)] sm:p-7">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors duration-300 group-hover:bg-terracotta/15">
                     <Icon className="h-5 w-5" />
                   </span>

@@ -281,8 +281,8 @@ export function Footer({
               className="@container mt-4"
             />
 
-            <div className="glass-card mt-6 inline-flex rounded-full px-2 py-1">
-              <SocialLinks contact={contact} />
+            <div className="glass-card mt-6 inline-flex max-w-full flex-wrap rounded-full px-2 py-1">
+              <SocialLinks contact={contact} className="flex-wrap" />
             </div>
           </div>
         </div>
@@ -328,8 +328,8 @@ export function Footer({
             <p className="font-body text-xs font-medium tracking-[0.15em] text-warm-grey uppercase">
               Elsewhere
             </p>
-            <div className="glass-card mt-3 inline-flex rounded-full px-2 py-1">
-              <SocialLinks contact={contact} iconClassName="h-5 w-5" />
+            <div className="glass-card mt-3 inline-flex max-w-full flex-wrap rounded-full px-2 py-1">
+              <SocialLinks contact={contact} className="flex-wrap" iconClassName="h-5 w-5" />
             </div>
           </div>
 
